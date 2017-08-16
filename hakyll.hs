@@ -8,7 +8,7 @@ import           Text.Pandoc.Options
 --------------------------------------------------------------------------------
 config :: Configuration
 config = defaultConfiguration {
-    destinationDirectory = "public"
+    destinationDirectory = "_site"
 }
 
 main :: IO ()
