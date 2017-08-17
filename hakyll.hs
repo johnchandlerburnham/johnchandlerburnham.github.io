@@ -8,7 +8,9 @@ import           Text.Pandoc.Options
 --------------------------------------------------------------------------------
 config :: Configuration
 config = defaultConfiguration {
-    destinationDirectory = "_site"
+    destinationDirectory = "_site",
+    deployCommand = "bash deploy.sh deploy"
+    
 }
 
 main :: IO ()
