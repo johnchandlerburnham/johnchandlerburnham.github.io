@@ -10,7 +10,6 @@ config :: Configuration
 config = defaultConfiguration {
     destinationDirectory = "_site",
     deployCommand = "bash deploy.sh deploy"
-    
 }
 
 main :: IO ()
