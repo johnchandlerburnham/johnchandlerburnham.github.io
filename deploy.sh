@@ -19,6 +19,7 @@ fi
 # Setup
 git stash
 git checkout hakyll
+COMMIT=$(git log -1 HEAD --pretty=format:%H)
 
 # Build _site
 stack exec site clean
@@ -39,7 +40,6 @@ rsync -a --filter='P _site/'      \
          _site/ .
 
 # Commit
-COMMIT=$(git log -1 HEAD --pretty=format:%H)
 info "Publish site based on commit: $COMMIT"
 
 git add -A
