@@ -2,7 +2,23 @@
 
 REMOTE="git@github.com:johnchandlerburnham/johnchandlerburnham.github.io.git"
 
+info() {
+  printf "  \033[00;32m+\033[0m $1\n"
+}
 
+fail() {
+  printf "  \033[0;31m-\033[0m $1\n"
+  exit
+} 
+
+#Check git repo
+if [[ $(git remote get-url origin) != $REMOTE ]];
+  then fail "Can't find remote repository: $REMOTE"
+fi
+
+# Setup
+git stash
+git checkout hakyll
 
 # Build _site
 stack exec site clean
@@ -17,17 +33,22 @@ rsync -a --filter='P _site/'      \
          --filter='P _cache/'     \
          --filter='P .git/'       \
          --filter='P .gitignore'  \
-         --filter='P  CNAME'      \
+         --filter='P CNAME'       \
          --filter='P .stack-work' \
          --delete-excluded        \
          _site/ .
 
 # Commit
+COMMIT=$(git log -1 HEAD --pretty=format:%H)
+info "Publish site based on commit: $COMMIT"
+
 git add -A
-git commit -m "Publish."
+git commit -m "Publish site based on commit: $COMMIT"
 
 # Push
 git push origin master
+info "Pushed"
 
 # Restoration
 git checkout hakyll
+git stash pop
