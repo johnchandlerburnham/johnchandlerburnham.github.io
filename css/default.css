@@ -1,3 +1,4 @@
+@import url('http://fonts.googleapis.com/css?family=Roboto');
 /* @import "base.css"; */
 
 /* fonts */
@@ -22,7 +23,6 @@ cyan     #2aa198 Accent
 green    #859900 Accent
 */
 
-@import url(http://fonts.googleapis.com/css?family=Roboto);
 
 html {
      /* to allow the #footer to be properly positioned 
