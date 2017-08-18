@@ -38,7 +38,7 @@ rsync -a --filter='P _site/'      \
          --filter='P .git/'       \
          --filter='P .gitignore'  \
          --filter='P CNAME'       \
-         --filter='P README'       \
+         --filter='P README.md'   \
          --filter='P .stack-work' \
          --delete-excluded        \
          _site/ .
