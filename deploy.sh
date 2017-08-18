@@ -17,7 +17,10 @@ if [[ $(git remote get-url origin) != $REMOTE ]];
 fi
 
 # Setup
-git stash
+touch .deploy_lock
+git add .deploy_lock
+
+git stash --include-untracked
 git checkout hakyll
 COMMIT=$(git log -1 HEAD --pretty=format:%H)
 
@@ -52,3 +55,4 @@ info "Pushed"
 # Restoration
 git checkout hakyll
 git stash pop
+git rm .deploy_lock -f
