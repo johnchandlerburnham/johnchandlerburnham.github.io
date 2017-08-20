@@ -1,6 +1,15 @@
 ---
 title: Example post
+author: jcb
+tags: foo, bar1
 ---
+
+$$
+\require{enclose}
+\begin{array}{rll}
+   32 \enclose{longdiv}{487}\kern-.2ex \\[-3pt]
+  \end{array}
+$$
 
 Mauris in lorem nisl. Maecenas tempus facilisis ante, eget viverra nisl
 tincidunt et. Donec turpis lectus, mattis ac malesuada a, accumsan eu libero.
