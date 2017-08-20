@@ -3,23 +3,21 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>John Chandler Burnham - example post</title>
+        <title>John Chandler Burnham - Example post</title>
         <link rel="stylesheet" type="text/css" href="../css/default.css" />
     </head>
     <body>
         <div id="header">
-            <div id="logo">
-                <a href="../">John Chandler Burnham</a>
-            </div>
             <div id="navigation">
-                <a href="../">Home</a>
-                <a href="../about.html">About</a>
-                <a href="../archive.html">Archive</a>
+                <a href="../">jcb</a>
+                <a href="../about.html">posts</a>
+                <a href="../about.html">projects</a>
+                <a href="../archive.html">github</a>
             </div>
         </div>
 
         <div id="content">
-            <h1>example post</h1>
+            <h1>Example post</h1>
               <div class="info">
     Posted on August 23, 2015
     
@@ -27,16 +25,315 @@
 
 <p>Mauris in lorem nisl. Maecenas tempus facilisis ante, eget viverra nisl tincidunt et. Donec turpis lectus, mattis ac malesuada a, accumsan eu libero. Morbi condimentum, tortor et tincidunt ullamcorper, sem quam pretium nulla, id convallis lectus libero nec turpis. Proin dapibus nisi id est sodales nec ultrices tortor pellentesque.</p>
 <p>Vivamus vel nisi ac lacus sollicitudin vulputate ac ut ligula. Nullam feugiat risus eget eros gravida in molestie sapien euismod. Nunc sed hendrerit orci. Nulla mollis consequat lorem ac blandit. Ut et turpis mauris. Nulla est odio, posuere id ullamcorper sit amet, tincidunt vel justo. Curabitur placerat tincidunt varius. Nulla vulputate, ipsum eu consectetur mollis, dui nibh aliquam neque, at ultricies leo ligula et arcu.</p>
+<h1 id="an-h1-header">An h1 header</h1>
+<p>Paragraphs are separated by a blank line.</p>
+<p>2nd paragraph. <em>Italic</em>, <strong>bold</strong>, and <code>monospace</code>. Itemized lists look like:</p>
+<ul>
+<li>this one</li>
+<li>that one</li>
+<li>the other one</li>
+</ul>
+<p>Note that — not considering the asterisk — the actual text content starts at 4-columns in.</p>
+<blockquote>
+<p>Block quotes are written like so.</p>
+<p>They can span multiple paragraphs, if you like.</p>
+</blockquote>
+<p>Use 3 dashes for an em-dash. Use 2 dashes for ranges (ex., “it’s all in chapters 12–14”). Three dots … will be converted to an ellipsis. Unicode is supported. ☺</p>
+<h2 id="an-h2-header">An h2 header</h2>
+<p>Here’s a numbered list:</p>
+<ol style="list-style-type: decimal">
+<li>first item</li>
+<li>second item</li>
+<li>third item</li>
+</ol>
+<p>Note again how the actual text starts at 4 columns in (4 characters from the left side). Here’s a code sample:</p>
+<pre><code># Let me re-iterate ...
+for i in 1 .. 10 { do-something(i) }</code></pre>
+<p>As you probably guessed, indented 4 spaces. By the way, instead of indenting the block, you can use delimited blocks, if you like:</p>
+<pre><code>define foobar() {
+    print &quot;Welcome to flavor country!&quot;;
+}</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">{-# LANGUAGE ExistentialQuantification #-}</span>
+<span class="kw">module</span> <span class="dt">Main</span> <span class="kw">where</span>
+<span class="co">-- This is a comment with 80 characters in it.........................*........</span>
+<span class="ot">main ::</span> <span class="dt">IO</span> ()
+<span class="kw">import </span><span class="dt">System.Random</span>  <span class="co">-- give us a way to generate random numbers!</span>
+
+<span class="kw">data</span> <span class="dt">CardNumber</span> <span class="fu">=</span> <span class="dt">Two</span>   <span class="fu">|</span> <span class="dt">Three</span> <span class="fu">|</span> <span class="dt">Four</span> <span class="fu">|</span> <span class="dt">Five</span> <span class="fu">|</span> <span class="dt">Six</span>
+                <span class="fu">|</span> <span class="dt">Seven</span> <span class="fu">|</span> <span class="dt">Eight</span> <span class="fu">|</span> <span class="dt">Nine</span> <span class="fu">|</span> <span class="dt">Ten</span>  <span class="fu">|</span> <span class="dt">Knight</span> 
+                <span class="fu">|</span> <span class="dt">Queen</span> <span class="fu">|</span> <span class="dt">King</span>  <span class="fu">|</span> <span class="dt">Ace</span>
+                <span class="kw">deriving</span> (<span class="dt">Bounded</span>, <span class="dt">Enum</span>, <span class="dt">Eq</span>)</code></pre></div>
+<div class="sourceCode" id="mycode" startFrom="1"><table class="sourceCode haskell numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+</pre></td><td class="sourceCode"><pre><code class="sourceCode haskell"><span class="ot">{-# LANGUAGE ExistentialQuantification #-}</span>
+<span class="kw">module</span> <span class="dt">Main</span> <span class="kw">where</span>
+<span class="co">-- This is a comment with 80 characters in it.........................*........</span>
+<span class="ot">main ::</span> <span class="dt">IO</span> ()
+<span class="kw">import </span><span class="dt">System.Random</span>  <span class="co">-- give us a way to generate random numbers!</span>
+
+<span class="kw">data</span> <span class="dt">CardNumber</span> <span class="fu">=</span> <span class="dt">Two</span>   <span class="fu">|</span> <span class="dt">Three</span> <span class="fu">|</span> <span class="dt">Four</span> <span class="fu">|</span> <span class="dt">Five</span> <span class="fu">|</span> <span class="dt">Six</span>
+                <span class="fu">|</span> <span class="dt">Seven</span> <span class="fu">|</span> <span class="dt">Eight</span> <span class="fu">|</span> <span class="dt">Nine</span> <span class="fu">|</span> <span class="dt">Ten</span>  <span class="fu">|</span> <span class="dt">Knight</span> 
+                <span class="fu">|</span> <span class="dt">Queen</span> <span class="fu">|</span> <span class="dt">King</span>  <span class="fu">|</span> <span class="dt">Ace</span>
+                <span class="kw">deriving</span> (<span class="dt">Bounded</span>, <span class="dt">Enum</span>, <span class="dt">Eq</span>)
+
+<span class="kw">data</span> <span class="dt">CardSuit</span>   <span class="fu">=</span> <span class="dt">Club</span> <span class="fu">|</span> <span class="dt">Heart</span> <span class="fu">|</span> <span class="dt">Diamond</span> <span class="fu">|</span> <span class="dt">Spade</span> <span class="kw">deriving</span> (<span class="dt">Bounded</span>, <span class="dt">Enum</span>, <span class="dt">Eq</span>)
+
+<span class="kw">data</span> <span class="dt">Card</span> <span class="fu">=</span> <span class="dt">Card</span> <span class="dt">CardNumber</span> <span class="dt">CardSuit</span> <span class="kw">deriving</span> (<span class="dt">Eq</span>)
+
+<span class="kw">type</span> <span class="dt">Deck</span> <span class="fu">=</span> [<span class="dt">Card</span>]
+
+<span class="kw">instance</span> <span class="dt">Show</span> <span class="dt">CardNumber</span> <span class="kw">where</span>
+  show <span class="dt">Two</span>    <span class="fu">=</span> <span class="st">&quot;2&quot;</span>
+  show <span class="dt">Three</span>  <span class="fu">=</span> <span class="st">&quot;3&quot;</span>
+  show <span class="dt">Four</span>   <span class="fu">=</span> <span class="st">&quot;4&quot;</span>
+  show <span class="dt">Five</span>   <span class="fu">=</span> <span class="st">&quot;5&quot;</span>
+  show <span class="dt">Six</span>    <span class="fu">=</span> <span class="st">&quot;6&quot;</span>
+  show <span class="dt">Seven</span>  <span class="fu">=</span> <span class="st">&quot;7&quot;</span>
+  show <span class="dt">Eight</span>  <span class="fu">=</span> <span class="st">&quot;8&quot;</span>
+  show <span class="dt">Nine</span>   <span class="fu">=</span> <span class="st">&quot;9&quot;</span>
+  show <span class="dt">Ten</span>    <span class="fu">=</span> <span class="st">&quot;10&quot;</span>
+  show <span class="dt">Knight</span> <span class="fu">=</span> <span class="st">&quot;Kn&quot;</span>
+  show <span class="dt">Queen</span>  <span class="fu">=</span> <span class="st">&quot;Q&quot;</span>
+  show <span class="dt">King</span>   <span class="fu">=</span> <span class="st">&quot;K&quot;</span>
+  show <span class="dt">Ace</span>    <span class="fu">=</span> <span class="st">&quot;A&quot;</span>
+
+<span class="kw">instance</span> <span class="dt">Show</span> <span class="dt">CardSuit</span> <span class="kw">where</span>
+  show <span class="dt">Club</span>    <span class="fu">=</span> <span class="st">&quot;♣&quot;</span>
+  show <span class="dt">Heart</span>   <span class="fu">=</span> <span class="st">&quot;♥&quot;</span>
+  show <span class="dt">Diamond</span> <span class="fu">=</span> <span class="st">&quot;♦&quot;</span>
+  show <span class="dt">Spade</span>   <span class="fu">=</span> <span class="st">&quot;♠&quot;</span>
+
+<span class="kw">instance</span> <span class="dt">Show</span> <span class="dt">Card</span> <span class="kw">where</span>
+  show (<span class="dt">Card</span> n s) <span class="fu">=</span> (show n) <span class="fu">++</span> (show s)
+
+<span class="co">{--</span>
+<span class="co">draw :: Deck -&gt; (Card, Deck)</span>
+<span class="co">draw [] = undefined</span>
+<span class="co">draw (x:xs) = (x, xs)</span>
+<span class="co">--}</span>
+
+<span class="ot">draw ::</span> <span class="dt">Deck</span> <span class="ot">-&gt;</span> (<span class="dt">Card</span>, <span class="dt">Deck</span>)
+draw xs <span class="fu">=</span> (head <span class="fu">$</span> fst l, snd l)
+  <span class="kw">where</span> l <span class="fu">=</span> drawN <span class="dv">1</span> xs
+
+<span class="ot">drawN ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Deck</span> <span class="ot">-&gt;</span> (<span class="dt">Deck</span>, <span class="dt">Deck</span>)
+drawN _ [] <span class="fu">=</span> undefined
+drawN n xs
+    <span class="fu">|</span> n <span class="fu">&gt;</span> length xs <span class="fu">=</span> undefined
+    <span class="fu">|</span> otherwise     <span class="fu">=</span> (take n xs, drop n xs)
+
+<span class="ot">countDeck ::</span> <span class="dt">Deck</span> <span class="ot">-&gt;</span> <span class="dt">Int</span>
+countDeck cards <span class="fu">=</span> length cards
+
+<span class="ot">deck ::</span> <span class="dt">Deck</span>
+deck <span class="fu">=</span> reverse <span class="fu">$</span> deck' [<span class="dt">Card</span> <span class="dt">Two</span> <span class="dt">Club</span>]
+
+<span class="ot">deck' ::</span> <span class="dt">Deck</span> <span class="ot">-&gt;</span> <span class="dt">Deck</span>
+deck' (f<span class="fu">@</span>(<span class="dt">Card</span> <span class="dt">Ace</span> <span class="dt">Spade</span>)<span class="fu">:</span>l) <span class="fu">=</span> f <span class="fu">:</span> l
+deck' (f<span class="fu">@</span>(<span class="dt">Card</span>  cn <span class="dt">Spade</span>)<span class="fu">:</span>l) <span class="fu">=</span> deck' (<span class="dt">Card</span> (succ cn)     <span class="dt">Club</span>  <span class="fu">:</span> f <span class="fu">:</span> l)
+deck' (f<span class="fu">@</span>(<span class="dt">Card</span>  cn    ct)<span class="fu">:</span>l) <span class="fu">=</span> deck' (<span class="dt">Card</span>       cn  (succ ct) <span class="fu">:</span> f <span class="fu">:</span> l)
+
+main <span class="fu">=</span> <span class="kw">do</span>
+          print deck
+          print <span class="fu">$</span> length deck 
+          print (<span class="dt">Card</span> <span class="dt">Two</span> <span class="dt">Club</span> <span class="fu">==</span> <span class="dt">Card</span> <span class="dt">Two</span> <span class="dt">Heart</span>)
+          print (<span class="dt">Card</span> <span class="dt">Two</span> <span class="dt">Club</span> <span class="fu">==</span> <span class="dt">Card</span> <span class="dt">Two</span> <span class="dt">Heart</span>)
+          print <span class="fu">$</span> countDeck [<span class="dt">Card</span> <span class="dt">Two</span> <span class="dt">Club</span>, <span class="dt">Card</span> <span class="dt">Two</span> <span class="dt">Heart</span>]
+          print <span class="fu">$</span> draw deck
+          print <span class="fu">$</span> drawN <span class="dv">10</span> (deck)
+
+
+
+<span class="co">-- Some notes about design</span>
+<span class="co">{-</span>
+<span class="co">We will treat a deck of cards as a simple haskell list of cards.  We are going</span>
+<span class="co">to consider the &quot;top&quot; of the deck to be the front of a singly linked list That</span>
+<span class="co">is top (x:xs) = x That  means the bottom of the deck will be the last element</span>
+<span class="co">of the list. In haskell terms we will call the bottom of the deck the same as</span>
+<span class="co">bottom xs = last xs</span>
+<span class="co">-}</span></code></pre></td></tr></table></div>
+<p>(which makes copying &amp; pasting easier). You can optionally mark the delimited block for Pandoc to syntax highlight it:</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">import</span> time
+<span class="co"># Quick, count to ten!</span>
+<span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">10</span>):
+    <span class="co"># (but not *too* quick)</span>
+    time.sleep(<span class="fl">0.5</span>)
+    <span class="bu">print</span> i</code></pre></div>
+<h3 id="an-h3-header">An h3 header</h3>
+<p>Now a nested list:</p>
+<ol style="list-style-type: decimal">
+<li><p>First, get these ingredients:</p>
+<ul>
+<li>carrots</li>
+<li>celery</li>
+<li>lentils</li>
+</ul></li>
+<li><p>Boil some water.</p></li>
+<li><p>Dump everything in the pot and follow this algorithm:</p>
+<pre><code>find wooden spoon
+uncover pot
+stir
+cover pot
+balance wooden spoon precariously on pot handle
+wait 10 minutes
+goto first step (or shut off burner when done)</code></pre>
+<p>Do not bump wooden spoon or it will fall.</p></li>
+</ol>
+<p>Notice again how text always lines up on 4-space indents (including that last line which continues item 3 above).</p>
+<p>Here’s a link to <a href="http://foo.bar">a website</a>, to a <a href="local-doc.html">local doc</a>, and to a <a href="#an-h2-header">section heading in the current doc</a>. Here’s a footnote <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>.</p>
+<p>Tables can look like this:</p>
+<table>
+<caption>Shoes, their sizes, and what they’re made of</caption>
+<thead>
+<tr class="header">
+<th>size</th>
+<th align="left">material</th>
+<th align="left">color</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>9</td>
+<td align="left">leather</td>
+<td align="left">brown</td>
+</tr>
+<tr class="even">
+<td>10</td>
+<td align="left">hemp canvas</td>
+<td align="left">natural</td>
+</tr>
+<tr class="odd">
+<td>11</td>
+<td align="left">glass</td>
+<td align="left">transparent</td>
+</tr>
+</tbody>
+</table>
+<p>(The above is the caption for the table.) Pandoc also supports multi-line tables:</p>
+<table style="width:41%;">
+<colgroup>
+<col width="12%" />
+<col width="28%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">keyword</th>
+<th align="left">text</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">red</td>
+<td align="left">Sunsets, apples, and other red or reddish things.</td>
+</tr>
+<tr class="even">
+<td align="left">green</td>
+<td align="left">Leaves, grass, frogs and other things it’s not easy being.</td>
+</tr>
+</tbody>
+</table>
+<p>A horizontal rule follows.</p>
+<hr />
+<p>Inline math equations go in like so: <span class="math inline">\(\omega = d\phi / dt\)</span>. Display math should get its own line and be put in in double-dollarsigns:</p>
+<p><span class="math display">\[I = \int \rho R^{2} dV\]</span></p>
+<p>And note that you can backslash-escape any punctuation characters which you wish to be displayed literally, ex.: `foo`, *bar*, etc.:</p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Footnote text goes here.<a href="#fnref1">↩</a></p></li>
+</ol>
+</div>
 
         </div>
         <div id="footer">
-          <code>Site :: <a href="http://www.archlinux.org">Arch</a>
-            -&gt; <a href="http://jaspervdj.be/hakyll">Hakyll</a> 
-            -&gt; <a href="https://github.com/johnchandlerburnham">GitHub</a> 
-            -&gt; <a href="https://www.cloudflare.com">CloudFlare</a> 
-          </code>
           <p>&copy; <script>document.write(new Date().getFullYear());</script>
-             John Chandler Burnham.
+             John Chandler Burnham. 
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a> 
           </p>
         </div>
     </body>
