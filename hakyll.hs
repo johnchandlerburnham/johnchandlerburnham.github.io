@@ -81,8 +81,13 @@ pandocMathCompiler =
                           Ext_latex_macros]
         defaultExtensions = writerExtensions defaultHakyllWriterOptions
         newExtensions = foldr S.insert defaultExtensions mathExtensions
-        writerOptions = defaultHakyllWriterOptions {
-                          writerExtensions = newExtensions,
-                          writerHTMLMathMethod = MathJax ""
-                        }
+        writerOptions = 
+          defaultHakyllWriterOptions {
+            writerTableOfContents = True,
+            writerTOCDepth = 3,
+            writerTemplate = 
+              Just "<hr>\n<h2>Contents</h2>\n$toc$\n<hr>\n$body$",
+            writerExtensions = newExtensions,
+            writerHTMLMathMethod = MathJax ""
+          }
     in pandocCompilerWith defaultHakyllReaderOptions writerOptions
