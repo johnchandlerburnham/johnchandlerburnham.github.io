@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Workthrough: Haskell Programming From First Principles (Allen & Moronuki)</title>
+        <link rel="stylesheet" type="text/css" href="../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../">jcb</a>
+                <a href="../posts.html">posts</a>
+                <a href="../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+            </div>
+        </div>
+
+        <div id="content">
+            <h1>Workthrough: Haskell Programming From First Principles (Allen & Moronuki)</h1>
+              <div class="info">
+    Posted on November  1, 2017
+    
+        by jcb
+    
+</div>
+<div class="info">
+    
+    Tags: <a href="../tags/workthrough.html">workthrough</a>, <a href="../tags/haskell.html">haskell</a>
+    
+</div>
+
+<hr>
+
+<hr>
+<h2>Contents</h2>
+<ul>
+<li><a href="#preliminaries">Preliminaries</a></li>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#chapter-1-all-you-need-is-lambda">Chapter 1: All You Need is Lambda</a><ul>
+<li><a href="#intermission-equivalence-exercises-p.13">Intermission: Equivalence Exercises (p.13)</a></li>
+<li><a href="#chapter-exercises-p.17">Chapter Exercises (p.17)</a><ul>
+<li><a href="#combinators">Combinators</a></li>
+<li><a href="#normal-form-or-diverge">Normal form or diverge?</a></li>
+<li><a href="#beta-reduce">Beta Reduce</a></li>
+</ul></li>
+<li><a href="#follow-up-resources">Follow-up Resources</a></li>
+</ul></li>
+<li><a href="#chapter-2-hello-haskell">Chapter 2: Hello Haskell!</a></li>
+</ul>
+<hr>
+<p><strong>Work in progress</strong></p>
+<h1 id="preliminaries">Preliminaries</h1>
+<p>This page contains my notes and exercise solutions for the text “Haskell Programming From First Principles” by Chris Allen and Julie Moronuki.</p>
+<p>Brief review: I love this book. I love Haskell. I worry this book has been so good at teaching me Haskell that I love other languages less by comparison. The book’s philosophy of “Let’s break complicated topics down into simple pieces, and then play with the pieces until they become obvious.” is so effective, that I’m going to just reflexively hold every other CS book to the same standard from now on. This is going to leave me very disappointed, considering that most other programming books don’t come anywhere near this fun.</p>
+<p>Okay, maybe that’s a little hyperbolic. I don’t want to give the impression that HPFP is a text without flaws. In my notes on the rest of this page, I imagine I’ll be going into those flaws in some depth. But before I do I want to make it perfectly clear that this book is spectacular and any criticism of mine is made with the greatest possible love and affection.</p>
+<p>I deeply admire what Julie Moronuki and Chris Allen have accomplished here, and I encourage anyone interested in programming to buy a copy at <a href="www.haskellbook.com" class="uri">www.haskellbook.com</a>. I am also eagerly awaiting Julie’s upcoming book <a href="https://joyofhaskell.com/">The Joy of Haskell</a> and Chris’ <a href="https://lorepub.com/product/cookbook">Haskell Almanac</a>.</p>
+<p>Before we get started, a little housekeeping: This page contains notes and solutions, but it is not a Haskell tutorial in its own right. My intended reader is someone who has already bought HPFP and maybe wants to check their own work against someone else’s.</p>
+<p>Also, each chapter of HPFP has a list follow-up resources at the end. In my chapter notes, I’ll link to separate posts containing my notes on each of these resources.</p>
+<p>Lastly, my GitHub repository containing my solutions for HPFP is <a href="https://github.com/johnchandlerburnham/haskellbook">here</a>. While this page is marked <strong>Work In Progress</strong>, I make no guarantees as to whether the code there matches the code here. But I do plan on bringing them into alignment ultimately.</p>
+<p>Awesome, let’s get started.</p>
+<h1 id="introduction">Introduction</h1>
+<h1 id="chapter-1-all-you-need-is-lambda">Chapter 1: All You Need is Lambda</h1>
+<p><strong>Function</strong>: A relation between an input set and output set such that each input has only one ouput. Personally, I think its more intuitive to imagine a function as a transformation that changes one type of thing (the input set) into another type of thing (the output set). I like to imagine a vegetable juicer: Put carrots in, get carrot juice out. Put spinach in, get spinach juice out. What is the <em>function</em> of a vegetable juicer? It transforms vegetables into vegetable juice. The set of things that can go into a vegetable juicer are its input set (or <em>domain</em>) and the set of things that can come out are its output set (or <em>codomain</em>).</p>
+<p><strong>Computable functions</strong>: If a function is a transformation between two sets of things, and we can build machines which do transformations, then any function for which we can build a machine is called a <strong>computable</strong> function. Not all functions are computable.</p>
+<p><strong>Turing Machines</strong>: A simple model of a computer based on manipulating symbols on a tape according to some rules and an internal state. Despite its simplicity, a Turing Machine can be built that executes any computable function.</p>
+<p><strong>Lambda Calculus</strong>: A simple model of computation based on building, applying, and evaluating functions. A function built using the Lambda Calculus is called a lambda expression, and for any computable function, a lambda calculus can be constructed which evaluates that function.</p>
+<p><strong>parameter</strong>: An input to a function.</p>
+<p><strong>“functions are first-class”</strong>: Functions can be parameters.</p>
+<p><strong>referential transparency</strong>: The property that the same function with the same parameters returns the same output. All functions are referentially transparent over all their parameters, but in some situations it can be difficult to tell what all a functions’ parameters are. Suppose you turn a dozen carrots into carrot juice with a vegetable juicer, don’t clean the juicer afterwards. You’ll drink your carrot juice, but the next person to use the juicer will have carrot flavored juice, even if they wanted celery and ginger. The juicer function has hidden paramters, i.e. the residue of previous inputs. Functions like this can be described as <em>stateful</em>, because they have some internal or hidden parameters whose state can affect the output of the whole function.</p>
+<p><strong>purity</strong>: A synonym for referential transparency.</p>
+<p><strong>Functional programming</strong>: Building machines (programs) that evaluate computable functions using the lambda calculus.</p>
+<p><strong>abstraction</strong>: A lamda expression that represents a function. It can be written down with the folowing notation: <span class="math inline">\(\lambda x.x\)</span>. Everything between the <span class="math inline">\(\lambda\)</span> and the <span class="math inline">\(.\)</span> is called the <strong>head</strong>, and the symbol in the head names the parameter of the function. After the <span class="math inline">\(.\)</span> is the <strong>body</strong>, and describes what to do with the parameter, when the abstraction is applied. Terms that occur in both the <strong>head</strong> and the <strong>body</strong> are called <em>bound variables</em>, and symbols that only appear in the body are called <em>unbound</em>, or <em>free variables</em>.</p>
+<p><strong>currying</strong>: Properly speaking, all abstractions have only single parameters. Functions with multiple paramters are expressed as a nested strucure of single- parameter functions. For example <span class="math inline">\(\lambda xy.xy\)</span> is more properly written as <span class="math inline">\(\lambda x.(\lambda y.xy)\)</span>.</p>
+<p><strong>application</strong>: A lambda expression can be applied to some input like so: <span class="math inline">\(((\lambda x.x) N)\)</span>. Following the reductions steps will evaluate the function described by <span class="math inline">\(\lambda x.x\)</span> with input parameter N.</p>
+<p><strong>alpha equivalence</strong>: Within an abstraction, the specific symbols in the head may be replaced by other symbols as long as the replacement is consistent and total. For example, in the abstraction <span class="math inline">\(\lambda x.x\)</span> the term <span class="math inline">\(x\)</span> in the head may be replaced with <span class="math inline">\(y\)</span>, so long as all instance of <span class="math inline">\(x\)</span> in the body are also replaced with <span class="math inline">\(y\)</span>. Thus, <span class="math inline">\(\lambda x.x\)</span>, <span class="math inline">\(\lambda y.y\)</span>, and any other expression of the form <span class="math inline">\(\lambda n.n\)</span> (for some <span class="math inline">\(n\)</span>) are alpha equivalent.</p>
+<p><strong>beta reduction</strong>: An abstraction is evaluated by replacing all its bound variables with the expression the abstraction is evaluated against (its input), and then removing the head of the abstraction. For example, <span class="math inline">\(((\lambda x.x) N)\)</span> would be evaluated by replacing all <span class="math inline">\(x\)</span>’s in the body with <span class="math inline">\(N\)</span> (yielding <span class="math inline">\(\lambda x.N\)</span>) and then removing the head for the final output of <span class="math inline">\(N\)</span>.</p>
+<p><strong>beta normal form</strong>: When an expression cannot be further reduced through <em>beta reduction</em> (i.e. application of abstractions). This signals the end of the evaluation.</p>
+<p><strong>combinator</strong>: A lambda term with no free variables. <span class="math inline">\(\lambda x.x\)</span> is a combinator, <span class="math inline">\(\lambda x.xy\)</span> is not.</p>
+<p><strong>divergence</strong>: If an expression can never reach <em>beta normal form</em>, it is said to diverge. For example, <span class="math inline">\((\lambda x.xx)(\lambda x.xx)\)</span> diverges. This corresponds to non-terminating function (an infinite loop).</p>
+<h2 id="intermission-equivalence-exercises-p.13">Intermission: Equivalence Exercises (p.13)</h2>
+<ol style="list-style-type: decimal">
+<li><code>\xy.xz</code> is equivalent to <code>\mn.mz</code>, by alpha equivalence of <code>x</code> with <code>m</code> and <code>y</code> with <code>n</code>.</li>
+<li><code>\xy.xxy</code> is equivalent to <code>\a.(\b.aab)</code>, by currying and alpha equivalence.</li>
+<li><code>\xyz.zx</code> is equivalent to <code>\tos.st</code>.</li>
+</ol>
+<h2 id="chapter-exercises-p.17">Chapter Exercises (p.17)</h2>
+<h3 id="combinators">Combinators</h3>
+<ol style="list-style-type: decimal">
+<li><code>\x.xxx</code> is a combinator.</li>
+<li><code>\xy.zx</code> is not a combinator, <code>z</code> is free.</li>
+<li><code>\xyz.xy(zx)</code> is a combinator.</li>
+<li><code>\xyz.xy(zxy)</code> is a combinator</li>
+<li><code>\xy.xy(zxy)</code> is not a combinator, <code>z</code> is free</li>
+</ol>
+<h3 id="normal-form-or-diverge">Normal form or diverge?</h3>
+<ol style="list-style-type: decimal">
+<li><code>\x.xxx</code> is Normal</li>
+<li><code>(\z.zz)(\y.yy)</code> diverges</li>
+<li><code>(\x.xxx)z</code> is Normal</li>
+</ol>
+<h3 id="beta-reduce">Beta Reduce</h3>
+<ol style="list-style-type: decimal">
+<li><p><code>(\abc.cba)zz(\wv.w)</code> reduction:</p>
+<pre><code>(\abc.cba)zz(\wv.w) -&gt;
+(\bc.cbz)z(\wv.w) -&gt;
+(\c.czz)(\wv.w) -&gt;
+(\wv.w)zz -&gt;
+(\v.z)z -&gt;
+z</code></pre></li>
+<li><p><code>(\x.\y.xyy)(\a.a)b</code> reduction:</p>
+<pre><code>(\x.\y.xyy)(\a.a)b -&gt;
+(\y.(\a.a)yy)b -&gt;
+(\a.a)bb -&gt;
+bb</code></pre></li>
+<li><p><code>(\y.y)(\x.xx)(\z.zq)</code> reduction:</p>
+<pre><code>(\y.y)(\x.xx)(\z.zq) -&gt;
+(\x.xx)(\z.zq) -&gt;
+(\z.zq)(\z.zq) -&gt;
+(\z.zq)q -&gt;
+(\z.zq)q -&gt;
+qq</code></pre></li>
+<li><p><code>(\z.z)(\z.zz)(\z.zy)</code> reduction:</p>
+<pre><code>(\z.z)(\z.zz)(\z.zy) -&gt;
+(\z.zz)(\z.zy) -&gt;
+(\z.zy)(\z.zy) -&gt;
+(\z.zy)y -&gt;
+yy</code></pre></li>
+<li><p><code>(\x.\y.xyy)(\y.y)y</code> reduction:</p>
+<pre><code>(\x.\y.xyy)(\y.y)y -&gt;
+(\y.(\y.y)yy)y
+(\y.y)yy
+yy</code></pre></li>
+<li><p><code>(\a.aa)(\b.ba)c</code> reduction:</p>
+<pre><code>(\a.aa)(\b.ba)c -&gt;
+(\b.ba)(\b.ba)c -&gt;
+(\b.ba)ac -&gt;
+aac</code></pre></li>
+<li><p><code>(\xyz.xz(yz))(\x.z)(\x.a)</code> reduction:</p>
+<pre><code>(\xyz.xz(yz))(\x.z)(\x.a) -&gt;
+(\z.(\x.z1)z((\x.a)z))
+(\z.z1a)</code></pre></li>
+</ol>
+<h2 id="follow-up-resources">Follow-up Resources</h2>
+<ol style="list-style-type: decimal">
+<li><p><a href="http://www.inf.fu-berlin.de/lehre/WS03/alpi/lambda.pdf">Raul Rojas. A Tutorial Introduction to the Lambda Calculus</a></p></li>
+<li><p><a href="http://www.cse.chalmers.se/research/group/logic/TypesSS05/%20Extra/geuvers.pdf">Henk Barendregt; Erik Barendsen. Introduction to Lambda Calculus</a></p></li>
+<li><p><a href="http://www.paultaylor.eu/stable/prot.pdf">Jean-Yves Girard; P. Taylor; Yves Lafon. Proofs and Types</a></p></li>
+</ol>
+<h1 id="chapter-2-hello-haskell">Chapter 2: Hello Haskell!</h1>
+<p><strong>GHC</strong>: The Glagow Haskell Compiler is a program (written in Haskell and C) turns Haskell code into x86 or ARM executables. There are <a href="https://wiki.haskell.org/Implementations">many other Haskell compilers</a>, but GHC is the de facto standard. Some Haskell compilers, such as Hugs, UHC and Yhc are no longer actively developed, but are notable for historic reasons, others, such as ghcjs and Frege (technically a separate dialect) are also important, since they target different platforms than GHC (Javascript and the JVM, respectively).</p>
+<p><strong>GHCi</strong>: GHC’s interactive mode, or <a href="https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop">REPL</a>. A REPL, or read-eval-print-loop, reads code that you type into a command line shell, evaluates it, prints the results, and then loops so you can type in more code.</p>
+<p><strong>Cabal</strong>: Haskell’s Common Architecture for Building Applications and Libraries. When we write software, we often want to include external libraries, Cabal is a tool that enables us to easily include those libraries in our own software, as well as to publish libraries that can be used by others.</p>
+<p><strong>Hackage</strong>: A central package archive which contains most of the Haskell libraries you’re ever going to want to use. Cabal installs packages from Hackage by default.</p>
+<p><strong>Cabal hell</strong>: When we install external libraries using cabal, those libraries are installed globally on our machine by default. This means that if we want to build two different projects that depend upon the same external library, the naive way to do so is to install that library on our machine with cabal and then include it in our projects. This seems innocuous, but is actually very bad, because it creates a hidden interdependence between our two projects.</p>
+<p>Suppose the library author added some new features in the library that we want to use in one of our projects. It seems obvious that we could just update the library and modify our project to use the new features, right? Except if we do that, we might break every other project on our machine that depends on that library, if the updated version wasn’t backwards compatible. And if the project that we’re currently working on itself depends on one of the other now-broken projects, we have to dive into a tangled web of hidden interdependencies to get anything working. This pattern, is called <strong>dependency hell</strong>, in general and is certainly not unique to cabal. There are a number of different ways to manage this problem, but the general approach is to use some other tool that allows you to install multiple copies of the same library on a per project basis so that changes in one project don’t propagate to other projects. Cabal itself provides a mechanism for doing this which allows you to install packages into self-contained “sandboxes,” but there are other tools, such as Stack (see below), which is what HPFP uses.</p>
+<p>One extremely interesting way to solve the problem of dependency management that I should note is to use a system package manager like Nix or Guix that supports this type of package sandboxing and referentially transparent builds for anything you install on your machine, not just Haskell packages (which is all Cabal or Stack deals with). And you can even extend this to running an entire OS, like NixOs or GuixSD that manages the whole OS this way. That is, you can install the Nix package manager on e.g. macOS, but macOS packages or applications won’t be self-contained. In NixOs however, everything, including OS libraries have isolated dependencies, which makes it radically more difficult to break things when you, for example, update your operating system.</p>
+<p><strong>Stack</strong>: A tool for building Haskell projects and manage dependencies. I like to think of Stack as a really nice user interface over a lot of common Haskell development functionality like installing packages with cabal, or managing different versions of GHC. Stack also installs packages from Stackage which is a mirror of Hackage that makes some guarantees about packages being compatible. Libraries on Hackage are more like nightly or unstable builds, up to date, but possibly brittle. Libraries on Stackage are farther behind, but stable.</p>
+<p><strong>Installating Stack</strong>:</p>
+<p>I started the book with <a href="archlinux.org">Arch Linux</a> as my operating system, but I switched to <a href="nixos.org">NixOS</a> part of the way through. Setting up Stack on Arch was really easy, but maintaining it proved fairly nontrivial. Apparently, just naively updating GHC and Stack with pacman (Arch’s package manager) can result in some epic dependency hell.</p>
+<p>When I investigated, I found a post somewhere (which I can’t seem to find now) that proposed the following:</p>
+<ol style="list-style-type: decimal">
+<li>Install stack with pacman</li>
+<li>Install stack again with stack.</li>
+<li>Remove the system package of stack with pacman.</li>
+<li>Use the stack that stack installed</li>
+</ol>
+<p>This was too silly for me to even try, but the fact that it seemed almost plausible told me that I should probably do my Haskell work on a different OS. So I added a NixOS partition on my machine on the theory that it’s better to have a system that’s difficult to learn and easy to debug than the other way round.</p>
+<p>Accordingly, installing Stack on NixOs in a way that things seem to mostly behave was non-trivial. But it’s been pretty smooth sailing ever since (knock on wood). Here’s a rough outline of what I did:</p>
+<p>[N.B. As I learn NixOS and Haskell better, I’ll edit this and add better instructions]</p>
+<ol style="list-style-type: decimal">
+<li>Installed Stack by adding stack to my system packages in my configuration.nix</li>
+<li><p>Enabled Stack’s Nix integration by adding</p>
+<pre><code>nix: 
+  enable: true
+  shell-file: shell.nix</code></pre>
+to the stack.yaml of any project I’m using stack with.</li>
+<li><p>Add the following shell.nix file to my project’s root directory</p>
+<pre><code># shell.nix 
+
+{ghc}:
+with (import &lt;nixpkgs&gt; {}); 
+
+haskell.lib.buildStackProject {
+  inherit ghc;
+  name = &quot;myEnv&quot;;
+  buildInputs = [ zlib ];
+  buildPhase = ''
+    export LANG=en_US.UTF-8
+  '';
+}</code></pre></li>
+</ol>
+<p>There may be some other minor steps that I’ve missed, but these are the main ones I remember. This is a pretty boilerplatey solution, but considering this book really depends on Stack I thought it better to stick to the text rather going the <a href="https://github.com/NixOS/cabal2nix">cabal2nix</a> route and having a more idiosyncratic build process.</p>
+
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham. 
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a> 
+          </p>
+        </div>
+    </body>
+</html>
