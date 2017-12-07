@@ -45,18 +45,6 @@ and other interests of mine.
 
 # Contact
 
-The best way to reach me is through email. My email address is my
-initials at this domain. My initials are three letters which can
-at the top left corner of this page in the header bar. The domain is the
-"something".com in the URL bar just above that. Sorry to be cryptic,
-but, as St. Peter once said: "Your enemy the spambot prowls around like a 
-roaring lion, seeking addresses to devour. Resist him, firm in your faith and 
-in your Turing Tests."[^1] 
+The best way to reach me is through my email: [jcb@johnchandlerburnham.com](mailto:jcb@johnchandlerburnham.com)
 
-If any reason this doesn't work for you, please file an issue at this website's
-[repository on Github](https://github.com/johnchandlerburnham/johnchandlerburnham.github.io/issues).
 
-[^1]: parapharasing [1 Peter 5:8-9, English Standard
-Version](https://www.biblegateway.com/passage/?search=1%20Peter+5&version=ESV),
-with shameless admiration of [King James
-Programming](http://kingjamesprogramming.tumblr.com/).
