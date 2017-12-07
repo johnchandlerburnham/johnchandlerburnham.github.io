@@ -1,4 +1,6 @@
 _cache/
+_cache/*
 _site/
+_site/*
 .stack-work/
 .stack-work/*
