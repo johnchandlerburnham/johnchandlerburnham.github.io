@@ -73,6 +73,22 @@
 </ul></li>
 <li><a href="#follow-up-resources-1">2.13 Follow-up resources</a></li>
 </ul></li>
+<li><a href="#strings">3 Strings</a><ul>
+<li><a href="#lists">Lists</a></li>
+<li><a href="#char">Char</a></li>
+<li><a href="#strings-ii">Strings II</a></li>
+<li><a href="#top-level-versus-local-definitions">3.4 Top-level versus local definitions</a><ul>
+<li><a href="#exercises-scope">Exercises: Scope</a></li>
+</ul></li>
+<li><a href="#types-of-concatenation-functions">3.5 Types of concatenation functions</a><ul>
+<li><a href="#exercises-syntax-errors">Exercises: Syntax Errors</a></li>
+</ul></li>
+<li><a href="#chapter-exercises-1">Chapter Exercises</a><ul>
+<li><a href="#reading-syntax">Reading syntax:</a></li>
+<li><a href="#building-functions">Building Functions:</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#basic-datatypes">4 Basic Datatypes</a></li>
 </ul>
 <hr>
 <p><strong>Work in progress</strong></p>
@@ -274,13 +290,13 @@ Prelude&gt; y
 4</code></pre>
 <p>You may have been expecting that last <code>y</code> to be <code>8</code> instead of <code>4</code>, which is how it would work in an imperative language like C or Python.</p>
 <p>What’s curious about Haskell though is why the above sequence works at all. Look what happens if we try to replicate similar looking expressions in a source file:</p>
-<pre><code>--- SevenIsNotThree.hs
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--- SevenIsNotThree.hs</span>
 
-module SevenIsNotThree where                                                    
+<span class="kw">module</span> <span class="dt">SevenIsNotThree</span> <span class="kw">where</span>                                                    
                                                                                 
-x = 3                                                                           
-y = x + 1                                                                       
-x = 7    </code></pre>
+x <span class="fu">=</span> <span class="dv">3</span>                                                                           
+y <span class="fu">=</span> x <span class="fu">+</span> <span class="dv">1</span>                                                                       
+x <span class="fu">=</span> <span class="dv">7</span>    </code></pre></div>
 <p>If you try loading this into GHCi:</p>
 <pre><code>Prelude&gt; :l SevenIsNotThree.hs 
 [1 of 1] Compiling SevenIsNotThree  ( SevenIsNotThree.hs, interpreted )
@@ -322,19 +338,19 @@ The Glorious Glasgow Haskell Compiler (interactive mode).</code></pre>
 <ol style="list-style-type: decimal">
 <li><code>let area x = 3.14 * (x * x)</code></li>
 <li><p><code>let double x = x * 2</code></p></li>
-<li><pre><code>-- Levels.hs
-module Levels where
+<li><div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- Levels.hs</span>
+<span class="kw">module</span> <span class="dt">Levels</span> <span class="kw">where</span>
 
-x = 7
-y = 10
-f = x + y</code></pre></li>
+x <span class="fu">=</span> <span class="dv">7</span>
+y <span class="fu">=</span> <span class="dv">10</span>
+f <span class="fu">=</span> x <span class="fu">+</span> y</code></pre></div></li>
 </ol>
 <h2 id="arithmetic-functions-in-haskell">2.8 Arithmetic functions in Haskell</h2>
 <p>Oh, gosh. Modular arithmetic.</p>
 <p>My recommendation is to read the chapter and read this Wikipedia page on the <a href="https://en.wikipedia.org/wiki/Modulo_operation">Modulo operation</a>. You’ll see there that pretty much every programming language has its own idiosyncratic way of doing the modulo operation, and there isn’t a lot of consistency between them.</p>
 <p>By the way, <code>divMod</code> and <code>quotRem</code> are two useful functions which return pairs of <code>div</code> and <code>mod</code>, and <code>quot</code> and <code>rem</code>, respectively, applied to the same arguments:</p>
-<pre><code>divMod x y = (div x y, mod x y)
-quotRem x y = (quot x y, rem x y)</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">divMod x y <span class="fu">=</span> (div x y, mod x y)
+quotRem x y <span class="fu">=</span> (quot x y, rem x y)</code></pre></div>
 <p>In my opinion I wouldn’t stress too much about all the detail here. In practice, <code>div</code> and <code>mod</code> are almost always what you need, and that the distinction between <code>divMod</code> and <code>quotRem</code> only appears when you’re dealing with negative integers. Really the difference is just what “round down” means.</p>
 <p>Let’s look at a few examples of how <code>divMod</code> and <code>quotRem</code> differ:</p>
 <pre><code>Prelude&gt; divMod 13 4
@@ -391,19 +407,19 @@ Prelude&gt; quotRem (-13) (-4)
 <h2 id="parenthesization">2.9 Parenthesization</h2>
 <p><code>$</code>, or “apply”, is a great help in making Haskell code legible.</p>
 <p>Look at the difference between</p>
-<pre><code>fun x = (foo (bar (baz x)))
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">fun x <span class="fu">=</span> (foo (bar (baz x)))
 
-fun' x = foo $ bar $ baz x</code></pre>
+fun' x <span class="fu">=</span> foo <span class="fu">$</span> bar <span class="fu">$</span> baz x</code></pre></div>
 <p>I think the latter is a lot nicer. But the difference gets even starker when you have a more complicated syntax structure:</p>
-<pre><code>lessFun x = (qux (baz (bar x)) (foo (bar x)) (baz (quux (foo (bar x)) (foo x))))</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">lessFun x <span class="fu">=</span> (qux (baz (bar x)) (foo (bar x)) (baz (quux (foo (bar x)) (foo x))))</code></pre></div>
 <p>My eyes glaze over after the first bar.</p>
-<pre><code>moreFun x = qux (baz $ bar x) (foo $ bar x) (baz $ quux (foo $ bar x) (foo x))</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">moreFun x <span class="fu">=</span> qux (baz <span class="fu">$</span> bar x) (foo <span class="fu">$</span> bar x) (baz <span class="fu">$</span> quux (foo <span class="fu">$</span> bar x) (foo x))</code></pre></div>
 <p>Now it’s a lot easier to tell that qux takes three arguments.</p>
 <p>We could also do:</p>
-<pre><code>moreFun x = qux (baz $ bar x) (foo $ bar x) $ baz $ quux (foo $ bar x) $ foo x</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">moreFun x <span class="fu">=</span> qux (baz <span class="fu">$</span> bar x) (foo <span class="fu">$</span> bar x) <span class="fu">$</span> baz <span class="fu">$</span> quux (foo <span class="fu">$</span> bar x) <span class="fu">$</span> foo x</code></pre></div>
 <p>But I think this is less clear. In general I like to use parentheses and <code>$</code> to better illuminate the structure of whatever the expression is, which depending, on the specific expression that might require slightly different styles. <code>let</code> and <code>where</code> expressions can also be a great help.</p>
-<pre><code>moreFun' x = qux (baz $ bar x) fbx (baz $ quux fbx $ foo x) where
-  fbx = foo $ bar x</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">moreFun' x <span class="fu">=</span> qux (baz <span class="fu">$</span> bar x) fbx (baz <span class="fu">$</span> quux fbx <span class="fu">$</span> foo x) <span class="kw">where</span>
+  fbx <span class="fu">=</span> foo <span class="fu">$</span> bar x</code></pre></div>
 <h3 id="exercises-a-head-code">Exercises: A Head Code</h3>
 <ol style="list-style-type: decimal">
 <li><p><code>let x = 5 in x</code></p>
@@ -447,11 +463,11 @@ fun' x = foo $ bar $ baz x</code></pre>
 <li><p>see morefun.hs</p></li>
 <li><p>see morefun.hs</p></li>
 <li><p>see morefun.hs</p>
-<pre><code>-- morefun.hs
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- morefun.hs</span>
 
-waxOn = x * 5 where x = y ^2; y = z + 8; z = 7
-triple x = x * 3
-waxOff x = triple x</code></pre></li>
+waxOn <span class="fu">=</span> x <span class="fu">*</span> <span class="dv">5</span> <span class="kw">where</span> x <span class="fu">=</span> y <span class="fu">^</span><span class="dv">2</span>; y <span class="fu">=</span> z <span class="fu">+</span> <span class="dv">8</span>; z <span class="fu">=</span> <span class="dv">7</span>
+triple x <span class="fu">=</span> x <span class="fu">*</span> <span class="dv">3</span>
+waxOff x <span class="fu">=</span> triple x</code></pre></div></li>
 <li><p><code>waxOff 10</code> returns <code>30</code></p>
 <p><code>waxOff (-50)</code> returns <code>(-150)</code></p></li>
 </ol>
@@ -462,6 +478,179 @@ waxOff x = triple x</code></pre></li>
 <li><p><a href="https://github.com/johnchandlerburnham/hpffp-resources/blob/master/Chapter%202/How%20to%20desugar%20Haskell%20code.pdf">How to desugar Haskell code; Gabriel Gonzalez</a></p>
 <p>[TODO: Notes on this resource]</p></li>
 </ol>
+<h1 id="strings">3 Strings</h1>
+<p><strong>string</strong>: a sequence of characters, usually representing text. The words you are reading now are strings.</p>
+<p><strong>Haskell’s <code>String</code> type</strong>: A particular way of representing strings as lists of <code>Char</code> types. It is very important to notice that even though the name of this type is <code>String</code>, it is not the only, or even the best way to represent sequences of characters and text. (see <a href="https://hackage.haskell.org/package/text-1.2.2.2/docs/Data-Text.html">Data.Text</a> and <a href="https://hackage.haskell.org/package/bytestring-0.10.8.2/docs/Data-ByteString.html">Data.ByteString</a></p>
+<p>The main advantage of <code>String</code> is that it is conceptually very simple: a <code>String</code> is a <code>List</code> of <code>Char</code>.</p>
+<h3 id="lists">Lists</h3>
+<p>A list (with a lowercase l) is some ordered collection of information. The order may not be important, but if there is no order, it’s not a list, it’s a set (“unordered list” is a bit of a misnomer).</p>
+<p>Suppose you buy groceries for your family every week. You want to know what everyone else wants from the store without having to talk to them each individually, so you put a piece of paper on the fridge and tell everyone to write down what they want you to get. This is an everyday example of a list: A grocery list.</p>
+<pre><code>Grocery List
+------------
+- Milk
+- Eggs
+- Flour
+- Chicken Noodle Soup 
+- Mushrooms
+- Beef tenderloin
+- Puff pastry</code></pre>
+<p>A grocery list is an everyday example of a list. The order of your grocery list probably isn’t important but there definitely is an order: The groceries aren’t written randomly all over the page, but in parallel lines starting from the top of the page downward.</p>
+<p>The order of the list could indicate the chronological order in which people added their requests. That’s probably not important information most of the time, but occasionally it might be.</p>
+<p>In the above example, notice that the first item on the list is <code>Milk</code>. If the list is chronological, it means that <code>Milk</code> was the first thing added since you went to the store last week. If you know you bought a half-gallon of <code>Milk</code> last week, that probably means your family drank all the <code>Milk</code> right after you bought it. And that might make you decide to buy a whole gallon this time.</p>
+<p>Another interesting thing you can see in the ordering of a grocery list is that items that are next to each other are likely to be connected to each other conceptually. The last three items: <code>mushrooms, Beef tenderloin, Puff pastry</code> are all ingredients for a Beef Wellington recipe. If the store happens to be all out of puff pastry, it might make sense to skip the mushrooms and the beef, since you can’t make the recipe.</p>
+<p>Okay, so a grocery list has an ordering that’s sometimes relevant.</p>
+<p>Here’s a slightly philosophical question: Was the grocery list a list before someone added the first item (<code>Milk</code>) to it?</p>
+<p>In common language, we probaby wouldn’t call a blank piece of paper a list. But we could perhaps call a piece of paper with the title <code>Grocery List</code> at the top a “blank grocery list”, or an “empty grocery list”, although that might sound strange.</p>
+<p>In Haskell-land (and CS-country in general), an empty list is definitely a list. <code>List</code> in Haskell is defined as follows:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">List</span> a <span class="fu">=</span> <span class="dt">Nil</span> <span class="fu">|</span> <span class="dt">Cons</span> a (<span class="dt">List</span> a)</code></pre></div>
+<p><code>Nil</code> is the empty list. We build lists by connecting the items in the list to each other and ultimately to the empty list. So the above definition says roughly: “A list of <code>a</code> is either an empty list, or is the connection of an <code>a</code> to a <code>List</code> of <code>a</code>.</p>
+<p>Since <code>a</code> is just a stand-in for some type of thing, a list of groceries in Haskell would be:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">List</span> <span class="dt">Grocery</span> <span class="fu">=</span> <span class="dt">Nil</span> <span class="fu">|</span> <span class="dt">Cons</span> <span class="dt">Grocery</span> (<span class="dt">List</span> <span class="dt">Grocery</span>)</code></pre></div>
+<p>“A list of groceries is either an empty list, or is the connection of a grocery item to a list of groceries.”</p>
+<p>If <code>Milk</code>, <code>Eggs</code> and <code>Flour</code> are all of the type <code>Grocery</code>, then we can make the following Grocery list:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">aGroceryList <span class="fu">=</span> <span class="dt">Cons</span> <span class="dt">Milk</span> (<span class="dt">Cons</span> <span class="dt">Eggs</span> (<span class="dt">Cons</span> <span class="dt">Flour</span> <span class="dt">Nil</span>))</code></pre></div>
+<p>This looks a litlle complicated though, so in Haskell, <code>Cons</code> represented as the <code>:</code> operator and <code>Nil</code> is <code>[]</code>.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">aNicerGroceryList <span class="fu">=</span> <span class="dt">Milk</span><span class="fu">:</span><span class="dt">Eggs</span><span class="fu">:</span><span class="dt">Flour</span><span class="fu">:</span>[]</code></pre></div>
+<p>But the syntactic sugar goes even a step further.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">theNicestGroceryList <span class="fu">=</span> [<span class="dt">Milk</span>, <span class="dt">Eggs</span>, <span class="dt">Flour</span>]</code></pre></div>
+<p>At the REPL:</p>
+<pre><code>Prelude&gt; data Grocery = Milk | Eggs | Flour deriving Show
+Prelude&gt; Milk:Eggs:Flour:[]
+[Milk,Eggs,Flour]
+Prelude&gt; :type [Milk,Eggs,Flour]
+[Milk,Eggs,Flour] :: [Grocery]</code></pre>
+<p>That last line means that the type of <code>[Milk,Eggs,Flour]</code> is a <code>[Grocery]</code>, which means the same as <code>List Grocery</code>.</p>
+<p><code>[]</code> is the list constructor in Haskell, which we can see at the REPL</p>
+<pre><code>Prelude&gt; :info []
+data [] a = [] | a : [a] 	-- Defined in ‘GHC.Types’</code></pre>
+<p>There’s some overloading of <code>[]</code> here, since <code>[]</code> is representing both <code>List</code> and <code>Nil</code>, but in practice this is nice since you build a list of <code>a</code>, <code>[a]</code>, by consing <code>a</code> to <code>nil</code>, <code>a:[]</code>.</p>
+<h3 id="char">Char</h3>
+<p>A <code>Char</code> is an ASCII character (<a href="https://en.wikipedia.org/wiki/ASCII">American Standard Code for Information Interchange</a>).</p>
+<p>[NB. <code>Char</code> actually represents Unicode characters in general, but I don’t want to bring in Unicode as a conceptual dependency here]</p>
+<p>Ascii is a way to represent text characters as numbers. Here’s a table of all 128 ascii characters:</p>
+<pre><code>Dec  Char                           Dec  Char     Dec  Char     Dec  Char
+---------                           ---------     ---------     ----------
+  0  NUL (null)                      32  SPACE     64  @         96  `
+  1  SOH (start of heading)          33  !         65  A         97  a
+  2  STX (start of text)             34  &quot;         66  B         98  b
+  3  ETX (end of text)               35  #         67  C         99  c
+  4  EOT (end of transmission)       36  $         68  D        100  d
+  5  ENQ (enquiry)                   37  %         69  E        101  e
+  6  ACK (acknowledge)               38  &amp;         70  F        102  f
+  7  BEL (bell)                      39  '         71  G        103  g
+  8  BS  (backspace)                 40  (         72  H        104  h
+  9  TAB (horizontal tab)            41  )         73  I        105  i
+ 10  LF  (NL line feed, new line)    42  *         74  J        106  j
+ 11  VT  (vertical tab)              43  +         75  K        107  k
+ 12  FF  (NP form feed, new page)    44  ,         76  L        108  l
+ 13  CR  (carriage return)           45  -         77  M        109  m
+ 14  SO  (shift out)                 46  .         78  N        110  n
+ 15  SI  (shift in)                  47  /         79  O        111  o
+ 16  DLE (data link escape)          48  0         80  P        112  p
+ 17  DC1 (device control 1)          49  1         81  Q        113  q
+ 18  DC2 (device control 2)          50  2         82  R        114  r
+ 19  DC3 (device control 3)          51  3         83  S        115  s
+ 20  DC4 (device control 4)          52  4         84  T        116  t
+ 21  NAK (negative acknowledge)      53  5         85  U        117  u
+ 22  SYN (synchronous idle)          54  6         86  V        118  v
+ 23  ETB (end of trans. block)       55  7         87  W        119  w
+ 24  CAN (cancel)                    56  8         88  X        120  x
+ 25  EM  (end of medium)             57  9         89  Y        121  y
+ 26  SUB (substitute)                58  :         90  Z        122  z
+ 27  ESC (escape)                    59  ;         91  [        123  {
+ 28  FS  (file separator)            60  &lt;         92  \        124  |
+ 29  GS  (group separator)           61  =         93  ]        125  }
+ 30  RS  (record separator)          62  &gt;         94  ^        126  ~
+ 31  US  (unit separator)            63  ?         95  _        127  DEL</code></pre>
+<p>Most of the first 32 are control characters intended for use by teletype machines and magnetic tape readers, so you don’t have to worry about them. A few are still used though, <code>\n</code> in Haskell means newline and is the same as Ascii 10 <code>\LF</code>.</p>
+<p>We can see the correspondence at the REPL:</p>
+<pre><code>Prelude&gt; import Data.Char
+Prelude Data.Char&gt; ord 'a'
+97
+Prelude Data.Char&gt; chr 97
+'a'
+Prelude Data.Char&gt; :type ord
+ord :: Char -&gt; Int
+Prelude Data.Char&gt; :type chr
+chr :: Int -&gt; Char
+Prelude Data.Char&gt; map ord &quot;foobar&quot;
+[102,111,111,98,97,114]
+Prelude Data.Char&gt; map chr [102,111,111,98,97,114]
+&quot;foobar&quot;</code></pre>
+<h3 id="strings-ii">Strings II</h3>
+<p>A String is just a list of <code>Char</code>, or <code>[Char]</code>:</p>
+<pre><code>Prelude&gt; :info String
+type String = [Char] 	-- Defined in ‘GHC.Base’</code></pre>
+<p>The double quotes in “foobar” are just syntactic sugar for:</p>
+<pre><code>Prelude&gt; ['f','o','o','b','a','r']
+&quot;foobar&quot;</code></pre>
+<h2 id="top-level-versus-local-definitions">3.4 Top-level versus local definitions</h2>
+<h3 id="exercises-scope">Exercises: Scope</h3>
+<ol style="list-style-type: decimal">
+<li><code>y</code> is in scope for <code>z</code></li>
+<li><code>h</code> is not in scope for <code>g</code></li>
+<li><code>pi</code> is in scope, since it’s in Prelude, but <code>d</code> is not in scope for the definition of <code>r</code>. <code>d</code> is an argument in <code>area</code> but <code>r</code> can’t see into <code>area</code>’s definition.</li>
+<li>This fixes what was wrong in the previous question. The <code>where</code> clause means that <code>r</code> can access <code>area</code>’s arguments. However, <code>r</code> is now locally defined to <code>area</code>, so another top level function wouldn’t be able to see it.</li>
+</ol>
+<h2 id="types-of-concatenation-functions">3.5 Types of concatenation functions</h2>
+<h3 id="exercises-syntax-errors">Exercises: Syntax Errors</h3>
+<ol style="list-style-type: decimal">
+<li>Need <code>(++)</code> not <code>++</code></li>
+<li>Single quotes are type <code>Char</code> not type <code>String</code></li>
+<li>This one works.</li>
+</ol>
+<h2 id="chapter-exercises-1">Chapter Exercises</h2>
+<h3 id="reading-syntax">Reading syntax:</h3>
+<ol style="list-style-type: decimal">
+<li><ol style="list-style-type: lower-alpha">
+<li>correct</li>
+<li>not correct, need <code>(++)</code> not <code>++</code></li>
+<li>correct</li>
+<li>incorrect, string not closed</li>
+<li>incorrect, wrong arg order</li>
+<li>correct</li>
+<li>incorrect, no integer argument</li>
+<li>correct</li>
+</ol></li>
+<li><ol style="list-style-type: lower-alpha">
+<li>d</li>
+<li>c</li>
+<li>e</li>
+<li>a</li>
+<li>b</li>
+</ol></li>
+</ol>
+<h3 id="building-functions">Building Functions:</h3>
+<ol style="list-style-type: decimal">
+<li><ol style="list-style-type: lower-alpha">
+<li><code>(++ &quot;!&quot;)</code></li>
+<li><code>(!! 4)</code></li>
+<li><code>(drop 6)</code></li>
+</ol></li>
+<li><div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Ex2</span> <span class="kw">where</span>
+a <span class="fu">=</span> (<span class="fu">++</span> <span class="st">&quot;!&quot;</span>)
+b <span class="fu">=</span> (<span class="fu">!!</span> <span class="dv">4</span>)
+c <span class="fu">=</span> (drop <span class="dv">6</span>)</code></pre></div></li>
+<li><div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Ex3</span> <span class="kw">where</span>
+
+<span class="ot">thirdLetter ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Char</span>
+thirdLetter x <span class="fu">=</span> x <span class="fu">!!</span> <span class="dv">2</span></code></pre></div></li>
+<li><div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Ex4</span> <span class="kw">where</span>
+
+<span class="ot">letterIndex ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Char</span>
+letterIndex x <span class="fu">=</span> <span class="st">&quot;Curry is awesome&quot;</span> <span class="fu">!!</span> x</code></pre></div></li>
+<li><div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Reverse</span> <span class="kw">where</span>
+<span class="ot">rvrs ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
+rvrs x <span class="fu">=</span> third <span class="fu">++</span> second <span class="fu">++</span> first <span class="kw">where</span>
+         third <span class="fu">=</span> drop <span class="dv">9</span> x
+         second <span class="fu">=</span> take <span class="dv">4</span> <span class="fu">$</span> drop <span class="dv">5</span> x
+         first <span class="fu">=</span> take <span class="dv">5</span> x
+
+<span class="ot">main ::</span> <span class="dt">IO</span> ()
+main <span class="fu">=</span> print <span class="fu">$</span> rvrs <span class="st">&quot;Curry is awesome&quot;</span></code></pre></div></li>
+<li>see exercise 5.</li>
+</ol>
+<h1 id="basic-datatypes">4 Basic Datatypes</h1>
 
         </div>
         <div id="footer">
