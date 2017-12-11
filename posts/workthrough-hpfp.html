@@ -88,7 +88,21 @@
 <li><a href="#building-functions">Building Functions:</a></li>
 </ul></li>
 </ul></li>
-<li><a href="#basic-datatypes">4 Basic Datatypes</a></li>
+<li><a href="#basic-datatypes">4 Basic Datatypes</a><ul>
+<li><a href="#what-are-types">4.2 What are types?</a></li>
+<li><a href="#anatomy-of-a-data-declaration">4.3 Anatomy of a data declaration</a><ul>
+<li><a href="#exercises-mood-swing">Exercises: Mood Swing</a></li>
+</ul></li>
+<li><a href="#numeric-types">4.4 Numeric types</a></li>
+<li><a href="#go-on-and-bool-me">4.6 Go on and Bool me</a><ul>
+<li><a href="#exercises-find-the-mistakes">Exercises: Find the Mistakes</a></li>
+</ul></li>
+<li><a href="#chapter-exercises-2">4.9 Chapter Exercises</a><ul>
+<li><a href="#correcting-syntax">Correcting syntax</a></li>
+<li><a href="#match-the-function-names-to-their-types">Match the function names to their types</a></li>
+</ul></li>
+<li><a href="#types">5 Types</a></li>
+</ul></li>
 </ul>
 <hr>
 <p><strong>Work in progress</strong></p>
@@ -254,10 +268,10 @@ haskell.lib.buildStackProject {
 <h2 id="infix-operators">2.6 Infix Operators</h2>
 <p>It may be helpful to point out that all infix operators are just syntacic sugar over functions.</p>
 <p><strong>syntacitc sugar</strong>: Syntax within a programming language that is designed to make things easier to read or to express. It makes the language “sweeter” for human use: things can be expressed more clearly, more concisely, or in an alternative style that some may prefer. (from <a href="https://en.wikipedia.org/wiki/Syntactic_sugar">Wikipedia</a>)</p>
-<pre><code>Prelude&gt; add = (+)
-Prelude&gt; add 2 2 
-4
-Prelude&gt; </code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Prelude</span><span class="fu">&gt;</span> add <span class="fu">=</span> (<span class="fu">+</span>)
+<span class="dt">Prelude</span><span class="fu">&gt;</span> add <span class="dv">2</span> <span class="dv">2</span> 
+<span class="dv">4</span>
+<span class="dt">Prelude</span><span class="fu">&gt;</span> </code></pre></div>
 <h3 id="exercises-parentheses-and-association">Exercises: Parentheses and Association</h3>
 <p><strong>Precedence</strong>: Where the implicit parentheses are. Precedence of operators is only relevant if you leave out parentheses. If you can explicitly mark what operations you want evaluated in what order, precedence doesn’t matter. Or, in other words, parentheses have the highest precedence, just like in grade school (the P in PEMDAS stands for parentheses).</p>
 <ol style="list-style-type: decimal">
@@ -279,58 +293,58 @@ Prelude&gt; </code></pre>
 </ol>
 <h2 id="declaring-values">2.7 Declaring values</h2>
 <p>Look at the following sequence of expressions in GHCi:</p>
-<pre><code>Prelude&gt; let x = 3
-Prelude&gt; let y = x + 1
-Prelude&gt; y
-4
-Prelude&gt; let x = 7
-Prelude&gt; x
-7
-Prelude&gt; y
-4</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="kw">let</span> x <span class="fu">=</span> <span class="dv">3</span>
+<span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="kw">let</span> y <span class="fu">=</span> x <span class="fu">+</span> <span class="dv">1</span>
+<span class="dt">Prelude</span><span class="fu">&gt;</span> y
+<span class="dv">4</span>
+<span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="kw">let</span> x <span class="fu">=</span> <span class="dv">7</span>
+<span class="dt">Prelude</span><span class="fu">&gt;</span> x
+<span class="dv">7</span>
+<span class="dt">Prelude</span><span class="fu">&gt;</span> y
+<span class="dv">4</span></code></pre></div>
 <p>You may have been expecting that last <code>y</code> to be <code>8</code> instead of <code>4</code>, which is how it would work in an imperative language like C or Python.</p>
 <p>What’s curious about Haskell though is why the above sequence works at all. Look what happens if we try to replicate similar looking expressions in a source file:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--- SevenIsNotThree.hs</span>
 
-<span class="kw">module</span> <span class="dt">SevenIsNotThree</span> <span class="kw">where</span>                                                    
+<span class="kw">module</span> <span class="dt">SevenIsNotThree</span> <span class="kw">where</span>
                                                                                 
 x <span class="fu">=</span> <span class="dv">3</span>                                                                           
 y <span class="fu">=</span> x <span class="fu">+</span> <span class="dv">1</span>                                                                       
 x <span class="fu">=</span> <span class="dv">7</span>    </code></pre></div>
 <p>If you try loading this into GHCi:</p>
-<pre><code>Prelude&gt; :l SevenIsNotThree.hs 
-[1 of 1] Compiling SevenIsNotThree  ( SevenIsNotThree.hs, interpreted )
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="fu">:</span>l SevenIsNotThree.hs 
+[<span class="dv">1</span> <span class="kw">of</span> <span class="dv">1</span>] <span class="dt">Compiling</span> <span class="dt">SevenIsNotThree</span>  ( SevenIsNotThree.hs, interpreted )
 
-SevenIsNotThree.hs:7:1: error:
-    Multiple declarations of ‘x’
-    Declared at: SevenIsNotThree.hs:5:1
-                 SevenIsNotThree.hs:7:1
-Failed, modules loaded: none.</code></pre>
+SevenIsNotThree.hs<span class="fu">:</span><span class="dv">7</span><span class="fu">:</span><span class="dv">1</span><span class="fu">:</span> error<span class="fu">:</span>
+    <span class="dt">Multiple</span> declarations <span class="kw">of</span> ‘x’
+    <span class="dt">Declared</span> at<span class="fu">:</span> SevenIsNotThree.hs<span class="fu">:</span><span class="dv">5</span><span class="fu">:</span><span class="dv">1</span>
+                 SevenIsNotThree.hs<span class="fu">:</span><span class="dv">7</span><span class="fu">:</span><span class="dv">1</span>
+<span class="dt">Failed</span>, modules loaded<span class="fu">:</span> none<span class="fu">.</span></code></pre></div>
 <p>Haskell’s error messages take a little getting used to, so I’ll translate:</p>
-<pre><code>Dear Sir or Madam,
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Dear</span> <span class="dt">Sir</span> or <span class="dt">Madam</span>,
 
-While the Prelude module was loaded, you, the Programmer, instructed
-us to load the module found in the file SevenIsNotThree.hs.
+<span class="dt">While</span> the <span class="dt">Prelude</span> <span class="kw">module</span> was loaded, you, the <span class="dt">Programmer</span>, instructed
+us to load the <span class="kw">module</span> found <span class="kw">in</span> the file SevenIsNotThree.hs<span class="fu">.</span>
 
-We located the aforementioned file, SevenIsNotThree.hs and attempted to load
-the module SevenIsNotThree we found therein.
+<span class="dt">We</span> located the aforementioned file, SevenIsNotThree.hs and attempted to load
+the <span class="kw">module</span> <span class="dt">SevenIsNotThree</span> we found therein<span class="fu">.</span>
 
-At line 7, column 1, in file SevenIsNotThree.hs, we encountered an error:
-  You tried to declare the expression 'x' mulitple times.
-  You declared 'x' at  line 5, column 1 of file SevenIsNotThree.hs
-  You declared 'x' at  line 7, column 1 of file SevenIsNotThree.hs
+<span class="dt">At</span> line <span class="dv">7</span>, column <span class="dv">1</span>, <span class="kw">in</span> file SevenIsNotThree.hs, we encountered an error<span class="fu">:</span>
+  <span class="dt">You</span> tried to declare the expression <span class="ch">'x'</span> mulitple times<span class="fu">.</span>
+  <span class="dt">You</span> declared <span class="ch">'x'</span> at  line <span class="dv">5</span>, column <span class="dv">1</span> <span class="kw">of</span> file SevenIsNotThree.hs
+  <span class="dt">You</span> declared <span class="ch">'x'</span> at  line <span class="dv">7</span>, column <span class="dv">1</span> <span class="kw">of</span> file SevenIsNotThree.hs
 
-Declaring an expression multiple times is forbidden. 
-  Either the declarations are the same
+<span class="dt">Declaring</span> an expression multiple times is forbidden<span class="fu">.</span> 
+  <span class="dt">Either</span> the declarations are the same
     and thus redundant,
-  Or the declarations are different
-    and thus contradictory.
+  <span class="dt">Or</span> the declarations are different
+    and thus contradictory<span class="fu">.</span>
 
-We have no desire to load redundant and contradictory code. Therefore, your
-request is denied and no modules were loaded.
+<span class="dt">We</span> have no desire to load redundant and contradictory code<span class="fu">.</span> <span class="dt">Therefore</span>, your
+request is denied and no modules were loaded<span class="fu">.</span>
 
-Sincerely,
-The Glorious Glasgow Haskell Compiler (interactive mode).</code></pre>
+<span class="dt">Sincerely</span>,
+<span class="dt">The</span> <span class="dt">Glorious</span> <span class="dt">Glasgow</span> <span class="dt">Haskell</span> <span class="dt">Compiler</span> (interactive mode)<span class="fu">.</span></code></pre></div>
 <p>Don’t worry, GHC isn’t scolding you (much). You shouldn’t want to run redundant or contradictory code either. Much better to find out that your code is broken in a message from the compiler than, for example, when your Mars Lander crashes into the surface because your code had a type error and mixed up feet and meters (this actually <a href="https://en.wikipedia.org/wiki/Mars_Climate_Orbiter#Cause_of_failure">happened</a>).</p>
 <p>As for why GHC is perfectly happy to accept contradictory declarations in GHCi let expressions but not in a source file, this is because everything in GHCi happens inside the <code>IO ()</code> type (IO meaning input/output). <code>IO</code> let expressions have different scope than declarations in a source file.</p>
 <p>This seems mysterious, but will make sense in later chapters.</p>
@@ -353,56 +367,56 @@ f <span class="fu">=</span> x <span class="fu">+</span> y</code></pre></div></li
 quotRem x y <span class="fu">=</span> (quot x y, rem x y)</code></pre></div>
 <p>In my opinion I wouldn’t stress too much about all the detail here. In practice, <code>div</code> and <code>mod</code> are almost always what you need, and that the distinction between <code>divMod</code> and <code>quotRem</code> only appears when you’re dealing with negative integers. Really the difference is just what “round down” means.</p>
 <p>Let’s look at a few examples of how <code>divMod</code> and <code>quotRem</code> differ:</p>
-<pre><code>Prelude&gt; divMod 13 4
-(3,1)
-Prelude&gt; quotRem 13 4
-(3,1)</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Prelude</span><span class="fu">&gt;</span> divMod <span class="dv">13</span> <span class="dv">4</span>
+(<span class="dv">3</span>,<span class="dv">1</span>)
+<span class="dt">Prelude</span><span class="fu">&gt;</span> quotRem <span class="dv">13</span> <span class="dv">4</span>
+(<span class="dv">3</span>,<span class="dv">1</span>)</code></pre></div>
 <p>Both arguments are positive, so there is no difference. <code>13</code> divided by <code>4</code> the ordinary way is three and a fourth, <code>3.25</code>. But since this is integer division we round down to <code>3</code>. Since <code>3 * 4</code> is <code>12</code> the remainder is one (<code>13 - 12 = 1</code>).</p>
 <p>But what if we do <code>(-13)</code> divided by <code>4</code>. If we were doing ordinary division we would get negative <code>(-3.25)</code>.</p>
 <p>Now this is the question: What does it mean to “round down” <code>(-3.25)</code>?</p>
 <p>The two possible options are <code>(-3)</code> and <code>(-4)</code>.</p>
 <p>If we say that <code>(-3.25)</code> rounded down is <code>(-3)</code>, then we run into the difficulty that <code>(-3)</code> is actually greater than <code>(-3.25)</code>:</p>
-<pre><code>Prelude&gt; (-3) &gt; (-3.25)
-True</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Prelude</span><span class="fu">&gt;</span> (<span class="fu">-</span><span class="dv">3</span>) <span class="fu">&gt;</span> (<span class="fu">-</span><span class="fl">3.25</span>)
+<span class="dt">True</span></code></pre></div>
 <p>On the other hand, if we say that <code>(-3.25)</code> rounded down is <code>(-4)</code> then it’s the absolute value which is greater:</p>
-<pre><code>Prelude&gt; abs (-4) &gt; abs (-3.25)
-True</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Prelude</span><span class="fu">&gt;</span> abs (<span class="fu">-</span><span class="dv">4</span>) <span class="fu">&gt;</span> abs (<span class="fu">-</span><span class="fl">3.25</span>)
+<span class="dt">True</span></code></pre></div>
 <p>So we have a choice to make. We want integer division to “round down”, but when one of the arguments is negative, “down” can mean two different things. We have to decide if we want “down” to be toward <code>0</code>, in which case we’ll choose <code>(-3)</code> in the above example, or towards <span class="math inline">\(-\infty\)</span>, negative infinity, in which case we choose <code>(-4)</code>.</p>
-<pre><code>Prelude&gt; divMod (-13) 4
-(-4,3)
-Prelude&gt; quotRem (-13) 4
-(-3,-1)</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Prelude</span><span class="fu">&gt;</span> divMod (<span class="fu">-</span><span class="dv">13</span>) <span class="dv">4</span>
+(<span class="fu">-</span><span class="dv">4</span>,<span class="dv">3</span>)
+<span class="dt">Prelude</span><span class="fu">&gt;</span> quotRem (<span class="fu">-</span><span class="dv">13</span>) <span class="dv">4</span>
+(<span class="fu">-</span><span class="dv">3</span>,<span class="fu">-</span><span class="dv">1</span>)</code></pre></div>
 <p>As we can see, <code>divMod</code> sets down as <span class="math inline">\(-\infty\)</span> and <code>quotRem</code> sets down as <code>0</code>.</p>
 <p>The values for <code>mod</code> and <code>rem</code>, are just consequences of that choice, since:</p>
-<pre><code>mod (-13) 4 = (-13) - 4 * (div 13 4) = (-13) - 4 * (-4) =
--13 + 16 = 3
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">mod (<span class="fu">-</span><span class="dv">13</span>) <span class="dv">4</span> <span class="fu">=</span> (<span class="fu">-</span><span class="dv">13</span>) <span class="fu">-</span> <span class="dv">4</span> <span class="fu">*</span> (div <span class="dv">13</span> <span class="dv">4</span>) <span class="fu">=</span> (<span class="fu">-</span><span class="dv">13</span>) <span class="fu">-</span> <span class="dv">4</span> <span class="fu">*</span> (<span class="fu">-</span><span class="dv">4</span>) <span class="fu">=</span>
+<span class="fu">-</span><span class="dv">13</span> <span class="fu">+</span> <span class="dv">16</span> <span class="fu">=</span> <span class="dv">3</span>
 
-rem (-13) 4 = (-13) - 4 * (quot 13 4) = (-13) - 4 * (-3) =
--13 + 12 = -1</code></pre>
+rem (<span class="fu">-</span><span class="dv">13</span>) <span class="dv">4</span> <span class="fu">=</span> (<span class="fu">-</span><span class="dv">13</span>) <span class="fu">-</span> <span class="dv">4</span> <span class="fu">*</span> (quot <span class="dv">13</span> <span class="dv">4</span>) <span class="fu">=</span> (<span class="fu">-</span><span class="dv">13</span>) <span class="fu">-</span> <span class="dv">4</span> <span class="fu">*</span> (<span class="fu">-</span><span class="dv">3</span>) <span class="fu">=</span>
+<span class="fu">-</span><span class="dv">13</span> <span class="fu">+</span> <span class="dv">12</span> <span class="fu">=</span> <span class="fu">-</span><span class="dv">1</span></code></pre></div>
 <p>Everything is just a consequence of what we want “down” to mean.</p>
 <p>If we flip the signs of the arguments:</p>
-<pre><code>Prelude&gt; divMod 13 (-4)
-(-4,-3)
-Prelude&gt; quotRem 13 (-4)
-(-3,1)</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Prelude</span><span class="fu">&gt;</span> divMod <span class="dv">13</span> (<span class="fu">-</span><span class="dv">4</span>)
+(<span class="fu">-</span><span class="dv">4</span>,<span class="fu">-</span><span class="dv">3</span>)
+<span class="dt">Prelude</span><span class="fu">&gt;</span> quotRem <span class="dv">13</span> (<span class="fu">-</span><span class="dv">4</span>)
+(<span class="fu">-</span><span class="dv">3</span>,<span class="dv">1</span>)</code></pre></div>
 <p><code>div</code> and <code>quot</code> are the same, because <code>13</code> divided by <code>(-4)</code> is still <code>(-3.25)</code> and the decision about “down” is the same.</p>
 <p><code>mod</code> and <code>rem</code> are different though, because:</p>
-<pre><code>mod 13 (-4) = 13 - (-4) * (div 13 4) = 13 + 4 * (-4) =
-13 - 16 = -3
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">mod <span class="dv">13</span> (<span class="fu">-</span><span class="dv">4</span>) <span class="fu">=</span> <span class="dv">13</span> <span class="fu">-</span> (<span class="fu">-</span><span class="dv">4</span>) <span class="fu">*</span> (div <span class="dv">13</span> <span class="dv">4</span>) <span class="fu">=</span> <span class="dv">13</span> <span class="fu">+</span> <span class="dv">4</span> <span class="fu">*</span> (<span class="fu">-</span><span class="dv">4</span>) <span class="fu">=</span>
+<span class="dv">13</span> <span class="fu">-</span> <span class="dv">16</span> <span class="fu">=</span> <span class="fu">-</span><span class="dv">3</span>
 
-rem 13 (-4) = 13 - (-4) * (quot 13 4) = 13 + 4 * (-3) =
-13 - 12 = 1</code></pre>
+rem <span class="dv">13</span> (<span class="fu">-</span><span class="dv">4</span>) <span class="fu">=</span> <span class="dv">13</span> <span class="fu">-</span> (<span class="fu">-</span><span class="dv">4</span>) <span class="fu">*</span> (quot <span class="dv">13</span> <span class="dv">4</span>) <span class="fu">=</span> <span class="dv">13</span> <span class="fu">+</span> <span class="dv">4</span> <span class="fu">*</span> (<span class="fu">-</span><span class="dv">3</span>) <span class="fu">=</span>
+<span class="dv">13</span> <span class="fu">-</span> <span class="dv">12</span> <span class="fu">=</span> <span class="dv">1</span></code></pre></div>
 <p>Lastly, if we set the signs of both arguments negative:</p>
-<pre><code>`(-13)` / `(-4)` = 13 / 4 = 3.25</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">`(-13)`</span> <span class="fu">/</span> <span class="ot">`(-4)`</span> <span class="fu">=</span> <span class="dv">13</span> <span class="fu">/</span> <span class="dv">4</span> <span class="fu">=</span> <span class="fl">3.25</span></code></pre></div>
 <p>and we’re back to “down” being unambiguous, so <code>divMod</code> and <code>quotRem</code> are the same again.</p>
-<pre><code>Prelude&gt; divMod (-13) (-4)
-(3,-1)
-Prelude&gt; quotRem (-13) (-4)
-(3,-1)</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Prelude</span><span class="fu">&gt;</span> divMod (<span class="fu">-</span><span class="dv">13</span>) (<span class="fu">-</span><span class="dv">4</span>)
+(<span class="dv">3</span>,<span class="fu">-</span><span class="dv">1</span>)
+<span class="dt">Prelude</span><span class="fu">&gt;</span> quotRem (<span class="fu">-</span><span class="dv">13</span>) (<span class="fu">-</span><span class="dv">4</span>)
+(<span class="dv">3</span>,<span class="fu">-</span><span class="dv">1</span>)</code></pre></div>
 <p>But really. Just use <code>divMod</code>. You almost always want “down” to be towards negative infinity.</p>
 <p>I would almost rather manually recreate <code>quot</code> out of <code>div</code> wherever I needed it:</p>
-<pre><code>quot x y = (sign x) * (sign y) * (div (abs x) (abs y)) where
-  sign x = div (abs x) x</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">quot x y <span class="fu">=</span> (sign x) <span class="fu">*</span> (sign y) <span class="fu">*</span> (div (abs x) (abs y)) <span class="kw">where</span>
+  sign x <span class="fu">=</span> div (abs x) x</code></pre></div>
 <p>Just so that it’s perfectly clear that I’m really interested in rounding absolute values.</p>
 <h2 id="parenthesization">2.9 Parenthesization</h2>
 <p><code>$</code>, or “apply”, is a great help in making Haskell code legible.</p>
@@ -514,15 +528,15 @@ waxOff x <span class="fu">=</span> triple x</code></pre></div></li>
 <p>But the syntactic sugar goes even a step further.</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">theNicestGroceryList <span class="fu">=</span> [<span class="dt">Milk</span>, <span class="dt">Eggs</span>, <span class="dt">Flour</span>]</code></pre></div>
 <p>At the REPL:</p>
-<pre><code>Prelude&gt; data Grocery = Milk | Eggs | Flour deriving Show
-Prelude&gt; Milk:Eggs:Flour:[]
-[Milk,Eggs,Flour]
-Prelude&gt; :type [Milk,Eggs,Flour]
-[Milk,Eggs,Flour] :: [Grocery]</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="kw">data</span> <span class="dt">Grocery</span> <span class="fu">=</span> <span class="dt">Milk</span> <span class="fu">|</span> <span class="dt">Eggs</span> <span class="fu">|</span> <span class="dt">Flour</span> <span class="kw">deriving</span> <span class="dt">Show</span>
+<span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="dt">Milk</span><span class="fu">:</span><span class="dt">Eggs</span><span class="fu">:</span><span class="dt">Flour</span><span class="fu">:</span>[]
+[<span class="dt">Milk</span>,<span class="dt">Eggs</span>,<span class="dt">Flour</span>]
+<span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="fu">:</span><span class="kw">type</span> [<span class="dt">Milk</span>,<span class="dt">Eggs</span>,<span class="dt">Flour</span>]
+[<span class="dt">Milk</span>,<span class="dt">Eggs</span>,<span class="dt">Flour</span>]<span class="ot"> ::</span> [<span class="dt">Grocery</span>]</code></pre></div>
 <p>That last line means that the type of <code>[Milk,Eggs,Flour]</code> is a <code>[Grocery]</code>, which means the same as <code>List Grocery</code>.</p>
 <p><code>[]</code> is the list constructor in Haskell, which we can see at the REPL</p>
-<pre><code>Prelude&gt; :info []
-data [] a = [] | a : [a] 	-- Defined in ‘GHC.Types’</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="fu">:</span>info []
+<span class="kw">data</span> [] a <span class="fu">=</span> [] <span class="fu">|</span> a <span class="fu">:</span> [a] 	<span class="co">-- Defined in ‘GHC.Types’</span></code></pre></div>
 <p>There’s some overloading of <code>[]</code> here, since <code>[]</code> is representing both <code>List</code> and <code>Nil</code>, but in practice this is nice since you build a list of <code>a</code>, <code>[a]</code>, by consing <code>a</code> to <code>nil</code>, <code>a:[]</code>.</p>
 <h3 id="char">Char</h3>
 <p>A <code>Char</code> is an ASCII character (<a href="https://en.wikipedia.org/wiki/ASCII">American Standard Code for Information Interchange</a>).</p>
@@ -564,26 +578,26 @@ data [] a = [] | a : [a] 	-- Defined in ‘GHC.Types’</code></pre>
  31  US  (unit separator)            63  ?         95  _        127  DEL</code></pre>
 <p>Most of the first 32 are control characters intended for use by teletype machines and magnetic tape readers, so you don’t have to worry about them. A few are still used though, <code>\n</code> in Haskell means newline and is the same as Ascii 10 <code>\LF</code>.</p>
 <p>We can see the correspondence at the REPL:</p>
-<pre><code>Prelude&gt; import Data.Char
-Prelude Data.Char&gt; ord 'a'
-97
-Prelude Data.Char&gt; chr 97
-'a'
-Prelude Data.Char&gt; :type ord
-ord :: Char -&gt; Int
-Prelude Data.Char&gt; :type chr
-chr :: Int -&gt; Char
-Prelude Data.Char&gt; map ord &quot;foobar&quot;
-[102,111,111,98,97,114]
-Prelude Data.Char&gt; map chr [102,111,111,98,97,114]
-&quot;foobar&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="kw">import </span><span class="dt">Data.Char</span>
+<span class="dt">Prelude</span> <span class="dt">Data.Char</span><span class="fu">&gt;</span> ord <span class="ch">'a'</span>
+<span class="dv">97</span>
+<span class="dt">Prelude</span> <span class="dt">Data.Char</span><span class="fu">&gt;</span> chr <span class="dv">97</span>
+<span class="ch">'a'</span>
+<span class="dt">Prelude</span> <span class="dt">Data.Char</span><span class="fu">&gt;</span> <span class="fu">:</span><span class="kw">type</span> ord
+ord<span class="ot"> ::</span> <span class="dt">Char</span> <span class="ot">-&gt;</span> <span class="dt">Int</span>
+<span class="dt">Prelude</span> <span class="dt">Data.Char</span><span class="fu">&gt;</span> <span class="fu">:</span><span class="kw">type</span> chr
+chr<span class="ot"> ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Char</span>
+<span class="dt">Prelude</span> <span class="dt">Data.Char</span><span class="fu">&gt;</span> map ord <span class="st">&quot;foobar&quot;</span>
+[<span class="dv">102</span>,<span class="dv">111</span>,<span class="dv">111</span>,<span class="dv">98</span>,<span class="dv">97</span>,<span class="dv">114</span>]
+<span class="dt">Prelude</span> <span class="dt">Data.Char</span><span class="fu">&gt;</span> map chr [<span class="dv">102</span>,<span class="dv">111</span>,<span class="dv">111</span>,<span class="dv">98</span>,<span class="dv">97</span>,<span class="dv">114</span>]
+<span class="st">&quot;foobar&quot;</span></code></pre></div>
 <h3 id="strings-ii">Strings II</h3>
 <p>A String is just a list of <code>Char</code>, or <code>[Char]</code>:</p>
-<pre><code>Prelude&gt; :info String
-type String = [Char] 	-- Defined in ‘GHC.Base’</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="fu">:</span>info <span class="dt">String</span>
+<span class="kw">type</span> <span class="dt">String</span> <span class="fu">=</span> [<span class="dt">Char</span>] 	<span class="co">-- Defined in ‘GHC.Base’</span></code></pre></div>
 <p>The double quotes in “foobar” are just syntactic sugar for:</p>
-<pre><code>Prelude&gt; ['f','o','o','b','a','r']
-&quot;foobar&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Prelude</span><span class="fu">&gt;</span> [<span class="ch">'f'</span>,<span class="ch">'o'</span>,<span class="ch">'o'</span>,<span class="ch">'b'</span>,<span class="ch">'a'</span>,<span class="ch">'r'</span>]
+<span class="st">&quot;foobar&quot;</span></code></pre></div>
 <h2 id="top-level-versus-local-definitions">3.4 Top-level versus local definitions</h2>
 <h3 id="exercises-scope">Exercises: Scope</h3>
 <ol style="list-style-type: decimal">
@@ -627,15 +641,15 @@ type String = [Char] 	-- Defined in ‘GHC.Base’</code></pre>
 <li><code>(!! 4)</code></li>
 <li><code>(drop 6)</code></li>
 </ol></li>
-<li><div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Ex2</span> <span class="kw">where</span>
+<li><div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Exercise2</span> <span class="kw">where</span>
 a <span class="fu">=</span> (<span class="fu">++</span> <span class="st">&quot;!&quot;</span>)
 b <span class="fu">=</span> (<span class="fu">!!</span> <span class="dv">4</span>)
 c <span class="fu">=</span> (drop <span class="dv">6</span>)</code></pre></div></li>
-<li><div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Ex3</span> <span class="kw">where</span>
+<li><div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Exercise3</span> <span class="kw">where</span>
 
 <span class="ot">thirdLetter ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Char</span>
 thirdLetter x <span class="fu">=</span> x <span class="fu">!!</span> <span class="dv">2</span></code></pre></div></li>
-<li><div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Ex4</span> <span class="kw">where</span>
+<li><div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Exercise4</span> <span class="kw">where</span>
 
 <span class="ot">letterIndex ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Char</span>
 letterIndex x <span class="fu">=</span> <span class="st">&quot;Curry is awesome&quot;</span> <span class="fu">!!</span> x</code></pre></div></li>
@@ -651,6 +665,218 @@ main <span class="fu">=</span> print <span class="fu">$</span> rvrs <span class=
 <li>see exercise 5.</li>
 </ol>
 <h1 id="basic-datatypes">4 Basic Datatypes</h1>
+<h2 id="what-are-types">4.2 What are types?</h2>
+<p><strong>Types</strong>: Haskell has expressions. Type the number <code>1</code> into the repl. That’s an expression. Type <code>addOne = (+) 1</code>. The function <code>addOne</code> is also an expression. Try to imagine all the possible expressions we could type into GHCi. This is hard to do because the number of possibile expressions is infinite. But if we try to imagine lots of different expressions, we should start to notice patterns. <code>1</code> is an expression, so is <code>2</code>, so is <code>3</code>, and so on. All positive integers are expressions. <code>-1</code> is an expression, so <code>-2</code> and <code>-3</code>. Negative integers, and therefore all integers are expressions. The pair <code>(1,1)</code> is an expression, so is <code>(1,2)</code>, so is <code>(23,58982)</code>. All pairs of integers are expressions. We can keep going like this forever, finding new patterns of ways to group expressions together. Every time we find a new expression-pattern, if we can precisely describe the structure of that pattern, we have a type.</p>
+<p>When we played with the <code>String</code> type in the preceeding chapter, we were, in effect, saying “Let’s for the moment think about only those expressions that have the <code>String</code> pattern, which looks like this:</p>
+<p>`<code>haskell data String = [Char] data [] a = [] | a : [a]</code></p>
+<p>Haskell mandates that expressions have types, and the compiler will not let us run code where the types do not match up.</p>
+<p>Try running:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Prelude</span><span class="fu">&gt;</span> not <span class="st">&quot;foo&quot;</span>
+
+<span class="fu">&lt;</span>interactive<span class="fu">&gt;:</span><span class="dv">4</span><span class="fu">:</span><span class="dv">5</span><span class="fu">:</span> error<span class="fu">:</span>
+    • <span class="dt">Couldn't</span> match expected <span class="kw">type</span> ‘<span class="dt">Bool</span>’ with actual <span class="kw">type</span> ‘[<span class="dt">Char</span>]’
+    • <span class="dt">In</span> the first argument <span class="kw">of</span> ‘not’, namely ‘<span class="st">&quot;foo&quot;</span>’
+      <span class="dt">In</span> the expression<span class="fu">:</span> not <span class="st">&quot;foo&quot;</span>
+      <span class="dt">In</span> an equation for ‘it’<span class="fu">:</span> it <span class="fu">=</span> not <span class="st">&quot;foo&quot;</span>
+<span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="fu">:</span><span class="kw">type</span> not
+not<span class="ot"> ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></code></pre></div>
+<p><code>not</code> is a function which takes a <code>Bool</code> and returns a <code>Bool</code>. If we try to call <code>not</code> with a <code>String</code> we get a type error. Our expression was not “well-typed.”</p>
+<p>We can also define new patterns, like</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Grocery</span> <span class="fu">=</span> <span class="dt">Milk</span> <span class="fu">|</span> <span class="dt">Eggs</span> <span class="fu">|</span> <span class="dt">Flour</span></code></pre></div>
+<p>So the type system is a tool for defining new patterns in the space of possible expressions, and then checking that in the code we want to run, all the types fit together perfectly.</p>
+<p>If you have ever played with Legos, you already have an intuition for how this ought to work.</p>
+<p align="center">
+<img src="https://upload.wikimedia.org/wikipedia/commons/3/32/Lego_Color_Bricks.jpg" width="400px" alt="Legos">
+</p>
+<p>There are a lot of different ways to fit pieces together. Two standard two by four Lego bricks of the same color can be combined 24 ways (ignoring symmetries). But there are also a lot of ways that you can’t fit pieces together. You can’t, for example, place a brick on top of two adjacent bricks at different heights. No amount of force will get the pieces to bend (Lego’s are very tough) that way. You can’t “coerce” Lego’s into doing whatever you want. The shapes are what they are, and it’s up to you the builder to figure out some interesting way to fit them together.</p>
+<p>Haskell expressions are like Lego pieces. And types are like their shapes. But unlike with Lego’s, you get to design entirely new pieces, as well as put them together.</p>
+<h2 id="anatomy-of-a-data-declaration">4.3 Anatomy of a data declaration</h2>
+<p>In the data declaration:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Bool</span> <span class="fu">=</span> <span class="dt">False</span> <span class="fu">|</span> <span class="dt">True</span></code></pre></div>
+<p>It’s important to keep in mind that everything to left of the <code>=</code> are types, and everything to the right are expressions.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="kw">data</span> <span class="dt">Bool</span> <span class="fu">=</span> <span class="dt">False</span> <span class="fu">|</span> <span class="dt">True</span> <span class="kw">deriving</span> <span class="dt">Show</span>
+<span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="dt">False</span>
+<span class="dt">False</span>
+<span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="dt">Bool</span>
+
+<span class="fu">&lt;</span>interactive<span class="fu">&gt;:</span><span class="dv">6</span><span class="fu">:</span><span class="dv">1</span><span class="fu">:</span> error<span class="fu">:</span> <span class="dt">Data</span> constructor not <span class="kw">in</span> scope<span class="fu">:</span> <span class="dt">Bool</span>
+<span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="fu">:</span><span class="kw">type</span> <span class="dt">False</span>
+<span class="dt">False</span><span class="ot"> ::</span> <span class="dt">Bool</span>
+<span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="fu">:</span>info <span class="dt">Bool</span>
+<span class="kw">data</span> <span class="dt">Bool</span> <span class="fu">=</span> <span class="dt">False</span> <span class="fu">|</span> <span class="dt">True</span> 	<span class="co">-- Defined at &lt;interactive&gt;:4:1</span>
+<span class="kw">instance</span> [safe] <span class="dt">Show</span> <span class="dt">Bool</span> <span class="co">-- Defined at &lt;interactive&gt;:4:35</span>
+<span class="dt">Prelude</span><span class="fu">&gt;</span></code></pre></div>
+<p><code>Bool</code> and <code>False</code> live in two different spaces. <code>Bool</code> lives in type-space and <code>False</code> lives in data-space. This is a really important distinction! Typespace disappears after code gets compiled, so you can’t interact with them in running code (or “runtime”).</p>
+<p><strong>compile-time</strong>: When code gets compiled. Types are used in compiletime, but not in runtime. Compiler errors happen at compile-time.</p>
+<p><strong>run-time</strong>: When code gets run. Haskell types vanish at run-time. A run-time error might be an exception like:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Prelude</span><span class="fu">&gt;</span> head []
+<span class="fu">***</span> <span class="dt">Exception</span><span class="fu">:</span> Prelude.head<span class="fu">:</span> empty list</code></pre></div>
+<p>Another thing to remember is that since typespace and dataspace are distinct, the same name can live in both spaces:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="kw">data</span> <span class="dt">Thing</span> a <span class="fu">=</span> <span class="dt">Thing</span> a <span class="kw">deriving</span> <span class="dt">Show</span>
+<span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="dt">Thing</span> <span class="dv">1</span>
+<span class="dt">Thing</span> <span class="dv">1</span>
+<span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="dt">Thing</span> <span class="dv">1</span><span class="ot"> ::</span> <span class="dt">Thing</span> <span class="dt">Integer</span>
+<span class="dt">Thing</span> <span class="dv">1</span></code></pre></div>
+<p><code>Thing</code> the data constructor lives in dataspace:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="fu">:</span>t <span class="dt">Thing</span>
+<span class="dt">Thing</span><span class="ot"> ::</span> a <span class="ot">-&gt;</span> <span class="dt">Thing</span> a</code></pre></div>
+<p>And <code>Thing</code> the type constructor lives in typespace:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="fu">:</span>i <span class="dt">Thing</span>
+<span class="kw">data</span> <span class="dt">Thing</span> a <span class="fu">=</span> <span class="dt">Thing</span> a 	<span class="co">-- Defined at &lt;interactive&gt;:24:1</span>
+<span class="kw">instance</span> [safe] <span class="dt">Show</span> a <span class="ot">=&gt;</span> <span class="dt">Show</span> (<span class="dt">Thing</span> a)
+  <span class="co">-- Defined at &lt;interactive&gt;:24:33</span></code></pre></div>
+<p>But this is just two names that happen to be the same. We could equivalently say:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="kw">data</span> <span class="dt">Thing</span> a <span class="fu">=</span> <span class="dt">MakeThing</span> a <span class="kw">deriving</span> <span class="dt">Show</span></code></pre></div>
+<p>and everything behaves the same:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="kw">data</span> <span class="dt">Thing</span> a <span class="fu">=</span> <span class="dt">MakeThing</span> a <span class="kw">deriving</span> <span class="dt">Show</span>
+<span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="dt">Thing</span> <span class="dv">1</span>
+
+<span class="fu">&lt;</span>interactive<span class="fu">&gt;:</span><span class="dv">5</span><span class="fu">:</span><span class="dv">1</span><span class="fu">:</span> error<span class="fu">:</span>
+    <span class="dt">Data</span> constructor not <span class="kw">in</span> scope<span class="fu">:</span> <span class="dt">Thing</span><span class="ot"> ::</span> <span class="dt">Integer</span> <span class="ot">-&gt;</span> t
+<span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="dt">MakeThing</span> <span class="dv">1</span>
+<span class="dt">MakeThing</span> <span class="dv">1</span>
+<span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="fu">:</span>t <span class="dt">Thing</span> 
+
+<span class="fu">&lt;</span>interactive<span class="fu">&gt;:</span><span class="dv">1</span><span class="fu">:</span><span class="dv">1</span><span class="fu">:</span> error<span class="fu">:</span> <span class="dt">Data</span> constructor not <span class="kw">in</span> scope<span class="fu">:</span> <span class="dt">Thing</span>
+<span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="fu">:</span>t <span class="dt">MakeThing</span> 
+<span class="dt">MakeThing</span><span class="ot"> ::</span> a <span class="ot">-&gt;</span> <span class="dt">Thing</span> a
+<span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="fu">:</span>i <span class="dt">Thing</span>
+<span class="kw">data</span> <span class="dt">Thing</span> a <span class="fu">=</span> <span class="dt">MakeThing</span> a 	<span class="co">-- Defined at &lt;interactive&gt;:4:1</span>
+<span class="kw">instance</span> [safe] <span class="dt">Show</span> a <span class="ot">=&gt;</span> <span class="dt">Show</span> (<span class="dt">Thing</span> a)
+  <span class="co">-- Defined at &lt;interactive&gt;:4:37</span>
+<span class="dt">Prelude</span><span class="fu">&gt;</span> </code></pre></div>
+<h3 id="exercises-mood-swing">Exercises: Mood Swing</h3>
+<ol style="list-style-type: decimal">
+<li><code>Mood</code></li>
+<li><code>Blah</code> or <code>Woot</code></li>
+<li>Woot is a value whose type is Mood, should be <code>changeMood :: Mood -&gt; Mood</code></li>
+<li><div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- Mood.hs</span>
+<span class="kw">module</span> <span class="dt">Mood</span> <span class="kw">where</span>
+<span class="kw">data</span> <span class="dt">Mood</span> <span class="fu">=</span> <span class="dt">Woot</span> <span class="fu">|</span> <span class="dt">Blah</span> <span class="kw">deriving</span> <span class="dt">Show</span>
+
+<span class="ot">changeMood ::</span> <span class="dt">Mood</span> <span class="ot">-&gt;</span> <span class="dt">Mood</span>
+changeMood <span class="dt">Blah</span> <span class="fu">=</span> <span class="dt">Woot</span>
+changeMood <span class="dt">Woot</span> <span class="fu">=</span> <span class="dt">Blah</span></code></pre></div></li>
+<li>see 4.</li>
+</ol>
+<h2 id="numeric-types">4.4 Numeric types</h2>
+<p>Numeric types will not completely make sense without typeclasses.</p>
+<p><strong>Typeclass</strong>: A collection of types that share common properties. For example, the typeclass <code>Show</code> is defined as</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="fu">:</span>i <span class="dt">Show</span>
+<span class="kw">class</span> <span class="dt">Show</span> a <span class="kw">where</span>
+<span class="ot">  showsPrec ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">ShowS</span>
+<span class="ot">  show ::</span> a <span class="ot">-&gt;</span> <span class="dt">String</span>
+<span class="ot">  showList ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">ShowS</span>
+  <span class="ot">{-# MINIMAL showsPrec | show #-}</span>
+  	<span class="co">-- Defined in ‘GHC.Show’</span></code></pre></div>
+<p>Which is for our purposes equivalent to:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Show</span> a <span class="kw">where</span>
+<span class="ot">  show ::</span> a <span class="ot">-&gt;</span> <span class="dt">String</span></code></pre></div>
+<p>So any type that is an instance of <code>Show</code> has a function called <code>show</code> that lets you turn a value of that type into a <code>String</code>.</p>
+<p>Let’s try it:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="kw">data</span> <span class="dt">Something</span> <span class="fu">=</span> <span class="dt">Something</span>
+<span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="kw">instance</span> <span class="dt">Show</span> <span class="dt">Something</span> <span class="kw">where</span> show <span class="dt">Something</span> <span class="fu">=</span> <span class="st">&quot;Something&quot;</span>
+<span class="dt">Prelude</span><span class="fu">&gt;</span> show <span class="dt">Something</span>
+<span class="st">&quot;Something&quot;</span></code></pre></div>
+<p>Of course, this is tedious, so Haskell gives us a <code>deriving</code> mechanism that does effectively this:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="kw">data</span> <span class="dt">Something</span> <span class="fu">=</span> <span class="dt">Something</span> <span class="kw">deriving</span> show
+<span class="dt">Prelude</span><span class="fu">&gt;</span> show <span class="dt">Something</span>
+<span class="st">&quot;Something&quot;</span></code></pre></div>
+<p>The reason this is relevant is that <code>Num</code>, <code>Fractional</code> and <code>Integral</code> are all typeclasses, not types:</p>
+<pre><code>Prelude&gt; :i Num
+class Num a where
+  (+) :: a -&gt; a -&gt; a
+  (-) :: a -&gt; a -&gt; a
+  (*) :: a -&gt; a -&gt; a
+  negate :: a -&gt; a
+  abs :: a -&gt; a
+  signum :: a -&gt; a
+  fromInteger :: Integer -&gt; a
+  {-# MINIMAL (+), (*), abs, signum, fromInteger, (negate | (-)) #-}
+  	-- Defined in ‘GHC.Num’
+Prelude&gt; :i Fractional
+class Num a =&gt; Fractional a where
+  (/) :: a -&gt; a -&gt; a
+  recip :: a -&gt; a
+  fromRational :: Rational -&gt; a
+  {-# MINIMAL fromRational, (recip | (/)) #-}
+  	-- Defined in ‘GHC.Real’
+Prelude&gt; :i Integral
+class (Real a, Enum a) =&gt; Integral a where
+  quot :: a -&gt; a -&gt; a
+  rem :: a -&gt; a -&gt; a
+  div :: a -&gt; a -&gt; a
+  mod :: a -&gt; a -&gt; a
+  quotRem :: a -&gt; a -&gt; (a, a)
+  divMod :: a -&gt; a -&gt; (a, a)
+  toInteger :: a -&gt; Integer
+  {-# MINIMAL quotRem, toInteger #-}
+  	-- Defined in ‘GHC.Real’</code></pre>
+<p>But this is getting pretty deep into the “typeclass zoo.” Better leave this for chapters 5 and 6.</p>
+<h2 id="go-on-and-bool-me">4.6 Go on and Bool me</h2>
+<h3 id="exercises-find-the-mistakes">Exercises: Find the Mistakes</h3>
+<ol style="list-style-type: decimal">
+<li><code>not True &amp;&amp; True</code></li>
+<li><code>not (x == 6) where x = 5</code></li>
+<li><code>(1 * 2) &gt; 5</code></li>
+<li><code>[&quot;Merry&quot;] &gt; [&quot;Happy&quot;]</code></li>
+<li><code>[&quot;1, 2, 3&quot;] ++ &quot;look at me!&quot;</code></li>
+</ol>
+<h2 id="chapter-exercises-2">4.9 Chapter Exercises</h2>
+<ol style="list-style-type: decimal">
+<li><p><code>length :: [a] -&gt; Int</code></p></li>
+<li><ol style="list-style-type: lower-alpha">
+<li>5</li>
+<li>3</li>
+<li>2</li>
+<li>5</li>
+</ol></li>
+<li><code>Int</code> is not a <code>Fractional</code></li>
+<li>Use infix `<code>div`</code> instead</li>
+<li><code>Bool</code>, returns <code>True</code></li>
+<li><code>Bool</code>, returns <code>False</code></li>
+<li><ol style="list-style-type: lower-alpha">
+<li>Works, <code>False</code></li>
+<li>Error, no instance <code>(Num Char)</code></li>
+<li>Works, returns <code>8</code></li>
+<li>Works returns <code>False</code></li>
+<li>No instance <code>(Num Bool)</code></li>
+</ol></li>
+<li><div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">isPalindrome ::</span> (<span class="dt">Eq</span> a) <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+isPalindrome x <span class="fu">=</span> reverse x <span class="fu">==</span> x</code></pre></div></li>
+<li><div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">myAbs ::</span> <span class="dt">Integer</span> <span class="ot">-&gt;</span> <span class="dt">Integer</span>
+myAbs <span class="fu">=</span> <span class="kw">if</span> x <span class="fu">&lt;</span> <span class="dv">0</span> <span class="kw">then</span> (<span class="fu">-</span>x) <span class="kw">else</span> x</code></pre></div></li>
+<li><p>```haskell – Exercise10.hs module Exercise10 where</p>
+<p>f :: (a, b) -&gt; (c, d) -&gt; ((b, d), (a, c)) f x y = ((snd x, snd y), (fst x, fst y)) ```</p></li>
+</ol>
+<h3 id="correcting-syntax">Correcting syntax</h3>
+<ol style="list-style-type: decimal">
+<li><div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- CorrectingSyntax1.hs</span>
+<span class="kw">module</span> <span class="dt">CorrectingSyntax1</span> <span class="kw">where</span>
+
+f xs <span class="fu">=</span> length xs <span class="fu">+</span> <span class="dv">1</span></code></pre></div></li>
+<li><div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- CorrectingSyntax2.hs</span>
+<span class="kw">module</span> <span class="dt">CorrectingSyntax2</span> <span class="kw">where</span>
+
+f <span class="fu">=</span> (\x <span class="ot">-&gt;</span> x)</code></pre></div></li>
+<li><div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- CorrectingSyntax3.hs</span>
+<span class="kw">module</span> <span class="dt">CorrectingSyntax3</span> <span class="kw">where</span>
+
+f (a, b) <span class="fu">=</span> a</code></pre></div></li>
+</ol>
+<h3 id="match-the-function-names-to-their-types">Match the function names to their types</h3>
+<ol style="list-style-type: decimal">
+<li><ol start="3" style="list-style-type: lower-alpha">
+<li></li>
+</ol></li>
+<li><ol start="2" style="list-style-type: lower-alpha">
+<li></li>
+</ol></li>
+<li>a</li>
+<li>d</li>
+</ol>
+<h2 id="types">5 Types</h2>
+<p>I want to acknowledge how apt and lovely the quote at the beginning of this chapter is. It is an excerpt from the Wallace Stevens poem: <a href="https://www.poetryfoundation.org/poems/43431/the-idea-of-order-at-key-west">The Idea of Order at Key West</a></p>
 
         </div>
         <div id="footer">
