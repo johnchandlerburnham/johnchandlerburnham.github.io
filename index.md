@@ -26,8 +26,8 @@ and other interests of mine.
     engine. 
 
   - Interned at a few space technology startups in Silicon Valley: 
-    [Moon Express](moonexpress.com), a NASA contractor building a lunar lander,
-    and [Planet Labs](www.planet.com), a satellite imaging company.
+    [Moon Express](http://www.moonexpress.com), a NASA contractor building a lunar lander,
+    and [Planet Labs](http://www.planet.com), a satellite imaging company.
 
   - Won a [Thiel Fellowship](http://thielfellowship.org) for an asteroid mining idea.
     (Did not mine any asteroids).
