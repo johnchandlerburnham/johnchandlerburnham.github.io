@@ -18,7 +18,7 @@ and other interests of mine.
     Arts](http://www.thomasmorecollege.edu/), in Merrimack, NH.
     Learned some Greek and Latin, in that order (ἀρίστη ὴ Ἀττική γλῶττα).
 
-  - Cofounded [Tlon](tlon.io) (the company developing [Urbit](http://www.urbit.org))
+  - Cofounded [Tlon](http://tlon.io) (the company developing [Urbit](http://www.urbit.org))
     in San Francisco. Learned about functional programming and startups.
 
   - Research Fellowship at [Wolfram Research](http://www.wolfram.com) in Somerville,

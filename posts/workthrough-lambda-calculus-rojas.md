@@ -1,8 +1,8 @@
 ---
-title: "Workthrough: A Tutorial Introduction to the Lambda Calculus (Rojas)"
+title: "Workthrough: Tutorial Intro to Lambda Calculus (Rojas)"
 author: jcb
 date: 2017-11-14
-tags: workthrough, math, haskell
+tags: workthrough, math, haskell, lambda
 ---
 
 **Work in progress**
@@ -698,10 +698,10 @@ R ( R ((\f. R (f f)) (\f. R (f f)))) =>
 ...
 ```
 
-This is the famous `Y` combinator:
+When we abstract over `R`, this becomes the famous `Y` combinator:
 
 ```
-Y = (\f. f f) (\f. R (f f)) =>(\f. R (f f)) (\f. R (f f))
+Y = \r. (\f. f f) (\f. r (f f)) => \r. (\f. r (f f)) (\f. r (f f))
 ```
 
 **combinator**: A lambda abstraction with no free variables.
