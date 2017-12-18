@@ -1,5 +1,5 @@
 ---
-title: "Workthrough: Haskell Programming (Milewski)"
+title: "Workthrough: Category Theory for Programmers (Milewski)"
 author: jcb
 date: 2017-12-15
 tags: workthrough, haskell, math, category-theory
