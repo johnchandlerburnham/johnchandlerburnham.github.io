@@ -4,7 +4,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>John Chandler Burnham - Workthrough: A Tutorial Introduction to the Lambda Calculus (Rojas)</title>
+        <title>John Chandler Burnham - Workthrough: Tutorial Intro to Lambda Calculus (Rojas)</title>
         <link rel="stylesheet" type="text/css" href="../css/default.css" />
     </head>
     <body>
@@ -18,7 +18,7 @@
         </div>
 
         <div id="content">
-            <h1>Workthrough: A Tutorial Introduction to the Lambda Calculus (Rojas)</h1>
+            <h1>Workthrough: Tutorial Intro to Lambda Calculus (Rojas)</h1>
               <div class="info">
     Posted on November 14, 2017
     
@@ -27,7 +27,7 @@
 </div>
 <div class="info">
     
-    Tags: <a href="../tags/workthrough.html">workthrough</a>, <a href="../tags/math.html">math</a>, <a href="../tags/haskell.html">haskell</a>
+    Tags: <a href="../tags/workthrough.html">workthrough</a>, <a href="../tags/math.html">math</a>, <a href="../tags/haskell.html">haskell</a>, <a href="../tags/lambda.html">lambda</a>
     
 </div>
 
@@ -320,8 +320,8 @@ false </code></pre>
 R ((\f. R (f f)) (\f. R (f f)) =&gt;
 R ( R ((\f. R (f f)) (\f. R (f f)))) =&gt;
 ...</code></pre>
-<p>This is the famous <code>Y</code> combinator:</p>
-<pre><code>Y = (\f. f f) (\f. R (f f)) =&gt;(\f. R (f f)) (\f. R (f f))</code></pre>
+<p>When we abstract over <code>R</code>, this becomes the famous <code>Y</code> combinator:</p>
+<pre><code>Y = \r. (\f. f f) (\f. r (f f)) =&gt; \r. (\f. r (f f)) (\f. r (f f))</code></pre>
 <p><strong>combinator</strong>: A lambda abstraction with no free variables.</p>
 <hr />
 <p>Another way to think about the <code>Y</code> combinator is as a <em>fixed-point</em> combinator.</p>

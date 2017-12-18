@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Workthrough: Haskell Programming (Milewski)</title>
+        <link rel="stylesheet" type="text/css" href="../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../">jcb</a>
+                <a href="../posts.html">posts</a>
+                <a href="../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+            </div>
+        </div>
+
+        <div id="content">
+            <h1>Workthrough: Haskell Programming (Milewski)</h1>
+              <div class="info">
+    Posted on December 15, 2017
+    
+        by jcb
+    
+</div>
+<div class="info">
+    
+    Tags: <a href="../tags/workthrough.html">workthrough</a>, <a href="../tags/haskell.html">haskell</a>, <a href="../tags/math.html">math</a>, <a href="../tags/category-theory.html">category-theory</a>
+    
+</div>
+
+<hr>
+
+<hr>
+<h2>Contents</h2>
+<ul>
+<li><a href="#category-the-essence-of-composition">1 Category: The Essence of Composition</a><ul>
+<li><a href="#arrows-as-fucntions.">1.1 Arrows as Fucntions.</a></li>
+<li><a href="#properties-of-composition">1.2 Properties of Composition</a></li>
+<li><a href="#challenges">1. 4 Challenges</a></li>
+</ul></li>
+<li><a href="#types-and-functions">2 Types and Functions</a><ul>
+<li><a href="#what-are-types">2.3 What are Types</a></li>
+<li><a href="#why-do-we-need-a-mathematical-model">2.4 Why Do we need a Mathematical Model</a></li>
+<li><a href="#pure-and-dirty-functions">2.5 Pure and Dirty Functions</a></li>
+<li><a href="#examples-of-types">2.6 Examples of Types</a></li>
+<li><a href="#challenges-1">2.6 Challenges</a></li>
+</ul></li>
+<li><a href="#categories-great-and-small">3 Categories Great and Small</a><ul>
+<li><a href="#no-objects">3.1 No objects</a></li>
+<li><a href="#simple-graphs">3.2 Simple Graphs</a></li>
+<li><a href="#orders">3.3 Orders</a></li>
+<li><a href="#monoid-as-set">3.4 Monoid as Set</a></li>
+<li><a href="#monoid-as-category">3.5 Monoid as Category</a></li>
+<li><a href="#challenges-2">3.6 Challenges</a></li>
+</ul></li>
+<li><a href="#kleisli-categories">4 Kleisli Categories</a></li>
+<li><a href="#products-and-coproducts">5 Products and Coproducts</a><ul>
+<li><a href="#initial-object">5.1 Initial Object</a></li>
+<li><a href="#terminal-object">5.2 Terminal Object</a></li>
+<li><a href="#duality">5.3 Duality</a></li>
+<li><a href="#isomorphisms">5.4 Isomorphisms</a><ul>
+<li><a href="#theorem-any-category-has-at-most-one-initial-object-up-to-isomorphism">Theorem: Any category has at most one initial object (up to isomorphism)</a></li>
+</ul></li>
+<li><a href="#products">5.5 Products</a></li>
+<li><a href="#coproduct">5.6 Coproduct</a></li>
+<li><a href="#challenges-3">5.8 Challenges</a></li>
+</ul></li>
+</ul>
+<hr>
+<p><strong>Work in Progress</strong></p>
+<h1 id="category-the-essence-of-composition">1 Category: The Essence of Composition</h1>
+<p><strong>category</strong>: A structure consisting of objects and arrows between objects, such that arrows compose. That is, if a category has objects <code>A</code>, <code>B</code> and <code>C</code> along with arrows <code>A -&gt; B</code> and <code>B -&gt; C</code>, then it also has the arrow <code>A -&gt; C</code>.</p>
+<h2 id="arrows-as-fucntions.">1.1 Arrows as Fucntions.</h2>
+<p>Arrows are also called morphisms, which comes from the Greek “morphe” meaning form.</p>
+<p>Notation: - <code>.</code> is composition, <code>(g . f)(x) = g(f(x))</code> - <code>::</code> is type of, like <code>f :: Integer</code> - <code>-&gt;</code> is an arrow, <code>f :: A -&gt; B</code> means <code>f</code> is a morphism from <code>A</code> to <code>B</code></p>
+<h2 id="properties-of-composition">1.2 Properties of Composition</h2>
+<ol style="list-style-type: decimal">
+<li><p>Composition of arrows is associative, so that</p>
+<pre><code>h . (g . f) = (h . g) . f = h . g . f</code></pre>
+<p>This makes sense with the definition of a category. Suppose a category contains objects <code>A, B, C, D</code> and arrows:</p>
+<pre><code>f :: A -&gt; B
+g :: B -&gt; C
+h :: C -&gt; D</code></pre>
+<p>Then by definition it contains:</p>
+<pre><code>(f . g) :: A -&gt; C
+(h . g) :: B -&gt; D
+(h . g . f) :: A -&gt; D</code></pre>
+<p>Associativity just means that it doesn’t matter what order we compose arrows:</p>
+<pre><code>h . (g . f) == (h . g) . f == h . g . f</code></pre></li>
+<li><p>There is an identity arrow <code>A -&gt; A</code> for every object <code>A</code>. Such that for arrows <code>f :: A -&gt; B</code> and <code>g :: B -&gt; A</code>:</p>
+<pre><code>f . id_a = f
+id_a . g = g</code></pre></li>
+</ol>
+<p>One thing that confuses me is that it seems like this implies that in some case that there can’t be multiple arrows from one object to another.</p>
+<p>Suppose a category <code>Cat</code> has objects <code>A</code>, <code>B</code> and arrows</p>
+<pre><code>f' :: A -&gt; B
+f  :: A -&gt; B
+g  :: B -&gt; A
+id_a :: A -&gt; A
+id_b :: B -&gt; B</code></pre>
+<p>If <code>Cat</code> is a category, then the compositions of <code>g . f</code> and <code>g . f'</code> must be arrows in the category:</p>
+<pre><code>g . f :: A -&gt; A 
+g . f' :: A -&gt; A </code></pre>
+<p>But the only arrow of type <code>A -&gt; A</code> is <code>id_a</code>, so</p>
+<pre><code>g . f = g . f' = id_a</code></pre>
+<p>And equivalently:</p>
+<pre><code>f . g= f' . g = id_b</code></pre>
+<p>Which implies:</p>
+<pre><code>f' = f' . id_a = f' . g . f = id_b . f = f </code></pre>
+<p>So, either <code>Cat</code> is not a category, or <code>f' == f.</code></p>
+<p>cf. <a href="https://en.wikibooks.org/wiki/Haskell/Category_theory#Hask,_the_Haskell_category">Haskell Wikibook page on Category Theory</a></p>
+<p>I think the important thing to keep in mind here is that when looking at a possible structure to see if its a category, the structure is constant. There aren’t any implicit elements of <code>Cat</code> that could also satisfy the property that e.g <code>(g . f)</code> is in <code>Cat</code>. We actually have to look in <code>Cat</code> to find if something fits the properties. If not, it’s not a category.</p>
+<p>When I first approached this topic I confused the statements:</p>
+<ul>
+<li>For any arrows <code>g</code> and <code>f</code> in a category <code>C</code>, their composition <code>(g . f)</code> must also be an arrow in <code>C</code>. (<strong>Right</strong>)</li>
+<li>If arrows <code>g</code> and <code>f</code> are arrows in <code>C</code>, add a new arrow <code>(g . f)</code> to <code>C</code>. (<strong>Wrong</strong>)</li>
+</ul>
+<p>This really confused me for a bit, until I realized that when I was doing the latter I was just trying to build a superset of <code>C</code> that actually was a category.</p>
+<h2 id="challenges">1. 4 Challenges</h2>
+<ol style="list-style-type: decimal">
+<li><code>I = (\x. x)</code> in the lambda calculus.</li>
+<li><p><code>compose = (\x y z. x (y z))</code></p></li>
+<li><p><code>compose I F X = (\x y z. x (y z)) I F X = I (F X) = F X</code> <code>compose F I X = (\x y z. x (y z)) F I X = F (I X) = F X</code></p></li>
+<li>No, links are not composable.</li>
+<li>Friendships are not composable.</li>
+<li><p>When the edges are composable, and every node has a self-directed edge.</p></li>
+</ol>
+<hr />
+<h1 id="types-and-functions">2 Types and Functions</h1>
+<h2 id="what-are-types">2.3 What are Types</h2>
+<p><strong>Set</strong>: A category whose objects are sets and whose arrows are functions. <strong>Hask</strong>: Set, except every set is extedned with the bottom element <code>_|_</code>, indicating non termination.</p>
+<p>The question of whether <strong>Hask</strong> is actually a category appears to be an <a href="http://math.andrej.com/2016/08/06/hask-is-not-a-category/comment-page-1/">interesting one</a></p>
+<p>[TODO: Workthrough of https://www.cs.ox.ac.uk/jeremy.gibbons/publications/fast+loose.pdf]</p>
+<h2 id="why-do-we-need-a-mathematical-model">2.4 Why Do we need a Mathematical Model</h2>
+<p><strong>operational semantics</strong>: Describing how a program runs by trying to directly reason about how it operates on some idealized abstract machine.</p>
+<p><strong>denotational semantics</strong>: Describing how a program runs by building a mathematical structure that corresponds to the program and proving theorems about that structure.</p>
+<h2 id="pure-and-dirty-functions">2.5 Pure and Dirty Functions</h2>
+<p><strong>pure function</strong>: A function that returns the same output for the same input, and whose output and input are explicit.</p>
+<p>I wonder if a function in, for example, <code>C</code> could be considered pure, but only if we treat the whole state of the machine, or maybe the whole state of the universe as the input and output types.</p>
+<h2 id="examples-of-types">2.6 Examples of Types</h2>
+<p><strong>Void</strong>: The type with no elements (other than <code>_|_</code>, of course)</p>
+<p><strong>()</strong>: Unit, the type with only one element: <code>()</code></p>
+<h2 id="challenges-1">2.6 Challenges</h2>
+<ol style="list-style-type: decimal">
+<li><ol start="2" style="list-style-type: decimal">
+<li><ol start="3" style="list-style-type: decimal">
+<li><ol start="4" style="list-style-type: decimal">
+<li></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol>
+<p>[TODO: Memoization in Haskell.]</p>
+<ol start="5" style="list-style-type: decimal">
+<li><p>4 functions</p>
+<pre><code>not :: Bool -&gt; Bool
+id_bool :: Bool -&gt; Bool
+(const True) :: Bool -&gt; Bool
+(const False) :: Bool -&gt; Bool</code></pre></li>
+<li><pre><code>absurdUnit :: Void -&gt; ()
+absurdTrue :: Void -&gt; Bool
+absurdFalse :: Void -&gt; Bool
+
+id_Void :: Void -&gt; Void
+id_unit :: () -&gt; ()
+id_bool :: Bool -&gt; Bool
+
+not :: Bool -&gt; Bool
+(const True) :: Bool -&gt; Bool
+(const False) :: Bool -&gt; Bool
+
+(const True)  :: () -&gt; Bool
+(const False) :: () -&gt; Bool
+
+unit :: Bool -&gt; ()</code></pre></li>
+</ol>
+<p>[TODO: Diagram]</p>
+<h1 id="categories-great-and-small">3 Categories Great and Small</h1>
+<h2 id="no-objects">3.1 No objects</h2>
+<p>The empty category!</p>
+<h2 id="simple-graphs">3.2 Simple Graphs</h2>
+<p><strong>free category</strong>: A category generated by a directed graph by turning nodes into objects, edges into arrows and adding new edges for every composition of arrows.</p>
+<p>Okay so generating free categories is what I was doing in chapter 2 that was confusing me. Subtle!</p>
+<h2 id="orders">3.3 Orders</h2>
+<p><strong>preorder</strong>: If a set <code>P</code> has a binary relation <code>pre :: P -&gt; P -&gt; Bool</code> such that for all <code>x :: P, y :: P, z :: P</code></p>
+<pre><code>pre x x = True                      -- reflexive
+pre x y &amp;&amp; pre y z =&gt; pre x z       -- transitive</code></pre>
+<p>Then <code>pre</code> is a preorder.</p>
+<p><strong>partial order</strong>: If a set <code>P</code> has a binary relation <code>part :: P -&gt; P -&gt; Bool</code> such that for all <code>x :: P, y :: P</code>:</p>
+<pre><code>part x y = pre x y                 -- part is a preorder
+part x y &amp;&amp; part y x =&gt; x == y     -- antisymmetric </code></pre>
+<p>then <code>part</code> is a partial order</p>
+<p><strong>total order</strong>: If a set <code>P</code> has a binary relation <code>tot :: P -&gt; P -&gt; Bool</code>, such that for all <code>x :: P, y :: P</code>:</p>
+<pre><code>tot x y = part x y                 -- tot is a partial order
+tot x y || tot y x = True          -- total (defined for all P)</code></pre>
+<p>then <code>tot</code> is a total order.`</p>
+<p><strong>thin category</strong>: A category where between any two objects <code>X</code> and <code>Y</code> there is at most one arrow <code>X -&gt; Y</code> from <code>X</code> to <code>Y</code>.</p>
+<p><strong>hom-set</strong>: The set of arrows from an object <code>X</code> to an object <code>Y</code>. <code>hom-set :: Category -&gt; Object -&gt; Object -&gt; {Arrow}</code>. I don’t really like the name “hom-set”. I get that “hom” stands for “homomorphism”, but I hate using apocope (eliding syllables from the ends of words) to generate new terms. It’s slangy, offloads important “info” onto implicit context, sounds ugly and confuses me. Hate it.</p>
+<p>I’ve read that some books use “morphisms” as a way to describe “hom-set”. That’s a lot better, but still not perfect…</p>
+<p>I kind of like thinking about the set of morphisms from <code>X</code> to <code>Y</code> as the “volley” of arrows from <code>X</code> to <code>Y</code>. I especially like that “volley” comes from Latin “volare: to fly”. And that’s really what we’re after, which arrows “fly” from <code>X</code> to <code>Y</code>:</p>
+<pre><code>volley :: Category -&gt; Object -&gt; Object -&gt; {Arrow}</code></pre>
+<p>We’ll also need term for all the arrow in a whole category, not just between two ojects:</p>
+<pre><code>vol :: Category -&gt; {Arrow}</code></pre>
+<p>Okay, it’s another apocope, but this is actually a meaningful one. “Vol” is a French word meaning “flight”. And we can think of all the a all the arrows in a category as being like a “flock” or a “flight” of arrows.</p>
+<p>I’ve also read that the vol (hom-set) of a category is not necessarily a set. So I think the term “hom-set” really fails utterly in all parts for clearly conveying the concept.</p>
+<p>I’m going to use my own made-up “vol”, “volley” terminology, mostly because I think it’s pretty. I’ll try to include definitions whenever I stray to far from this context:</p>
+<pre><code>volley C a b = hom-set_C(a, b)
+vol C = all morphisms of C</code></pre>
+<p>[TODO: Extend archery terminology to other category theory concepts]</p>
+<h2 id="monoid-as-set">3.4 Monoid as Set</h2>
+<p><strong>monoid</strong> A set <code>M</code> with a binary operation <code>mappend :: M -&gt; M -&gt; M</code> and an element <code>mempty :: M</code> such that for any <code>a :: M, b :: M, c :: M</code>:</p>
+<pre><code>mappend (mappend a b) c = mappend a (mappend b c)  -- associative
+mappend mempty a = mappend a mempty = a            -- identity element</code></pre>
+<p>Addition of integers is a monoid:</p>
+<pre><code>(a + b) + c = a + (b + c)
+0 + a = a + 0 = a</code></pre>
+<p>So is multiplication of integers:</p>
+<pre><code>(a * b) * c = a * (b * c)
+1 * a = a * 1 = a</code></pre>
+<h2 id="monoid-as-category">3.5 Monoid as Category</h2>
+<p>Treat <code>M</code> as an object, rather than a set. We can convert all elements of <code>M</code> into arrows:</p>
+<p>The identity element turns into the identity arrow:</p>
+<pre><code>mappend a mempty = mappend mempty a = id_M a = a id_M = a  -- identity arrow</code></pre>
+<p>And every element <code>x</code> of <code>M</code> turns into:</p>
+<pre><code>mappend x :: M -&gt; M</code></pre>
+<p>where composition of arrows becomes:</p>
+<pre><code>(mappend x1) . (mappend x2) = (mappend (mappend x1 x2)) :: M -&gt; M</code></pre>
+<p>E.g, if the monoid is addition of integers:</p>
+<pre><code>(+ 2) . (+ 3) = (+ (2 + 3)) = (+ 5)</code></pre>
+<p>And since <code>mappend</code> is associative, so is composition</p>
+<pre><code>(mappend x1) . (mappend x2) . (mappend x3) 
+= ((mappend x1) . (mappend x2)) . (mappend x3)
+= (mappend (mappend x1 x2)) . (mappend x3)  
+= mappend (mappend (mappend x1 x2) x3)
+= mappend (mappend x1 (mappend x2 x3))     
+= (mappend x1) . (mappend (mappend x2 x3))
+= (mappend x1) . ((mappend x2) . (mappend x3))</code></pre>
+<p>E.g. with the integer addition monoid:</p>
+<pre><code>(+2) . (+3) . (+4) = ((+5) . (+4)) = (+9)
+                   = ((+2) . (+7)) = (+9)</code></pre>
+<p>And thus we’ve turned <code>M</code> into a category!</p>
+<p>And we can just as easily turn <code>M</code> back into a set by taking the set of arrow with <code>vol :: Category -&gt; {Arrow}</code>, (hom-set).</p>
+<h2 id="challenges-2">3.6 Challenges</h2>
+<ol style="list-style-type: decimal">
+<li><ol style="list-style-type: lower-alpha">
+<li>Graph <code>G</code> with node <code>A</code> and no edges. Adding</li>
+</ol>
+<pre><code>id_a :: A -&gt; A</code></pre>
+<p>Gives a category.</p>
+<ol start="2" style="list-style-type: lower-alpha">
+<li>This is a category</li>
+<li>Graph <code>G</code> with nodes <code>A</code>, <code>B</code> and edge <code>A -&gt; B</code>. Adding</li>
+</ol>
+<pre><code>id_A :: A -&gt; A
+id_B :: B -&gt; B</code></pre>
+<p>Gives a category.</p>
+<ol start="4" style="list-style-type: lower-alpha">
+<li>Let the single node be the object <code>String</code>. from each edge generate prepender and appender arrows for each letter, so the <code>'a'</code> edge becomes <code>(++ &quot;a&quot;)</code> and <code>(&quot;a&quot; ++)</code>. Then add an empty string (++ “”) arrow, which is the identity. Then add arrows for the compositions of all arrows. And now we have the <code>String</code> monoid category.</li>
+</ol></li>
+<li><ol style="list-style-type: lower-alpha">
+<li><p>Inclusion is</p>
+<ul>
+<li>reflexive, since by definition all elements of <code>A</code> are in <code>A</code></li>
+<li>transitive, since if <code>A</code> is in <code>B</code> all elements of <code>A</code> are also in <code>B</code></li>
+<li>antisymmetric, since if <code>A</code> is in <code>B</code> and <code>B</code> is in <code>A</code>. there are no elements that they do not share, so all their elements are the same, and thus <code>A == B</code></li>
+<li>not necessarily total from the information given. If the set of sets is the set of sets of integers, for example, then <code>{1}, {2}</code> are both in the set, but <code>{2}</code> is not in <code>{1}</code> and <code>{1}</code> is not in <code>{2}</code>.</li>
+</ul>
+<p>But if the set of sets is, e.g. the set of the empty set <code>{{}}</code>, then the inclusion relation could be total. So this is actually an interesting question:</p>
+<p>I think we can define this recursively: a set with total order is either the empty set or a set of sets with total order:</p>
+<p><code>T-Set = {} | Set T</code></p>
+<p>But then the question is how complicated does this set get? Because all the Von Neumann ordinals:</p>
+<p><code>0 = {}   1 = {0} = {{}}   2 = {1} = {{{}}}   ...</code> are in <code>T-set</code>.</p>
+<p>Oh, actually, this doesn’t work, because the inclusion relation the question only goes one level deep, I think. <code>A,B,C,D</code> are not elements of <code>{{A, B}, {C, D}}</code>, so <code>0</code> is not in <code>2</code> with Von Neumann encoding.</p>
+<p>But if we changed our inclusion relation to:</p>
+<p><code>A</code> is in <code>B</code> if all the elements of <code>A</code> are <em>included</em> in elements of <code>B</code>.</p>
+<p>Then I think we get the <code>T-Set</code> above for all the sets with total order.</p>
+<p>But I’m at the limits of my set theory here. I think I’ll add a book to my reading list and come back to this.</p>
+<p>[TODO. Do a workthrough on set theory]</p></li>
+<li><p>Skipping. Don’t care about <code>C++</code></p></li>
+</ol></li>
+<li><p>`And-Monoid:</p>
+<pre><code>mempty = True
+mappend = (&amp;&amp;)
+
+x &amp;&amp; True = x
+True &amp;&amp; x = x
+
+(x &amp;&amp; y) &amp;&amp; z = z &amp;&amp; (y &amp;&amp; z)</code></pre>
+<p><code>Or-Monoid:</code></p>
+<pre><code>mempty = False
+mappend = (||)
+
+x || False = x
+False || x = x
+
+(x || y) || z = z || (y || z)</code></pre></li>
+<li><p>Bool Monoid Category, has object bool and arrows:</p>
+<pre><code>andTrue :: Bool -&gt; Bool   -- identity
+andFalse :: Bool -&gt; Bool  -- always returns false
+
+andFalse . andFalse = andFalse</code></pre>
+<p>And is commutative, so thats all there is.</p></li>
+<li><p>Addition Mod 3, has object Int3 and arrows:</p>
+<pre><code>(+ 0) :: Int3 -&gt; Int3    -- identity
+(+ 1) :: Int3 -&gt; Int3
+(+ 2) :: Int3 -&gt; Int3
+
+(+ 1) . (+ 2) = (+ 2) . (+ 1) = (+ 0)
+(+ 1) . (+ 1) = (+ 2)
+(+ 2) . (+ 2) = (+ 1)</code></pre></li>
+</ol>
+<h1 id="kleisli-categories">4 Kleisli Categories</h1>
+<p>This is a lot of<code>C++</code> code that I’m not particularly interested in deciphering. Since I already have some familiarity with monads I’m gonna skip it and come back if I’m blocked.</p>
+<h1 id="products-and-coproducts">5 Products and Coproducts</h1>
+<h2 id="initial-object">5.1 Initial Object</h2>
+<p><strong>initial object</strong>: The initial object is the object that has one and only one morphism going to any object in the category.</p>
+<p>This is like <code>Void</code></p>
+<h2 id="terminal-object">5.2 Terminal Object</h2>
+<p><strong>terminal object</strong>: The terminal object is the object with one and only one morphism coming to it from any object in the category.</p>
+<p>This is like <code>()</code></p>
+<p><strong>poset</strong>: A partially ordered set.</p>
+<h2 id="duality">5.3 Duality</h2>
+<p><strong>opposite category</strong>: For any category <code>C</code>, the opposite or dual category <code>C^op</code> is <code>C</code> with all the arrows reversed. If <code>f</code> and <code>g</code> are arrows in <code>C</code>, then <code>(g . f) = (f^(op) . g^(op)</code>.</p>
+<h2 id="isomorphisms">5.4 Isomorphisms</h2>
+<p><strong>inverse</strong>: If for two objects <code>A</code> and <code>B</code> there are two arrows <code>f :: A -&gt; B</code> and <code>g :: A -&gt; B</code>, such that:</p>
+<pre><code>f . g = id_A
+g . f = id_B</code></pre>
+<p><code>f</code> and <code>g</code> are inverses, or isomorphisms, and <code>A</code> and <code>B</code> are said to be isomorphic.</p>
+<h3 id="theorem-any-category-has-at-most-one-initial-object-up-to-isomorphism">Theorem: Any category has at most one initial object (up to isomorphism)</h3>
+<p>Proof:</p>
+<p>Suppose a category <code>C</code> has two initial objects <code>I1</code> and <code>I2</code>. Then by definition it has the identity arrows:</p>
+<pre><code>id_I1 :: I1 -&gt; I1
+id_I2 :: I2 -&gt; I2</code></pre>
+<p>And because <code>I1</code> and <code>I2</code> are initial objects, there must be only one arrow from <code>I1</code> to <code>I2</code>, and only one arrow from <code>I2</code> to <code>I1</code>:</p>
+<pre><code>f :: I1 -&gt; I2
+g :: I2 -&gt; I1</code></pre>
+<p>But if <code>f</code> and <code>g</code> are arrows in <code>C</code> then so are</p>
+<pre><code>(f . g) :: I2 -&gt; I2
+(g . f) :: I1 -&gt; 11</code></pre>
+<p>And since an initial object has only one arrow to every other object in the category, including itself:</p>
+<pre><code>(f . g) = id_I2 :: I2 -&gt; I2
+(g . f) = id_I1 :: I1 -&gt; 11</code></pre>
+<p>And therefore <code>f</code> and <code>g</code> are inverses, so <code>I1</code> and <code>I2</code> are isomorphic.</p>
+<p>Furthermore, since <code>I1</code> and <code>I2</code> are intitial objects, <code>f</code> and <code>g</code> are the only arrows between them, and therefore are unique isomorphism.</p>
+<h2 id="products">5.5 Products</h2>
+<p><strong>product</strong>: A product of two objects <code>X1</code> and <code>X2</code> in a category <code>C</code> is an object <code>X</code> with two arrows <code>p1 :: X -&gt; X1, p2 :: X -&gt; X2</code> with the property that for all objects <code>Y</code> in <code>C</code> with arrows <code>f1 :: Y -&gt; X1, f2 :: Y -&gt; X2</code>, there is a unique morphism <code>f :: Y -&gt; X</code> such that <code>f . p1 = f1, f . p2 = f2</code>.</p>
+<p>One way to think about this is whenever a product of <code>X1</code> and <code>X2</code> exists, all the objects that have arrows to <code>X1</code> and <code>X2</code> have arrows to the product object <code>X</code>. In other words, <code>X</code> is the most “downwind” or terminal-like object in the collection of objects that have morphisms to <code>X1</code> and <code>X2</code></p>
+<h2 id="coproduct">5.6 Coproduct</h2>
+<p><strong>coproduct</strong>: The dual of the product. Take the definition of the product and reverse the arrows. In other words, the coproduct <code>X</code> of <code>X1</code> and <code>X2</code> is the object that has arrows to every object that both <code>X1</code> and <code>X2</code> have arrows to. It is the most “upwind”, or initial-like object in the collection of objects that have arrows from both <code>X1</code> and <code>X2</code>.</p>
+<h2 id="challenges-3">5.8 Challenges</h2>
+<ol style="list-style-type: decimal">
+<li>See Theorem in 5.4</li>
+<li></li>
+</ol>
+
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham. 
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a> 
+          </p>
+        </div>
+    </body>
+</html>
