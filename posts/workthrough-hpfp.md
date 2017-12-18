@@ -1,5 +1,5 @@
 ---
-title: "Workthrough: Haskell Programming From First Principles (Allen & Moronuki)"
+title: "Workthrough: Haskell Programming (Allen & Moronuki)"
 author: jcb
 date: 2017-11-01
 tags: workthrough, haskell
@@ -49,7 +49,9 @@ matches the code here. But I do plan on bringing them into alignment ultimately.
 
 Awesome, let's get started.
 
-# Chapter 1: All You Need is Lambda
+---
+
+# 1 All You Need is Lambda
 
 ## 1.3 What is a Function?
 **Function**: A relation between an input set and output set such that each
@@ -249,7 +251,9 @@ This corresponds to non-terminating function (an infinite loop).
 
     [TODO: Notes on this Resource]
 
-# Chapter 2: Hello Haskell!
+---
+
+# 2 Hello Haskell!
 
 ## 2.1 Hello, Haskell
 
@@ -831,6 +835,7 @@ fractional division for the latter.
 
     [TODO: Notes on this resource]
 
+--- 
 
 # 3 Strings
 
@@ -1134,6 +1139,8 @@ that `r` can access `area`'s arguments. However, `r` is now locally defined to
     ```
 6. see exercise 5.
 
+---
+
 # 4 Basic Datatypes
 
 ## 4.2 What are types?
@@ -1202,7 +1209,7 @@ width = 400px
 alt="Legos">
 </p>
 
-There are a lot of different ways to fit pieces together.  Two standard two by
+There are a lot of different ways to fit Lego' together. Two standard two by
 four Lego bricks of the same color can be combined 24 ways (ignoring
 symmetries). But there are also a lot of ways that you can't fit pieces
 together. You can't, for example, place a brick on top of two adjacent bricks
@@ -1479,15 +1486,471 @@ for chapters 5 and 6.
 
 ### Match the function names to their types
 
-1. c.
-2. b.
-3. a
-4. d
+1.  c
+2.  b
+3.  a
+4.  d
+
+---
 
 ## 5 Types
 
 I want to acknowledge how apt and lovely the quote at the beginning of this
 chapter is. It is an excerpt from the Wallace Stevens poem: [The Idea of Order
 at Key West](https://www.poetryfoundation.org/poems/43431/the-idea-of-order-at-key-west)
+
+## 5.3 How to read type signatures
+
+
+The type constructor for function `(->)` isn't magic. It's exactly like
+any other type constructor. Recall how previously with lists the type constructor
+was `[]`:
+
+```haskell
+Prelude> :i []
+data [] a = [] | a : [a] 	-- Defined in ‘GHC.Types’
+```
+
+There isn't any reason other than cleaner syntax that `[] a` or `[a]` couldn't
+be `List a`.
+
+Well the function type is almost exactly the same. There isn't any reason
+why `a -> b`, which is `(->) a b`, couldn't be `Fun a b`. It's just more 
+syntactic sugar (Haskell is a very sugary language. That's why it's so sweet!)
+
+```haskell
+Prelude> :i (->)
+data (->) t1 t2 	-- Defined in ‘GHC.Prim’
+infixr 0 `(->)`
+```
+
+There isn't any definiiton for the function type though because it's a 
+primitive (hence the `GHC.Prim`).
+
+### Exercises: Type Matching
+
+1.  a. `not :: Bool -> Bool`
+    b. `length :: [a] -> Int`
+    c. `concat :: [[a]] -> [a]`
+    d. `head :: [a] -> a`
+    e. `(<) :: Ord a => a -> a -> Bool`
+
+
+## 5.4 Currying
+
+All these types for `f` are equivalent:
+
+```haskell
+type Fun = (->)
+f :: a -> a -> a
+f :: a -> (a -> a)
+f :: (->) a ((->) a a)
+f :: Fun a (Fun a a)
+```
+
+Functions in Haskell return one and only one thing. Partial application
+is kind of a silly term. What's partial about applying a `Fun a (Fun a a)` to
+an `a`? You give it an `a`, it gives you a function. Nothing partial about
+that. Maybe we wanted a function.
+
+It's only partial if you think of functions of somehow not being final values.
+Which is how they are in imperative-land. But we're not in imperative-land 
+anymore. Here functions are first-class, so they actually are values like
+anything else.
+
+In fact, if you remember any of Chapter 1, there's a good argument to be made
+that functions are more real than any other value. Lambda calculus builds
+the whole universe out of functions. Sure literals exist, but they're
+a convenience (a huge convenience) not a strict necessity.
+
+The `curry` and `uncurry` functions in the text are useful to understand
+conceptually. 
+
+Sectioning is basically bad practice. It's a great way to confuse yourself
+and others. Do yourself a favor and throw an abstraction on top of it:
+
+Not 
+```
+y = (2^)
+z = (^2)
+```
+
+But rather,
+```
+y = \x -> 2^x
+z = \x -> x^2
+```
+
+You see how much nicer that is? Don't abuse infix operators please. They're
+there to make text more legible, not more terse and inscrutable. There are
+definitely cases where a clever sectioning of an infix operator can make things
+clearer. These cases are exceptions. 
+
+### Exercises: Type Arguments 
+
+1. a 
+2. d
+3. d
+4. c
+5. a
+6. e
+7. e
+8. e
+9. c
+
+## 5.5 Polymorphism
+
+Greek words abound in Haskell jargon. If we lived in an age that believed
+in proper education you would already know them. We do not live in such an 
+age. 
+
+Important words:
+
+```
+hyle: matter
+morphe: form
+
+polys: - many
+monos: - one
+
+autos: self
+endon: in
+ectos: out
+isos: equal
+
+ana: up
+kata: down
+epi:  upon
+meta: beyond, with
+para: beside
+meter: measure
+```
+
+So when you read "parameteric polymorphism", fear not, you are really
+reading "beside-measure many-form-thing." The latter doesn't sound nearly
+as clever at cocktail parties, but that's actually what the words mean,
+and knowing the meanings of the words you use helps you remember the 
+concepts they describe.
+
+A parameter is quite literally a "side measure." When we measure
+a thing by looking at it next to something else, we're using a parameter.
+Ever ask whether something was bigger than a breadbox? That's measuring
+size in terms of breadboxes. It's a side measures. It's a parameter.
+
+
+## Exercises: Parametricity
+
+1. This is impossible because id has to work for a type that only one member.
+   If a type only has one member, then the only thing a function with 
+   signature a -> a can do if passed a value of that type is return the same
+   value (or bottom, which is in every type) without breaking the type
+   signature.
+2. `f x y = x` or `f x y = y`
+3. `a -> b -> b` is the same as `a -> (b -> b)` and the only thing with type
+   `(b -> b)` is the id function. So this function is a kind of constant
+   function that takes two arguments and returns the second, as opposed to 
+   `const :: a -> b -> a` which takes two arguments and returns the first.
+   One implementation would be `const id`, but I am unsure whether `flip const`
+   counts as a separate implementation.
+
+## 5.6 Type Inference
+
+Type inference is a cool tool for helping us build better programs. But 
+it works best when you give it annotations to infer from. A lot of Haskell
+programming involves defining the types of the top-level expressions in your
+program before you actually start constructing anything, so this isn't exactly
+any extra work.
+
+And if you want to see real type system magic at work:
+[Typing the technical interview](https://aphyr.com/posts/342-typing-the-technical-interview)
+
+
+### Exercises: Apply Yourself
+
+1. `[Char] -> [Char]`
+2. `Fractional a => a -> a`
+3. `Int -> [Char]`
+4. `Int -> Bool`
+5. `Char -> Bool`
+
+
+
+## 5.8 Chapter Exercises
+
+### Multiple Choice
+1. c
+2. a
+3. b
+4. c
+
+### Determine the type:
+
+1.  a. `Num a => a`
+    b. `Num a => (a, [Char])`
+    c. `(Integer, [Char])`
+    d. `Bool`
+    e. `Int`
+    f. `Bool`
+
+2. `Num a => a`
+3. `Num a => a -> a`
+4. `Fractional a => a`
+5. `[Char]`
+
+### Does it compile?:
+
+1. `bignum $ 10` doesn't make sense `5^10` is a number not a function
+2. This should work.
+3. c and d need a function.
+4. c not in scope.
+
+### Type variable or specific type constructor?
+
+1. 
+- 0: constrained polymorphic type var
+- 1: fully polymorphic type var
+- 2: concrete
+- 3: concrete
+
+2. 
+- 0: fully polymorphic
+- 1: concrete
+- 2: concrete
+
+3. 
+- 0: fully polymorphic
+- 1: constrained polymorphic
+- 2: concrete
+
+4. 
+- 0: fully polymorphic 
+- 1: fully polymorphic
+- 2: concrete
+
+### Write a type signature:
+
+1. `[a] -> a`
+2. `(Ord a, Ord b) => a -> b -> Bool`
+3. `(a, b) -> b`
+
+### Given a type, write the function:
+
+1. `i = id`
+2. `c x y = x`
+3. `yes`
+4. `c' x y = y`
+5. `r = tail`
+6. `co x y z = x $ y z`
+7. `a x y = fst(y, x y)`
+8. `a' x y = x y`
+
+### Fix it
+
+1.  ```haskell
+    module Sing where
+
+    fstString :: String -> String
+    fstString x = x ++ " in the rain"
+
+    sndString :: String -> String
+    sndString x = x ++ " over the rainbow"
+
+    sing = if (x > y) then fstString x else sndString y where 
+           x = "Singin"
+           y = "Somewhere"
+    ```
+2.  ```haskell
+    module Sing where
+
+    fstString :: String -> String
+    fstString x = x ++ " in the rain"
+
+    sndString :: String -> String
+    sndString x = x ++ " over the rainbow"
+
+    sing = if (x < y) then fstString x else sndString y where 
+           x = "Singin"
+           y = "Somewhere"
+    ```
+3.  ```haskell
+    module Arith3Broken where
+
+    main :: IO ()
+    main = do
+      print $ 1 + 2
+      print 10 
+      print $ negate (-1)
+      print $ 0 + blah
+      where blah = negate 1
+    ```
+
+### Type-Kwon-Do
+
+1. `h x = g $ f x`
+2. `e x = w $ q x`
+3. `xform (x, y) = (xz x, yz y) `
+4. `munge f g x = fst $ g $ f x`
+
+
+## 5.10 Follow-up resources
+
+1. Luis Damas; Robin Milner. Principal type-schemes for func-
+tional programs
+
+2. Christopher Strachey. Fundamental Concepts in Programming
+Languages
+Popular origin of the parametric/ad-hoc polymorphism dis-
+tinction.
+
+---
+
+# 6 Typeclasses
+
+## 6.2 What are typeclasses?
+
+"Typeclasses and types in Haskell are, in a sense, opposites". 
+
+Sentences like these frustrate me. You can say nearly anything is the case
+"in a sense:"
+
+"In a sense, the Moon really is made of cheese." In the sense of poetic whimsy.
+
+"In a sense, Johnny is at the top of his class." In unexcused absences and
+missed assignments.
+
+This is just some plain old fashioned jesuitical casuistry. Annoying.
+
+"In a sense, typeclasses and types are the same." In the sense that they both
+specify and constrain the properties of expressions.
+
+If an expression's type is an instance of `Eq` it means there's a way to 
+define to define and equals function `(==)` to check if two expressions
+of that type are equal:
+
+```
+Prelude> :info Eq
+class Eq a where
+  (==) :: a -> a -> Bool
+  (/=) :: a -> a -> Bool
+  {-# MINIMAL (==) | (/=) #-}
+  	-- Defined in ‘GHC.Classes’
+```
+
+But there are types that it is impossible to define `(==)` for! The 
+function constructor `(->)`, for example, cannot be an instance of `Eq`. Why?
+The Halting Problem! If there's no general way to test whether a function 
+will halt on a given input, there's certainly no general way to determine
+whether two functions will do the same thing (run forever or return the 
+same value) for a given input.
+
+So typeclasses constrains the potential things types can be by specifying
+what they can do.
+
+And this is incredibly convenient! We don't need to laboriously rebuild all
+the functions we want from scratch, we can just define types as instances
+of the typeclasses that have the methods we want. If we want equality, `Eq`,
+ordering, `Ord`, enumeration `Enum`, and so on:
+
+Some typeclasses and their relationships:
+
+<p align="center">
+<img
+src="https://wiki.haskell.org/wikiupload/d/df/Typeclassopedia-diagram.png"
+width = 600px
+alt="Typeclassopedia">
+</p>
+
+
+## Exercises: Eq Instances
+
+1. `instance Eq TisAnInteger where (==) TisAn x TisAn y = (==) x y`
+2. `instance Eq TwoIntegers where Two x y == Two p q = (x, y) == (p, q)`
+3. String or Int
+   ```
+   instance Eq StringOrInt where 
+   TisAnInt x == TisAnInt y = x == y
+   TisAString x == TisAString y = x == y
+   _ == _ = False
+   ```
+4. `instance Eq Pair where Pair a b == Pair x y = (a, b) == (x, y)`
+5. `instance Eq Tuple where Tuple a b == Tuple x y = (a, b) == (x, y)`
+6. Which
+   ``` 
+   instance Eq a => Eq (Which a) where 
+   ThisOne x == ThisOne y = x == y
+   ThatOne x == ThatOne y = x == y
+   _ == _ = False
+   ```
+7. EitherOr
+   ```
+   instance (Eq a, Eq b) => Eq (EitherOr a b) where 
+   Hello x == Hello y = x == y
+   Goodbye x == Goodbye y = x == y 
+   _ == _ = False
+   ```
+ 
+## Exercises: Tuple Experiment
+
+`quotRem` and `divMod` return a tuple with the values from `quot` and `rem` or 
+`div` and `mod` respectively.
+
+## Exercises: Will They Work?
+
+1. `5`
+2. `LT`
+3. error, a string and a bool are not comparable
+4. `False`
+
+## Chapter Exercises
+
+### Multiple choice
+
+1. c
+2. b
+3. a
+4. c
+5. a
+
+### Does it typecheck?:
+
+1. ch6/ex1.hs 
+2. ch6/ex2.hs
+3. 
+  a. any `Mood`, i.e. `Blah` or `Woot`
+  b. type error, `9` is not a `Mood`
+  c. `Mood` does not derive `Ord`
+
+4.ch6/ex4.hs
+
+### Given a datatype declaration, what can we do?
+exdatatype.hs
+
+1. `"chases"` and `True` are a `String` and a `Bool`, not a `Rocks` and a `Yeah`
+2. works
+3. works
+4. `Papu` isn't an instance of `Ord`
+
+### Match the types:
+
+exmatch1.hs and exmatch2.hs
+
+1. Since `i = 1`, `i` has to be a `Num`, it can't be a type that `1` isn't,
+like e.g.  a `String`. We can't cast `i` upwards.
+2. `1.0` is not just any instance of `Num`, the syntax implies `Fractional`.
+3. works
+4. works
+5. works, we can always cast downwards
+6. works
+7. Doesn't work, `sigmund` returns `myX` which is an `Int`
+8. Doesn't work, `sigmund'` returns an `Int` not any instance of `Num`
+9. Works, restricts `jung` to a list of `Ints` rather than any list
+10. Works, restricts input to `String`
+11. Doesn't work, `mySort` only sorts `Strings`, not any instance of `Ord`
+
+### Type-Kwon-Do: Electric Typealoo
+
+1. `chk f a b = f a == b`
+2. `arith f n a = (+ fromIntegral n) (f a)`
+
 
 
