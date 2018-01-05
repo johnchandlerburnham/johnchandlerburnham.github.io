@@ -13,15 +13,16 @@ tags: workthrough, haskell, math, category-theory
 
 **category**: A structure consisting of objects and arrows between objects,
 such that arrows compose. That is, if a category has objects `A`, `B` and `C`
-along with arrows `A -> B` and `B -> C`, then it also has the arrow `A -> C`.
+along with arrows `A -> B`, `B -> C`, then it also has the arrow `A -> C`.
 
 
-## 1.1 Arrows as Fucntions.
+## 1.1 Arrows as Functions.
 
 Arrows are also called morphisms, which comes from the Greek "morphe" meaning
 form.
 
 Notation:
+
 - `.` is composition, `(g . f)(x) = g(f(x))`
 - `::` is type of, like `f :: Integer` 
 - `->` is an arrow, `f :: A -> B` means `f` is a morphism from `A` to `B`
@@ -59,17 +60,20 @@ Notation:
     ```
 
 
-2.  There is an identity arrow `A -> A` for every object `A`. Such that for
-    arrows `f :: A -> B` and `g :: B -> A`:
-
+2.  There is an identity arrow `A -> A` for every object `A`, such that
+    
     ```
+    f :: A -> B
+    g :: B -> A
+    id_a :: A -> A
+
     f . id_a = f
     id_a . g = g
     ```
 
 
 One thing that confuses me is that it seems like this implies that in some
-case that there can't be multiple arrows from one object to another. 
+cases that there can't be multiple arrows from one object to another. 
 
 Suppose a category `Cat` has objects `A`, `B` and arrows
 
@@ -98,7 +102,7 @@ g . f = g . f' = id_a
 And equivalently:
 
 ```
-f . g= f' . g = id_b
+f . g = f' . g = id_b
 ```
 
 Which implies:
@@ -126,7 +130,7 @@ also be an arrow in `C`. (**Right**)
 
 This really confused me for a bit, until I realized that when I was doing the
 latter I was just trying to build a superset of `C` that actually was a
-category.
+category. This is apparently called a "free category".
 
 ## 1. 4 Challenges
 
@@ -147,13 +151,14 @@ category.
 ## 2.3 What are Types
 
 **Set**: A category whose objects are sets and whose arrows are functions.
-**Hask**: Set, except every set is extedned with the bottom element `_|_`,
-indicating non termination.
+
+**Hask**: Set, except every set is extended with the bottom element `_|_`,
+indicating non-termination.
 
 The question of whether **Hask** is actually a category appears to be
 an [interesting one](http://math.andrej.com/2016/08/06/hask-is-not-a-category/comment-page-1/)
 
-[TODO: Workthrough of https://www.cs.ox.ac.uk/jeremy.gibbons/publications/fast+loose.pdf]
+[TODO: Workthrough of [Fast and Loose Reasoning is Morally Correct](https://www.cs.ox.ac.uk/jeremy.gibbons/publications/fast+loose.pdf)]
 
 ## 2.4 Why Do we need a Mathematical Model
 
@@ -176,16 +181,14 @@ universe as the input and output types.
 
 ## 2.6 Examples of Types 
 
-**Void**: The type with no elements (other than `_|_`, of course)
+**Void**: The type with no elements (other than `_|_`, of course, if we're in Hask)
 
 **()**: Unit, the type with only one element: `()`
 
 
 ## 2.6 Challenges
 
-1. 2. 3. 4. 
-
-[TODO: Memoization in Haskell.]
+1. [TODO: Memoization in Haskell.]
 
 
 5. 4 functions
@@ -238,9 +241,11 @@ was confusing me. Subtle!
 ## 3.3 Orders
 
 **preorder**: If a set `P` has a binary relation `pre :: P -> P -> Bool` such
-that for all `x :: P, y :: P, z :: P` 
+that for all 
 
 ```
+x :: P, y :: P, z :: P
+
 pre x x = True                      -- reflexive
 pre x y && pre y z => pre x z       -- transitive
 ```
@@ -248,9 +253,11 @@ pre x y && pre y z => pre x z       -- transitive
 Then `pre` is a preorder.
 
 **partial order**: If a set `P` has a binary relation `part :: P -> P -> Bool`
-such that for all `x :: P, y :: P`:
+such that for all 
 
 ```
+x :: P, y :: P
+
 part x y = pre x y                 -- part is a preorder
 part x y && part y x => x == y     -- antisymmetric 
 ```
@@ -258,9 +265,11 @@ part x y && part y x => x == y     -- antisymmetric
 then `part` is a partial order
 
 **total order**: If a set `P` has a binary relation `tot :: P -> P -> Bool`,
-such that for all `x :: P, y :: P`:
+such that for all 
 
 ```
+x :: P, y :: P
+
 tot x y = part x y                 -- tot is a partial order
 tot x y || tot y x = True          -- total (defined for all P)
 ```
@@ -271,11 +280,15 @@ then `tot` is a total order.`
 there is at most one arrow `X -> Y` from `X` to `Y`.
 
 **hom-set**: The set of arrows from an object `X` to an object `Y`.
-`hom-set :: Category -> Object -> Object -> {Arrow}`. I don't really
-like the name "hom-set". I get that "hom" stands for "homomorphism", but I hate
-using apocope (eliding syllables from the ends of words) to generate new terms.
-It's slangy, offloads important "info" onto implicit context, sounds ugly
-and confuses me. Hate it.
+
+```
+hom-set :: Category -> Object -> Object -> {Arrow}
+```
+
+I don't really like the name "hom-set". I get that "hom" stands for
+"homomorphism", but I hate using apocope (eliding syllables from the ends of
+words) to generate new terms.  It's slangy, offloads important "info" onto
+implicit context, sounds ugly and confuses me. Hate it.
 
 I've read that some books use "morphisms" as a way to describe "hom-set".
 That's a lot better, but still not perfect...
@@ -296,10 +309,9 @@ two ojects:
 vol :: Category -> {Arrow}
 ```
 
-Okay, it's another apocope, but this is actually a meaningful one. "Vol"
-is a French word meaning "flight". And we can think of all the a
-all the arrows in a category as being like a "flock" or a "flight" of
-arrows.
+Okay, it's another apocope, but this is actually a meaningful one. "Vol" is a
+French word meaning "flight". And we can think of all the arrows in a category
+as being like a "flock" or a "flight" of arrows.
 
 I've also read that the vol (hom-set) of a category is not necessarily
 a set. So I think the term "hom-set" really fails utterly in all parts for
@@ -319,10 +331,23 @@ vol C = all morphisms of C
 
 ## 3.4 Monoid as Set
 
-**monoid** A set `M` with a binary operation `mappend :: M -> M -> M` and an
-element `mempty :: M` such that for any `a :: M, b :: M, c :: M`:
+**monoid** A set `M` with a binary operation 
 
 ```
+mappend :: M -> M -> M
+```
+
+and an element `
+
+```
+mempty :: M
+````
+
+such that for all
+
+```
+a :: M, b :: M, c :: M
+
 mappend (mappend a b) c = mappend a (mappend b c)  -- associative
 mappend mempty a = mappend a mempty = a            -- identity element
 ```
@@ -395,30 +420,29 @@ taking the set of arrow with `vol :: Category -> {Arrow}`, (hom-set).
 
 ## 3.6  Challenges
 
-1.  a. Graph `G` with node `A` and no edges. Adding
+1.  a.  Graph `G` with node `A` and no edges. Adding
 
-    ```
-    id_a :: A -> A
-    ```
+        ```
+        id_a :: A -> A
+        ```
+        Gives a category. 
 
-    Gives a category. 
-
-    b. This is a category
+    b.  This is a category
     c.  Graph `G` with nodes `A`, `B` and edge `A -> B`. Adding
 
-    ```
-    id_A :: A -> A
-    id_B :: B -> B
-    ```
+        ```
+        id_A :: A -> A
+        id_B :: B -> B
+        ```
 
-    Gives a category.
+        Gives a category.
 
-    d. Let the single node be the object `String`. 
-       from each edge generate prepender and appender arrows for each letter,
-       so the `'a'` edge becomes `(++ "a")` and `("a" ++)`.
-       Then add an empty string (++ "") arrow, which is the identity.
-       Then add arrows for the compositions of all arrows. And now we 
-       have the `String` monoid category.
+     d.  Let the single node be the object `String`. 
+         from each edge generate prepender and appender arrows for each letter,
+         so the `'a'` edge becomes `(++ "a")` and `("a" ++)`.
+         Then add an empty string (++ "") arrow, which is the identity.
+         Then add arrows for the compositions of all arrows. And now we 
+         have the `String` monoid category.
 
 2.  a.  Inclusion is 
 
@@ -474,7 +498,7 @@ taking the set of arrow with `vol :: Category -> {Arrow}`, (hom-set).
     
     b.  Skipping. Don't care about `C++`
     
-3.  `And-Monoid:
+3.  And-Monoid:
     ```
     mempty = True
     mappend = (&&)
@@ -486,7 +510,7 @@ taking the set of arrow with `vol :: Category -> {Arrow}`, (hom-set).
     ```
 
    
-    `Or-Monoid:`
+    Or-Monoid:
     ```
     mempty = False
     mappend = (||)
@@ -523,7 +547,7 @@ taking the set of arrow with `vol :: Category -> {Arrow}`, (hom-set).
 
 # 4 Kleisli Categories
 
-This is a lot of`C++` code that I'm not particularly interested in deciphering.
+This is a lot of `C++` code that I'm not particularly interested in deciphering.
 Since I already have some familiarity with monads I'm gonna skip it
 and come back if I'm blocked.
 
@@ -535,7 +559,7 @@ and come back if I'm blocked.
 **initial object**: The initial object is the object that has one and
 only one morphism going to any object in the category.
 
-This is like `Void`
+This is like `Void`.
 
 ## 5.2 Terminal Object
 
@@ -550,7 +574,11 @@ This is like `()`
 
 **opposite category**: For any category `C`, the opposite or dual category
 `C^op` is `C` with all the arrows reversed. If `f` and `g` are arrows
-in `C`, then `(g . f) = (f^(op) . g^(op)`.
+in `C`, then 
+
+```
+g . f = f^(op) . g^(op)
+```
 
 ## 5.4 Isomorphisms
 
@@ -602,15 +630,30 @@ the category, including itself:
 
 And therefore `f` and `g` are inverses, so `I1` and `I2` are isomorphic.
 
-Furthermore, since `I1` and `I2` are intitial objects, `f` and `g` are
+Furthermore, since `I1` and `I2` are initial objects, `f` and `g` are
 the only arrows between them, and therefore are unique isomorphism.
 
 ## 5.5 Products
 
 **product**: A product of two objects `X1` and `X2` in a category `C` is an
-object `X` with two arrows `p1 :: X -> X1, p2 :: X -> X2` with the property
-that for all objects `Y` in `C` with arrows `f1 :: Y -> X1, f2 :: Y -> X2`,
-there is a unique morphism `f :: Y -> X` such that `f . p1 = f1, f . p2 = f2`.
+object `X` with two arrows 
+
+```
+p1 :: X -> X1, p2 :: X -> X2
+```
+
+with the property
+that for all objects `Y` in `C` with arrows 
+
+```
+f1 :: Y -> X1, f2 :: Y -> X2
+```
+
+there is a unique morphism `f :: Y -> X` such that 
+
+```
+f . p1 = f1, f . p2 = f2
+```
 
 One way to think about this is whenever a product of `X1` and `X2` exists,
 all the objects that have arrows to `X1` and `X2` have arrows to the product
@@ -628,14 +671,362 @@ the collection of objects that have arrows from both `X1` and `X2`.
 
 ## 5.8 Challenges
 
-1. See Theorem in 5.4
-2.
+1.  See Theorem in 5.4
 
+2.  Okay, so the arrows in a poset represent the less-than-or-equal operator
+    `<=`, so for any object in the poset `A`, all objects `B` such that `A <= B`
+    have an arrow from `B` to `A`. 
 
+    For the product of two objects `X` and `Y`, let's consider all the objects
+    `Z_n` that have arrows to both `X` and `Y.` 
 
+    So any two objects in `Z_n`, `Z1, Z2` have arrows:
 
+    ```
+    Z1 -> X, Z1 -> Y
+    Z2 -> X, Z2 -> Y
+    ```
 
+    Now since the poset is a partial order, we cannot assume that there
+    are arrows between any objects in `Z_n`. (Nor can we assume there
+    are arrows `X -> Y`, or `Y <- X`.) Because of this in some posetal
+    categories, the product may be undefined for two objects, for example, in
+    the category:
 
+    ```
+    Objects: X, Y, Z1, Z2
 
+    Arrows: 
+    Z1 -> X, Z1 -> Y, Z1 -> Z1
+    Z2 -> X, Z2 -> Y, Z2 -> Z2
+    X -> X
+    Y -> Y
 
+    Diagram:
+
+    Z1 -> X
+    |     ^
+    v     |
+    Y <- Z2
+    ```
+
+    This satisfies the category properties of composition and identity (since
+    arrows in the above category can only be composed with identity arrows) and
+    the partial order properties, but there is no defined product of `Y` and
+    `X`
+
+    For the product of `X` and `Y` to exist, there must be some element `Z` of
+    `Z_n` such that all objects `Z_i` in `Z_n` have arrows `Z_i -> Z`. In other
+    words, if arrows in a posetal category represent "less-than-or-equal", the
+    product of `X` and `Y` is the greatest of all objects less than or equal to
+    `X` and `Y`, or the greatest lower bound of `X` and `Y`.
+
+    Interestingly, if e.g. `X -> Y` then `X` is in `Z_n` because of `X -> X`.
+    And by definition is the greatest lower bound (because all `Z_i` have `Z_i
+    -> X`). So if there is an arrow between `X` and `Y`, the product is simply
+    the minimum of the two.
+
+3.  The coproduct of two objects `X` and `Y` in a posetal category is the least
+    upper bound of `X` and `Y`, that is, the smalllest object that is greater
+    than or equal to both. It's exactly like the product, but with the arrows
+    reversed.
+
+4.  I have no favorite languages other than Haskell. 
+5.  So despite the C++ code, I think I can translate this problem into something
+
+    I can do:
+
+    ```
+    i :: Int -> Int
+    i x = x
+
+    j :: Bool -> Int
+    j x = if x then 1 else 0
+    ```
+
+    `Either` in Haskell is:
+    ```
+    Either a b = Left a | Right b
+
+    Left :: a -> Either a b
+    Right :: b -> Either a b
+    ```
+
+    `Either Int Bool` is a "better" coproduct of `Int` and `Bool` than `Int` if 
+    there is a unique arrow `unleft` from `Either Int Bool` to `Int` such that:
+
+    ```
+    (unleft . Left) = id_Int
+    ```
+
+    This function exists:
+
+    ```
+    unleft (Left x) = x
+    unleft _ = 0
+    ```
+
+    Note that while `(unleft . Left) = id_x`, `(Left . unleft) \= id_Either`,
+    because `Left (unleft (Right True) = Left 0`. If both composition equalled
+    identity, then the two types would be isomorphic, but they are not. Either
+    Int Bool is epimorphic (surjective) on Int, and Int is monomorphic
+    (injective) on Either Int Bool.
+
+    One thing that confuses me though, is that it seems like `unleft` isn't
+    unique, because we could replace whatever number gets produced from a
+    `Right` with any `Int`... So I'm clearly missing something here.
+
+    Oh I see! The morphism from `Either Int Bool -> Int` is unique *given* two
+    injections from `Int -> Int` and `Bool -> Int`. So the morphism shouldn't
+    be named `unleft` at all, but actually `embed`, because it embeds an Either
+    in `Int` space. 
+
+    Let's look at our category:
+
+    ```
+    Objects:
+    Int, Int, Bool, Either Int Bool
+
+    Arrows:
+
+    i :: Int -> Int
+    i n = n
+
+    j :: Bool -> Int
+    j True = 1
+    j False = 0
+
+    Left :: Int -> Either Int Bool
+    Left n = Left n
+
+    Right :: Bool -> Either Int Bool
+    Right b = Right b
+
+    embed :: Either Int Bool -> Int
+    embed (Left n) = i n
+    embed (Right b) = j b
+
+    ```
+
+    `embed` is unique for any `i` and `j` because it's just applying `i` and `j`
+    based on which side of the `Either` we're on.
+
+    And that's how we get the `factorizer` from the text:
+
+    ```
+    factorizer :: (a -> c) -> (b -> c) -> Either a b -> c
+    factorizer i j (Left a) = i a
+    factorizer i j (Right b) = j b
+```
+
+6. `id_Int = embed . Left`, but `id_Either \= Left . embed`, because
+   `(Left . embed) (Right True) = Left 1` 
+
+    So there is an `Either Int Bool -> Int` arrow that factorizes `Int -> Int
+    but not an `Int -> Either Int Bool` that factorizes `Either Int Bool ->
+    Either Int Bool`
+
+    Another way to look at this is that if we try to treat `Int` as an `Either`,
+    we don't know if any given integer is supposed to be a `Left` or a `Right`.
+
+    Like, if `j` sends `True, False` to `1, 0` and `i` sends `1, 0` to `1, 0`
+    we don't know if applying `m :: Int -> Either Int Bool` to `1` should
+    be a `Left 1` or a `Right True`.
+
+7.  Our Category:
+
+    ```
+    i :: Int -> Int
+    i n 
+      | n < 0 = n
+      | otherwise = n + 2
+
+    j :: Bool -> Int
+    j b = if b then 1 else 0
+
+    Left :: Int -> Either Int Bool
+    Right :: Bool -> Either Int Bool
+    ```
+
+    Suppose Int is a "better" coproduct of Int and Bool with injections `i` and
+    `j` than `Either Int Bool`. Then there must be a unique morphism `m :: Int
+    -> Either Int Bool` such that:
+
+    ```
+    m . i = Left
+    m . j = Right
+    ```
+
+    If on the other hand there is another morphism `m' :: Int -> Either Int Bool`,
+    `m /= m'` such that 
+
+    ```
+    m' . i = Left
+    m' . j = Right
+    ```
+
+    Then `m` would not be a unique factorizing morphism and therefore `Int`
+    could not be a better coproduct of `Int` and `Bool` than `Either Int Bool`
+
+    Here's a candidate for `m`:
+
+    ```
+    m :: Int -> Either Int Bool
+    m n
+     | n == 0 = Right False
+     | n == 1 = Right True
+     | n < 0 = Left n
+     | otherwise = Left (n - 2)
+    ```
+
+    This looks pretty unique at first glance.
+
+    However. 
+
+    We can show that there is a unique morphism `f = (factorize i j) ::
+    Either Int Bool -> Int`:
+
+    ```
+    factorize :: (Int -> Int) -> (Bool -> Int) -> Either Int Bool -> Int
+    factorize i j (Left n)  = i n
+    factorize i j (Right b) = j b
+    ```
+
+    such that 
+
+    ```
+    f . Left = i
+    f . Right = j
+    ```
+
+    So if both `m` and `f` are unique morphisms, then
+
+    ```
+    f . Left = f . (m . i) = (f . m) . i = i
+    f . Right = f . (m . j) = (f . m) . j = j 
+    => (f . m) = id_Int
+
+    m . i = m . (f . Left) = (m . f) . Left = Left
+    m . j = m . (f . Right) = (m . f) . Right = Right 
+    => (m . f) = id_EitherIntBool
+    ```
+
+    which implies that `m` and `f` are isomorphisms. And since `m` and `f`
+    are unique morphisms that fit the above conditions, `m` and `f` are 
+    unique isomorphisms. Which means `Either Int Bool` and `Int` are uniquely
+    isomorphic, and are equivalent up to unique isomorphism. In which case
+    `Int` cannot be a *better* coproduct that `Either Int Bool`. 
+
+    On the other hand, if `m` is not unique, there must be another `m' :: Int
+    -> Either Int Bool`, in which case `Int` does not satisfy the universal 
+    property of coproducts.
+
+    Actually, I think this is a general argument which applies to any possible
+    candidate coproduct. If we already know that there is a coproduct in the
+    category that satisfies the universal property, then any other other
+    coproduct that satisfies the property must be uniquely isomorphic to the
+    first, since their isomorphisms uniquely factorize their injections.
+
+    Wow. That's a mathy paragraph. I begin to see why math explanations
+    sound as impenetrable as they usually do...   
+
+8.  `()` is an inferior coproduct of `Int` and `Bool` than `Either Int Bool`,
+    because there is only one unique morphism `unit :: Either Int Bool -> ()`,
+    but no morphisms from `() -> Either Int Bool` that factorize injections
+    from `unit :: Int -> ()` and `unit :: Bool -> ()`. 
+
+    But the question is asking for an inferior candidate that admits multiple
+    morphisms between it and Either Int Bool.
+
+    `Int` is an inferior coproduct of Int and Bool. Suppose we have
+    the morphisms:
+
+    ```
+    Left :: Int -> Either Int Bool
+    Right :: Bool -> Either Int Bool
+
+    p :: Int -> Int
+    p = (+3)
+
+    q :: Bool -> Int
+    q True = 1
+    q False = 0
+    ```
+
+    Is there a unique morphism 
+    
+    ```
+    m :: Int -> Either Int Bool
+    ``` 
+    
+    such that
+
+    ```
+    m . p = Left
+    m . q = Right
+    ```
+
+    No! Because `p` and `q` don't map any values to `2 :: Int`, we can have
+
+    ```
+    m :: Int -> Either Int Bool
+    m 0 = Right False
+    m 1 = Right True
+    m 2 = (a :: Either Int Bool)
+    m n = n - 3
+    ```
+
+    We can return any `Either Int Bool` for `m 2` and `m` will still 
+    factorize, so we actually have infinite morphisms that satisfy the
+    property. Therefore, Int is a very bad coproduct for Either Int Bool.
+
+    On the other hand, the fact that we can use `Int` as a coproduct at all
+    (even an inferior one) is convenient, because it lets use model
+    coproducts (and other GADTs) on computers that only know about
+    discrete quantites.
+
+# 6 Simple Algebraic Data Types
+
+## 6.5 Challenges
+
+1.  Isomorphism:
+
+    ```
+    f :: Maybe a -> Either () a
+    f Nothing = Left ()
+    f Just a = Right a
+
+    g :: Either () a -> Maybe a
+    g (Left ()) = Nothing
+    g (Right a) = Just a
+    ```
+
+2.  Life is too short for OOP boilerplate. Break the cycle Morty, rise above,
+    focus on FP. 
+ 
+5.  Let's think about all the possible values of `a + a` and `2 x a`:
+
+    ```
+    a + a ~ Either a a = Left a | Right a
+    2 x a ~ (Bool, a)
+    ```
+
+    But `(Bool, a)` is just
+
+    ```
+    (True, a)
+    (False, a)
+    ```
+
+    so we have the isomorphism:
+
+    ```
+    f :: Either a a -> (Bool, a)
+    f (Left a) = (True, a)
+    f (Right a) = (False, a)
+
+    g :: (Bool, a) -> Either a a
+    g (True, a) = Left a
+    g (False, a) = Right a
+    ```
 
