@@ -1846,11 +1846,6 @@ same value) for a given input.
 So typeclasses constrains the potential things types can be by specifying
 what they can do.
 
-And this is incredibly convenient! We don't need to laboriously rebuild all
-the functions we want from scratch, we can just define types as instances
-of the typeclasses that have the methods we want. If we want equality, `Eq`,
-ordering, `Ord`, enumeration `Enum`, and so on:
-
 Some typeclasses and their relationships:
 
 <p align="center">
@@ -1860,34 +1855,48 @@ width = 600px
 alt="Typeclassopedia">
 </p>
 
-
 ## Exercises: Eq Instances
 
-1. `instance Eq TisAnInteger where (==) TisAn x TisAn y = (==) x y`
-2. `instance Eq TwoIntegers where Two x y == Two p q = (x, y) == (p, q)`
-3. String or Int
-   ```
-   instance Eq StringOrInt where 
-   TisAnInt x == TisAnInt y = x == y
-   TisAString x == TisAString y = x == y
-   _ == _ = False
-   ```
-4. `instance Eq Pair where Pair a b == Pair x y = (a, b) == (x, y)`
-5. `instance Eq Tuple where Tuple a b == Tuple x y = (a, b) == (x, y)`
-6. Which
-   ``` 
-   instance Eq a => Eq (Which a) where 
-   ThisOne x == ThisOne y = x == y
-   ThatOne x == ThatOne y = x == y
-   _ == _ = False
-   ```
-7. EitherOr
-   ```
-   instance (Eq a, Eq b) => Eq (EitherOr a b) where 
-   Hello x == Hello y = x == y
-   Goodbye x == Goodbye y = x == y 
-   _ == _ = False
-   ```
+1.  ```
+    instance Eq TisAnInteger where (==) TisAn x TisAn y = (==) x y
+    ```
+2.  ```
+    instance Eq TwoIntegers where Two x y == Two p q = (x, y) == (p, q)
+    ```
+
+3.  String or Int:
+
+    ```
+    instance Eq StringOrInt where 
+    TisAnInt x == TisAnInt y = x == y
+    TisAString x == TisAString y = x == y
+    _ == _ = False
+    ```
+4.  ```
+    instance Eq Pair where Pair a b == Pair x y = (a, b) == (x, y)
+    ```
+
+5.  ```
+    instance Eq Tuple where Tuple a b == Tuple x y = (a, b) == (x, y)
+    ```
+
+6.  Which
+ 
+    ``` 
+    instance Eq a => Eq (Which a) where 
+    ThisOne x == ThisOne y = x == y
+    ThatOne x == ThatOne y = x == y
+    _ == _ = False
+    ```
+
+7.  EitherOr
+
+    ```
+    instance (Eq a, Eq b) => Eq (EitherOr a b) where 
+    Hello x == Hello y = x == y
+    Goodbye x == Goodbye y = x == y 
+    _ == _ = False
+    ```
  
 ## Exercises: Tuple Experiment
 
@@ -1913,14 +1922,14 @@ alt="Typeclassopedia">
 
 ### Does it typecheck?:
 
-1. ch6/ex1.hs 
-2. ch6/ex2.hs
-3. 
-  a. any `Mood`, i.e. `Blah` or `Woot`
-  b. type error, `9` is not a `Mood`
-  c. `Mood` does not derive `Ord`
+1.  ch6/ex1.hs 
+2.  ch6/ex2.hs
 
-4.ch6/ex4.hs
+3.  a. any `Mood`, i.e. `Blah` or `Woot`
+    b. type error, `9` is not a `Mood`
+    c. `Mood` does not derive `Ord`
+
+4.  ch6/ex4.hs
 
 ### Given a datatype declaration, what can we do?
 exdatatype.hs
@@ -1952,5 +1961,727 @@ like e.g.  a `String`. We can't cast `i` upwards.
 1. `chk f a b = f a == b`
 2. `arith f n a = (+ fromIntegral n) (f a)`
 
+## 6.17 Follow-up resources
+
+1. [P. Wadler and S. Blott. How to make ad-hoc polymorphism less
+ad hoc.] (http://www.cse.iitk.ac.in/users/karkare/courses/2010/cs653/Papers/
+ad-hoc-polymorphism.pdf)
+
+2. [Cordelia V. Hall, Kevin Hammond, Simon L. Peyton Jones, and Philip L.
+Wadler. Typeclasses in Haskell.] (http://ropas.snu.ac.kr/lib/dock/HaHaJoWa1996.pdf)
 
 
+# 7 More functional patterns 
+
+## 7.2 Arguments and parameters
+
+This section is best understood in the context of the lambda calculus. I
+recommend reading at least [chapter 1 of my notes on Rojas' Introduction to
+the Lambda Calculus](/posts/workthrough-lambda-calculus-rojas.html#definition).
+
+## 7.3 Anonymous functions
+
+### Exercises: Grab bag
+
+1.  They are all equivalent
+2.  d
+3.  a. `f = \x -> x + 1`
+    b. `addFive = \x -> \y -> (min x y) + 5`
+    c. `mflip f x y = f y x`
+
+## 7.4 Pattern matching
+
+From [Gonzalez's "How to Desugar Haskell Code"](https://github.com/johnchandlerburnham/hpffp-resources/blob/master/Chapter-02/How%20to%20desugar%20Haskell%20code.pdf)
+
+> Pattern matching on constructors desugars to case statements:
+>
+> ```haskell
+> f (Left  l) = eL
+> f (Right r) = eR
+> 
+> -- ... desugars to:
+>
+> f x = case x of
+>     Left  l -> eL
+>     Right r -> eR
+> ```
+> 
+> Pattern matching on numeric or string literals desugars to equality tests:
+> 
+> ```haskell
+> f 0 = e0
+> f _ = e1
+> 
+> -- ... desugars to:
+> f x = if x == 0 then e0 else e1
+> 
+> -- ... desugars to:
+> f x = case x == 0 of
+>     True  -> e0
+>     False -> e1
+> ``` 
+
+
+### Exercises: Variety Pack
+
+1.  a. `k :: (a, b) -> a`
+    b. `k2` is a `String`, not the same as `k1` or `k3`
+    c. `k1` and `k3`
+
+2.  `f (a, b, c) (d, e, f) = ((a, d), (c, f))`
+
+## 7.5 Case expressions
+
+### Exercises: Case Practice
+
+1.  ```
+    functionC x y = case (x > y) of
+      True -> x 
+      False -> y 
+    ```
+
+2.  ```
+    ifEvenAdd2 n = 
+      case even n
+        True -> (n + 2)
+        False -> n
+    ```
+
+3.  ```
+    nums x = 
+      case compare x 0 of
+        LT -> -1
+        GT -> 1
+        EQ -> 0
+    ```
+
+## 7.6 Higher-order functions
+
+### Exercises: Artful Dodgy 
+
+2. `11`
+3. `22`
+4. `21`
+5. `12`
+6. `11`
+7. `21`
+8. `21`
+9. `22`
+10. `31`
+11. `23`
+
+## 7.7 Guards
+
+### Exercises: Guard Duty
+
+see avgGrade.hs
+
+1. Can't do otherwise if theres no wise to other. 
+2. No, because the conditions are not exclusive.
+3. b
+4. anything reversible, so lists
+5. `[a] -> Bool`
+6. c
+7. `(Ord a, Num a) => a`
+8. `(Ord a, Num a) => a -> Bool`
+
+
+## 7.11 Chapter Exercises
+
+### Multiple Choice
+
+1. d
+2. b
+3. a
+4. b
+5. a
+
+### Let's write code
+
+1.  a.  `tensDigit x = (flip mod) 10 $ fst $ divMod x 10`
+    
+        Seems silly to use `divMod`, when
+
+        `tensDigit' x = (flip mod) 10 $ div x 10`
+
+        works perfectly well.
+
+
+    b. Yup. 
+
+    c. Well let's do this properly:
+
+       ```haskell
+       -- 07/Digit.hs
+
+       baseDigit :: Integral a => a -> a -> a -> Maybe a
+       baseDigit base digit x                                                          
+         | base == 0 = Nothing
+         | digit < 0 = Nothing
+         | otherwise = Just $ (flip mod) base $ div x (base ^ digit)                   
+       ```
+        
+       So that 
+       
+       ```haskell
+       *Main> baseDigit 10 2 1234
+       Just 2
+       *Main> baseDigit 10 2 123456
+       Just 4
+       *Main> baseDigit 10 2 9876543210
+       Just 2
+       *Main> 
+       ```
+
+2.   ```haskell
+     -- 07/FoldBool.hs
+                                                                                     
+     foldBool :: a -> a -> Bool -> a
+     foldBool x y b = case b of
+         True -> x
+         False -> y
+
+     foldBool2 :: a -> a -> Bool -> a
+     foldBool2 x y b
+       | b == True = x
+       | b == False = y
+     ```
+
+3. `g f (a, b) = (f a, b)`
+
+4.  ```
+    -- 07/arith4.hs
+
+    roundTrip :: (Show a, Read a) => a -> a
+    roundTrip a = read (show a)
+
+    roundTripPF :: (Show a, Read a) => a -> a
+    roundTripPF = (read . show)
+
+    roundTrip2 :: (Show a, Read b) => a -> b
+    roundTrip2 a = read (show a)
+
+    main = do
+      print (roundTrip2 (4 :: Int))
+      print (id 4)
+    ```
+   
+## 7.13 Follow-up resources
+
+1. [Paul Hudak; John Peterson; Joseph Fasel. A Gentle Introduction
+to Haskell, chapter on case expressions and pattern matching.](https://www.haskell.org/tutorial/patterns.html)
+
+2. [Simon Peyton Jones. The Implementation of Functional Pro-
+gramming Languages, pages 53-103.](http://research.microsoft.com/en-us/um/people/simonpj/papers/slpj-book-1987/index.htm)
+
+3. [Christopher Strachey. Fundamental Concepts in Programming
+Languages, page 11 for explanation of currying.](http://www.cs.cmu.edu/~crary/819-f09/Strachey67.pdf)
+4. [J.N. Oliveira. An introduction to pointfree programming.](http://www.di.uminho.pt/~jno/ps/iscalc_1.ps.gz)
+5. [Manuel Alcino Pereira da Cunha. Point-free Program Calculation.](http://www4.di.uminho.pt/~mac/Publications/phd.pdf)
+
+# 8 Recursion
+
+## 8.2 Factorial
+
+## Intermission: Exercise
+
+```
+applyTimes 5 (+1) 5
+```
+turns  into
+
+```
+((+1) . (+1) . (+1) . (+1) . (+1)) 5
+```
+
+## 8.6 Chapter Exercises
+
+### Review of types
+
+1. d
+2. b
+3. d
+4. b
+
+### Reviewing currying
+
+```haskell
+flippy :: String -> String -> String
+appedCatty :: String -> String
+frappe :: String -> String
+```
+
+1. `"woops mrow woohoo"`
+2. `"1 mrow haha"`
+3. `"woops mrow 2 mrow haha"`
+4. `"woops mrow blue mrow haha"`
+5. `"pink mrow haha mrow green mrow woops mrow blue"`
+6. `"are mrow Pugs mrow awesome"`
+
+### Recursion
+
+1.  ```
+    dividedBy 15 2 -> 
+    go 15 2 0 -> 
+    go 13 2 1 -> 
+    go 11 2 2 -> 
+    go 9 2 3 ->
+    go 7 2 4 -> 
+    go 5 2 5 -> 
+    go 3 2 6 -> 
+    go 1 2 7 -> 
+    (7, 1)
+    ```
+
+2.  ```haskell
+    -- 08/rsum.hs
+    rsum :: (Eq a, Num a) => a -> a
+    rsum n = go n 0
+      where 
+        go n c
+         | n == 0 = c
+         | otherwise = go (n - 1) (c + n)
+    ```
+
+3.  ```haskell
+    -- 08/rmult.hs
+    rmult :: (Integral a) => a -> a -> a
+    rmult a b = go a b 0
+      where 
+        go a b c
+         | b == 0 = c
+         | otherwise = go a (b - 1) (c + a)
+    ```
+
+### Fixing dividedBy:
+
+```haskell
+-- 08/DividedBy.hs
+module DividedBy where
+
+unsafeDividedBy :: Integral a => a -> a -> (a, a)
+unsafeDividedBy num denom = go num denom 0
+  where 
+    go n d count
+      | n < d = (count, n)
+      | otherwise = go (n - d) d (count + 1)
+
+-- div throws an exception on zero
+partialDividedBy :: Integral a => a -> a -> (a, a)
+partialDividedBy num denom = go num denom 0
+  where 
+    go n d count
+      | n < d = (count, n)
+      | d < 0 = go n (negate d) count
+      | d == 0 = error $ "can't div by zero"
+      | otherwise = go (n - d) d (count + 1)
+
+
+data DividedResult = Result Integer | DividedByZero deriving (Eq, Show)
+-- equivalent to Maybe Integer
+
+dividedBy :: Integral a => a -> a-> DividedResult
+dividedBy num denom = go num denom 0
+  where 
+    resNeg (Result x) = Result (negate x)
+    go n d count
+      | d == 0 = DividedByZero
+      | d < 0 = resNeg $ go n (negate d) count 
+      | n < 0 = resNeg $ go (negate n) d count 
+      | n < d = Result count
+      | otherwise = go (n - d) d (count + 1)
+```
+
+### McCarthy 91 function:
+
+```haskell
+-- 08/mccarthy91.hs
+mc91 :: Integral a => a -> a
+mc91 n
+  | n > 100 = n - 10 
+  | otherwise = (mc91 . mc91) (n + 11)
+```
+
+### Numbers into Words: 
+
+```haskell
+-- 08/WordNumber.hs
+module WordNumber where
+
+import Data.List (intersperse)
+
+digitToWord :: Int -> String
+digitToWord x = 
+  case x of 
+    1 -> "one"
+    2 -> "two"
+    3 -> "three"
+    4 -> "four"
+    5 -> "five"
+    6 -> "six"
+    7 -> "seven"
+    8 -> "eight"
+    9 -> "nine"
+    0 -> "zero"
+    _ -> "NaD"
+
+digits :: Int -> [Int]
+digits n = go n []
+  where go n d
+          | n < 10 = n:d
+          | n >= 10 = go (n `div` 10) $ (n `mod` 10):d
+          
+wordNumber :: Int -> String
+wordNumber n = concat $ intersperse "-" $ map digitToWord $ digits n
+```
+
+# 9 Lists
+
+## 9.5 Using ranges to construct lists
+
+### Exercise: EnumFromTo
+
+```haskell
+--09/EnumFromTo.hs
+
+module EnumFromTo where
+
+-- the exercises for specific types
+
+eftBool:: Bool -> Bool -> [Bool]
+eftBool x y = go x y []
+  where 
+    go a b c
+      | a > b = c
+      | a == b = reverse (a : c)
+      | otherwise = go (succ a) b (a : c)
+
+eftInt:: Int -> Int -> [Int]
+eftInt x y = go x y []
+  where 
+    go a b c
+      | a > b = c
+      | a == b = reverse (a : c)
+      | otherwise = go (succ a) b (a : c)
+
+eftOrd:: Ordering -> Ordering -> [Ordering]
+eftOrd x y = go x y []
+  where 
+    go a b c
+      | a > b = c
+      | a == b = reverse (a : c)
+      | otherwise = go (succ a) b (a : c)
+
+eftChar:: Char -> Char -> [Char]
+eftChar x y = go x y []
+  where 
+    go a b c
+      | a > b = c
+      | a == b = reverse (a : c)
+      | otherwise = go (succ a) b (a : c)
+
+-- these all look basically the same, so let's generalize:
+
+eft :: (Ord a, Enum a) => a -> a -> [a]
+eft x y = go x y []
+  where 
+    go a b c
+      | a > b = c
+      | a == b = reverse (a : c)
+      | otherwise = go (succ a) b (a : c)
+
+-- that reverse is clunky though, let's see if we can get rid of it
+
+eft2 :: (Ord a, Enum a) => a -> a -> [a]
+eft2 x y = go x y []
+  where 
+    go a b c
+      | a > b = c
+      | a == b = c ++ a:[]
+      | otherwise = go (succ a) b (c ++ a:[])
+
+-- using string concatenation is just as slow though, let's use recursion
+
+eft3 :: (Ord a, Enum a) => a -> a -> [a]
+eft3 x y
+  | x > y = []
+  | x == y = [x]
+  | otherwise = x : eft3 (succ x) y
+
+-- We can get rid of the Ord constraint by leveraging the mapping between
+-- an Enum and Int
+
+eft4 :: Enum a => a -> a -> [a]
+eft4 x y
+  | fromEnum x > fromEnum y = []
+  | fromEnum x == fromEnum y = [x]
+  | otherwise = x : eft4 (succ x) y
+```
+
+## 9.6 Extracting portions of lists
+
+### Exercises: Thy Fearful Symmetry
+
+```haskell
+--09/FearfulSymmetry.hs
+module FearfulSymmetry where
+
+split :: String -> [String]
+split [] = []
+split  x = word : split rest
+  where 
+    word = takeWhile (/= ' ') x
+    rest = (drop 1) $ dropWhile (/= ' ') x
+
+splitOn :: Char -> String -> [String]
+splitOn _ [] = []
+splitOn  c str = part : (splitOn c rest)
+  where 
+    part = takeWhile (/= c) str
+    rest = (drop 1) $ dropWhile (/= c) str
+
+firstSen = "Tyger Tyger, burning bright\n"
+secondSen = "In the forests of the night\n"
+thirdSen = "What immortal hand or eye\n"
+fourthSen = "Could frame thy fearful symmetry?"
+sentences = firstSen ++ secondSen ++ thirdSen ++ fourthSen
+
+myLines :: String -> [String]
+myLines x = splitOn '\n' x
+
+shouldEqual = 
+  [ "Tyger Tyger, burning bright"
+  , "In the forests of the night"
+  , "What immortal hand or eye"
+  , "Could frame thy fearful symmetry?"
+  ]
+
+main :: IO ()
+main = print $ "Are they equal? " ++ show (myLines sentences == shouldEqual)
+```
+
+## 9.7 List Comprehensions
+
+### Exercises: Comprehend Thy Lists
+
+1. `[4, 16]`
+2. `[]`
+3. `[]`, unless `mySqr` is from `[1..10]`
+
+### Exercises: Square Cube
+
+```haskell
+--09/SquareCube.hs
+module SquareCube where
+
+mySqr = [x^2 | x <- [1..5]]
+myCube = [x^3 | x <- [1..5]]
+
+exercise1 = [(x, y) | x <- mySqr, y <- myCube]
+exercise2 = [(x, y) | x <- mySqr, y <- myCube, x < 50, y < 50]
+exercise3 = length exercise2
+```
+
+## 9.8 Spines and nonstrict evaluation
+
+### Exercises: Bottom Madness
+
+1. no
+2. yes
+3. no
+4. yes
+5. no
+6. yes
+7. no
+8. yes
+9.  yes
+10. no
+
+### Intermission: Is it in normal form?
+
+1. WHNF & NF
+2. WHNF
+3. neither
+4. neither
+5. neither
+6. neither
+7. WHNF
+
+## 9.9 Transforming lists
+
+### Exercises: More Bottoms
+
+1. bottom
+2. yes
+3. bottom
+4. Is this character a vowel?
+  `itIsMystery :: Char -> Bool`
+5.  a. the first 10 square numbers
+    b. `[1, 10, 20]` 
+    c. `[15, 15, 15]`
+
+6.  ```haskell
+    --09/foldbool.hs
+    foldBool = map (\x -> (Data.Bool.bool x (-x) (x == 3)))
+    ```
+
+## 9.10 Filtering lists of values
+
+### Exercises: Filtering 
+
+```haskell
+-- 09/Filtering.hs
+module Filtering where
+
+filterThreeMult :: [Integer] -> [Integer]
+filterThreeMult = filter (\x -> x `mod` 3 /= 0)
+
+howManyThreeMults :: [Integer] -> Int
+howManyThreeMults x = length x - (length . filterThreeMult) x
+
+howManyThreeMults' :: [Integer] -> Int
+howManyThreeMults' = length . filter (\x -> x `mod` 3 == 0)
+
+removeArticle :: String -> [String]
+removeArticle = filter (not . isArticle) . words  
+  where isArticle x = elem x ["a", "an", "the"] 
+```
+
+### Zipping exercises
+
+```haskell
+-- 09/ZippingExercises.hs
+module ZippingExercises where
+
+myZip :: [a] -> [b] -> [(a, b)]
+myZip (x:xs) (y:ys) = (x, y) : myZip xs ys
+myZip _ _ = []
+
+myZipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
+myZipWith f (x:xs) (y:ys) = (f x y) : (myZipWith f xs ys)
+myZipWith _ _ _ = []
+```
+
+## 9.12 Chapter Exercises
+
+### Data.Char
+
+```haskell
+--09/CharExercises.hs
+module CharExercises where
+
+import Data.Char
+
+--1
+-- isUpper :: Char -> Bool
+-- toUpper :: Char -> Char
+
+-- 2 
+filterUpper = filter isUpper
+
+-- 3 
+capFirst :: String -> String
+capFirst (x:xs) = (toUpper x):xs
+capFirst _ = "" 
+
+-- 4
+strToUpper :: String -> String
+strToUpper (x:xs) = (toUpper x):(strToUpper xs)
+strToUpper _ = "" 
+
+-- 5 
+headToUpper :: String -> Char
+headToUpper = toUpper . head
+
+-- 6, wrote it pointfree the first time...
+```
+
+### Ciphers
+
+```haskell
+--09/Cipher.hs
+module Cipher where
+
+import Data.Char
+
+caesar :: Int -> String -> String
+caesar key string = go key $ (map toLower . filter isAlpha) string
+  where go _ "" = ""
+        go n (c:cs) = chr ((ord c + n - ord 'a') `mod` 26 + ord 'a') : go n cs
+
+unCaesar :: Int -> String -> String
+unCaesar key string = caesar (negate key) string 
+
+test :: Int -> String -> Bool
+test n s = (map toLower . filter isAlpha) s == (unCaesar n . caesar n) s 
+```
+
+### Writing your own standard functions
+
+```haskell
+--09/StdFunc.hs
+module StdFunc where
+
+-- 1
+myOr :: [Bool] -> Bool
+myOr [] = False
+myOr (x:xs) = if x == True then True else myOr xs
+
+-- 2
+myAny :: (a -> Bool) -> [a] -> Bool
+myAny f xs = (myOr . map f) xs
+
+-- 3
+myElem :: Eq a => a -> [a] -> Bool
+myElem x xs = myAny ((==) x) xs
+
+-- 4
+myReverse :: [a] -> [a]
+myReverse xs = go xs []
+  where go [] n = n
+        go (n:ns) a = go ns (n:a)
+
+-- 5
+squish :: [[a]] -> [a]
+squish [] = []
+squish ((n:[]):nss) = n : squish (nss)
+squish ((n:ns):nss) = n : squish (ns:nss)
+
+-- 6 
+squishMap :: (a -> [b]) -> [a] -> [b]
+squishMap f xs = go f xs []
+  where go _ [] [] = []
+        go f (x:xs) [] = go f xs (f x)
+        go f xs (a:as) = a : (go f xs as)
+
+-- 7
+squishAgain :: [[a]] -> [a]
+squishAgain = squishMap id
+
+-- 8 
+myMaximumBy :: (a -> a -> Ordering) -> [a] -> a
+myMaximumBy cmp (x:xs) = go cmp xs x
+  where go _ [] a = a
+        go cmp (x:xs) a = go cmp xs (if (cmp x a) == GT then x else a)
+
+-- 9
+myMinimumBy :: (a -> a -> Ordering) -> [a] -> a
+myMinimumBy cmp (x:xs) = go cmp xs x
+  where go _ [] a = a
+        go cmp (x:xs) a = go cmp xs (if (cmp x a) == LT then x else a)
+
+
+myMaximum :: (Ord a) => [a] -> a
+myMaximum = myMaximumBy compare
+
+myMinimum :: (Ord a) => [a] -> a
+myMinimum = myMinimumBy compare
+```
+
+## 9.14 Follow-up resources
+
+1. [Data.List documentation for the base library.](http://hackage.haskell.org/package/base/docs/Data-List.html)
+
+2. [Ninety-nine Haskell problems.](https://wiki.haskell.org/H-99:_Ninety-Nine_Haskell_Problems)
+
+# 10 Folding lists
