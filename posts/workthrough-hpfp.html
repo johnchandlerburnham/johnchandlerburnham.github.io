@@ -203,7 +203,57 @@
 </ul></li>
 <li><a href="#follow-up-resources-5">9.14 Follow-up resources</a></li>
 </ul></li>
-<li><a href="#folding-lists">10 Folding lists</a></li>
+<li><a href="#folding-lists">10 Folding lists</a><ul>
+<li><a href="#fold-right">10.4 Fold right</a><ul>
+<li><a href="#exercises-understanding-folds">Exercises: Understanding folds</a></li>
+<li><a href="#exercises-database-processing">Exercises: Database Processing</a></li>
+</ul></li>
+<li><a href="#scans">10.9 Scans</a><ul>
+<li><a href="#scans-exercises">Scans Exercises</a></li>
+</ul></li>
+<li><a href="#chapter-exercises-8">10.10 Chapter Exercises</a><ul>
+<li><a href="#warm-up-and-reveiw">Warm-up and reveiw</a></li>
+<li><a href="#rewriting-functions-using-folds">Rewriting functions using folds</a></li>
+</ul></li>
+<li><a href="#follow-up-resources-6">10.12 Follow-up resources</a></li>
+</ul></li>
+<li><a href="#algebraic-datatypes">11 Algebraic Datatypes</a><ul>
+<li><a href="#data-constructors-and-values">11.5 Data constructors and values</a><ul>
+<li><a href="#exercises-dog-types">Exercises: Dog Types</a></li>
+</ul></li>
+<li><a href="#whats-a-type-and-whats-data">11.6 What’s a type and what’s data?</a><ul>
+<li><a href="#exercises-vehicles">Exercises: Vehicles</a></li>
+</ul></li>
+<li><a href="#what-makes-these-datatypes-algebraic">11.8 What makes these datatypes algebraic?</a><ul>
+<li><a href="#exercises-cardinality">Exercises: Cardinality</a></li>
+<li><a href="#exercises-for-example">Exercises: For Example</a></li>
+</ul></li>
+<li><a href="#newtype">11.9 newtype</a><ul>
+<li><a href="#exercises-logic-goats">Exercises: Logic Goats</a></li>
+</ul></li>
+<li><a href="#sum-types">11.10 Sum types</a><ul>
+<li><a href="#exercises-pity-the-bool">Exercises: Pity the Bool</a></li>
+</ul></li>
+<li><a href="#normal-form">11.12 Normal Form</a></li>
+<li><a href="#exercises-how-does-your-garden-grow">Exercises: How Does Your Garden Grow?</a></li>
+<li><a href="#constructing-and-deconstructing-values">11.13 Constructing and deconstructing values</a><ul>
+<li><a href="#exercises-programmers">Exercises: Programmers</a></li>
+</ul></li>
+<li><a href="#function-type-is-exponential">11.14 Function type is exponential</a></li>
+<li><a href="#exercises-the-quad">Exercises: The Quad</a></li>
+<li><a href="#binary-tree">11.17 Binary Tree</a><ul>
+<li><a href="#binarytree">BinaryTree</a></li>
+</ul></li>
+<li><a href="#chapter-exercises-9">11.18 Chapter Exercises</a><ul>
+<li><a href="#multiple-choice-3">Multiple Choice</a></li>
+<li><a href="#ciphers-1">Ciphers</a></li>
+<li><a href="#as-patterns">As-patterns</a></li>
+<li><a href="#language-exercises">Language exercises</a></li>
+<li><a href="#phone-exercise">Phone exercise</a></li>
+<li><a href="#huttons-razor">Hutton’s Razor</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#signaling-adversity">12 Signaling adversity</a></li>
 </ul>
 <hr>
 <p><strong>Work in progress</strong></p>
@@ -1381,7 +1431,18 @@ f x <span class="fu">=</span> <span class="kw">case</span> x <span class="fu">==
 </ol>
 <h2 id="guards">7.7 Guards</h2>
 <h3 id="exercises-guard-duty">Exercises: Guard Duty</h3>
-<p>see avgGrade.hs</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--07/AvgGrade.hs</span>
+<span class="kw">module</span> <span class="dt">AvgGrade</span> <span class="kw">where</span>
+
+<span class="ot">avgGrade ::</span> (<span class="dt">Fractional</span> a, <span class="dt">Ord</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Char</span>
+avgGrade x
+  <span class="fu">|</span> y <span class="fu">&gt;=</span> <span class="fl">0.7</span> <span class="fu">=</span> <span class="ch">'C'</span>
+  <span class="fu">|</span> y <span class="fu">&gt;=</span> <span class="fl">0.9</span> <span class="fu">=</span> <span class="ch">'A'</span>
+  <span class="fu">|</span> y <span class="fu">&gt;=</span> <span class="fl">0.8</span> <span class="fu">=</span> <span class="ch">'B'</span>
+  <span class="fu">|</span> y <span class="fu">&gt;=</span> <span class="fl">0.59</span> <span class="fu">=</span> <span class="ch">'D'</span>
+  <span class="fu">|</span> otherwise <span class="fu">=</span> <span class="ch">'F'</span>
+  <span class="kw">where</span> 
+    y <span class="fu">=</span> x <span class="fu">/</span> <span class="dv">100</span>  </code></pre></div>
 <ol style="list-style-type: decimal">
 <li>Can’t do otherwise if theres no wise to other.</li>
 <li>No, because the conditions are not exclusive.</li>
@@ -1409,32 +1470,49 @@ f x <span class="fu">=</span> <span class="kw">case</span> x <span class="fu">==
 <p><code>tensDigit' x = (flip mod) 10 $ div x 10</code></p>
 <p>works perfectly well.</p></li>
 <li><p>Yup.</p></li>
-<li><p>Well let’s do this properly:</p></li>
-</ol>
-<p>```haskell – 07/Digit.hs</p>
-<p>baseDigit :: Integral a =&gt; a -&gt; a -&gt; a -&gt; Maybe a baseDigit base digit x<br />
-| base == 0 = Nothing | digit &lt; 0 = Nothing | otherwise = Just $ (flip mod) base $ div x (base ^ digit)<br />
-```</p>
+<li><p>Well let’s do this properly:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- 07/Digit.hs</span>
+
+<span class="ot">baseDigit ::</span> <span class="dt">Integral</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a
+baseDigit base digit x
+  <span class="fu">|</span> base <span class="fu">==</span> <span class="dv">0</span> <span class="fu">=</span> <span class="dt">Nothing</span>
+  <span class="fu">|</span> digit <span class="fu">&lt;</span> <span class="dv">0</span> <span class="fu">=</span> <span class="dt">Nothing</span>
+  <span class="fu">|</span> otherwise <span class="fu">=</span> <span class="dt">Just</span> <span class="fu">$</span> (flip mod) base <span class="fu">$</span> div x (base <span class="fu">^</span> digit)</code></pre></div>
 <p>So that</p>
-<p><code>haskell    *Main&gt; baseDigit 10 2 1234    Just 2    *Main&gt; baseDigit 10 2 123456    Just 4    *Main&gt; baseDigit 10 2 9876543210    Just 2    *Main&gt;</code></p></li>
-<li><p>```haskell – 07/FoldBool.hs</p>
-<p>foldBool :: a -&gt; a -&gt; Bool -&gt; a foldBool x y b = case b of True -&gt; x False -&gt; y</p>
-<p>foldBool2 :: a -&gt; a -&gt; Bool -&gt; a foldBool2 x y b | b == True = x | b == False = y ```</p></li>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> baseDigit <span class="dv">10</span> <span class="dv">2</span> <span class="dv">1234</span>
+<span class="dt">Just</span> <span class="dv">2</span>
+<span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> baseDigit <span class="dv">10</span> <span class="dv">2</span> <span class="dv">123456</span>
+<span class="dt">Just</span> <span class="dv">4</span>
+<span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> baseDigit <span class="dv">10</span> <span class="dv">2</span> <span class="dv">9876543210</span>
+<span class="dt">Just</span> <span class="dv">2</span>
+<span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> </code></pre></div></li>
+</ol></li>
+<li><div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- 07/FoldBool.hs</span>
+
+<span class="ot">foldBool ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> a
+foldBool x y b <span class="fu">=</span> <span class="kw">case</span> b <span class="kw">of</span>
+   <span class="dt">True</span> <span class="ot">-&gt;</span> x
+   <span class="dt">False</span> <span class="ot">-&gt;</span> y
+
+<span class="ot">foldBool2 ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> a
+foldBool2 x y b
+ <span class="fu">|</span> b <span class="fu">==</span> <span class="dt">True</span> <span class="fu">=</span> x
+ <span class="fu">|</span> b <span class="fu">==</span> <span class="dt">False</span> <span class="fu">=</span> y</code></pre></div></li>
 <li><p><code>g f (a, b) = (f a, b)</code></p></li>
-<li><pre><code>-- 07/arith4.hs
+<li><div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- 07/arith4.hs</span>
 
-roundTrip :: (Show a, Read a) =&gt; a -&gt; a
-roundTrip a = read (show a)
+<span class="ot">roundTrip ::</span> (<span class="dt">Show</span> a, <span class="dt">Read</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a
+roundTrip a <span class="fu">=</span> read (show a)
 
-roundTripPF :: (Show a, Read a) =&gt; a -&gt; a
-roundTripPF = (read . show)
+<span class="ot">roundTripPF ::</span> (<span class="dt">Show</span> a, <span class="dt">Read</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a
+roundTripPF <span class="fu">=</span> (read <span class="fu">.</span> show)
 
-roundTrip2 :: (Show a, Read b) =&gt; a -&gt; b
-roundTrip2 a = read (show a)
+<span class="ot">roundTrip2 ::</span> (<span class="dt">Show</span> a, <span class="dt">Read</span> b) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> b
+roundTrip2 a <span class="fu">=</span> read (show a)
 
-main = do
-  print (roundTrip2 (4 :: Int))
-  print (id 4)</code></pre></li>
+main <span class="fu">=</span> <span class="kw">do</span>
+  print (roundTrip2 (<span class="dv">4</span><span class="ot"> ::</span> <span class="dt">Int</span>))
+  print (id <span class="dv">4</span>)</code></pre></div></li>
 </ol>
 <h2 id="follow-up-resources-4">7.13 Follow-up resources</h2>
 <ol style="list-style-type: decimal">
@@ -1874,6 +1952,654 @@ myMinimum <span class="fu">=</span> myMinimumBy compare</code></pre></div>
 <li><p><a href="https://wiki.haskell.org/H-99:_Ninety-Nine_Haskell_Problems">Ninety-nine Haskell problems.</a></p></li>
 </ol>
 <h1 id="folding-lists">10 Folding lists</h1>
+<p>Okay, so here’s the thing about the term “catamorphism”:</p>
+<p>“Kata” in Greek means “down”. The opposite of “kata” is “ana” which means “up”.</p>
+<p>So we have “catamorphisms” and “anamorphisms”. Remember that “morph” means “form”, so a “catamorphism” is a “down-form thing” and an “anamorphism” is an “up-form thing”.</p>
+<p>But what the heck do “up” and “down” have to do with “forms”. There’s a metaphor that recurs (heh) again and again in functional programming between height and complexity: Things that have more structure or are more complex are upwards and things that are simpler are downwards.</p>
+<p>So an <code>Integer</code> is pretty simple, and is downwards of <code>[Integer]</code> or <code>Maybe Integer</code> or <code>Map String Integer</code>.</p>
+<p>Functions that go “upwards” in this complexity-space, like from <code>Integer -&gt; [Integer]</code> are, roughly speaking, anamorphisms. Functions that go “downwards” are catamorphisms.</p>
+<h2 id="fold-right">10.4 Fold right</h2>
+<h3 id="exercises-understanding-folds">Exercises: Understanding folds</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Folds</span> <span class="kw">where</span>
+
+<span class="co">-- 1: </span>
+one <span class="fu">=</span> (<span class="fu">==</span>) (foldr (<span class="fu">*</span>) <span class="dv">1</span> [<span class="dv">1</span><span class="fu">..</span><span class="dv">5</span>]) (foldl (<span class="fu">*</span>) <span class="dv">1</span> [<span class="dv">1</span><span class="fu">..</span><span class="dv">5</span>])
+
+<span class="co">-- 2</span>
+two <span class="fu">=</span> scanl (flip (<span class="fu">*</span>)) <span class="dv">1</span> [<span class="dv">1</span><span class="fu">..</span><span class="dv">3</span>]
+
+<span class="co">--3: c</span>
+
+<span class="co">--4: reduce structure</span>
+
+<span class="co">--5</span>
+fiveA <span class="fu">=</span> foldr (<span class="fu">++</span>) <span class="st">&quot;&quot;</span> [<span class="st">&quot;woot&quot;</span>, <span class="st">&quot;WOOT&quot;</span>, <span class="st">&quot;woot&quot;</span>]
+fiveB <span class="fu">=</span> foldr max <span class="ch">'a'</span> <span class="st">&quot;fear is the little death&quot;</span>
+fiveC <span class="fu">=</span> foldr (<span class="fu">&amp;&amp;</span>) <span class="dt">True</span> [<span class="dt">False</span>, <span class="dt">True</span>]
+fiveD <span class="fu">=</span> foldr (<span class="fu">||</span>) <span class="dt">True</span> [<span class="dt">False</span>, <span class="dt">True</span>]
+fiveE <span class="fu">=</span> foldr ((<span class="fu">++</span>) <span class="fu">.</span> show) <span class="st">&quot;&quot;</span> [<span class="dv">1</span><span class="fu">..</span><span class="dv">5</span>]
+fiveF <span class="fu">=</span> foldl const <span class="ch">'a'</span>  [<span class="dv">1</span><span class="fu">..</span><span class="dv">5</span>]
+fiveG <span class="fu">=</span> foldl const <span class="dv">0</span> <span class="st">&quot;tacos&quot;</span>
+fiveH <span class="fu">=</span> foldr (flip const) <span class="dv">0</span> <span class="st">&quot;burritos&quot;</span>
+fiveI <span class="fu">=</span> foldr (flip const) <span class="ch">'z'</span> [<span class="dv">1</span><span class="fu">..</span><span class="dv">5</span>]</code></pre></div>
+<h3 id="exercises-database-processing">Exercises: Database Processing</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">DatabaseProcessing</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Data.Time</span>
+
+<span class="kw">data</span> <span class="dt">DatabaseItem</span> <span class="fu">=</span> <span class="dt">DbString</span> <span class="dt">String</span>
+                  <span class="fu">|</span> <span class="dt">DbNumber</span> <span class="dt">Integer</span>
+                  <span class="fu">|</span> <span class="dt">DbDate</span>   <span class="dt">UTCTime</span>
+                  <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Ord</span>, <span class="dt">Show</span>)
+
+<span class="ot">theDatabase ::</span> [<span class="dt">DatabaseItem</span>]
+theDatabase <span class="fu">=</span> 
+  [ <span class="dt">DbDate</span> (<span class="dt">UTCTime</span>
+            (fromGregorian <span class="dv">1911</span> <span class="dv">5</span> <span class="dv">1</span>)
+            (secondsToDiffTime <span class="dv">34123</span>))
+  , <span class="dt">DbNumber</span> <span class="dv">9001</span>
+  , <span class="dt">DbString</span> <span class="st">&quot;Hello, World!&quot;</span>
+  , <span class="dt">DbDate</span> (<span class="dt">UTCTime</span>
+            (fromGregorian <span class="dv">1921</span> <span class="dv">5</span> <span class="dv">1</span>)
+            (secondsToDiffTime <span class="dv">34123</span>))
+  ]
+
+<span class="co">-- 1 </span>
+<span class="ot">filterDbDate ::</span> [<span class="dt">DatabaseItem</span>] <span class="ot">-&gt;</span> [<span class="dt">UTCTime</span>]
+filterDbDate <span class="fu">=</span> map unpack <span class="fu">.</span> filter isADbDate <span class="kw">where</span>
+  isADbDate (<span class="dt">DbDate</span> _) <span class="fu">=</span> <span class="dt">True</span>
+  isADbDate _ <span class="fu">=</span> <span class="dt">False</span>
+  unpack (<span class="dt">DbDate</span> utc) <span class="fu">=</span> utc
+
+<span class="ot">filterDbDate2 ::</span> [<span class="dt">DatabaseItem</span>] <span class="ot">-&gt;</span> [<span class="dt">UTCTime</span>]
+filterDbDate2 <span class="fu">=</span> foldr unpackDate [] <span class="kw">where</span>
+  unpackDate (<span class="dt">DbDate</span> utc) acc <span class="fu">=</span> utc <span class="fu">:</span> acc
+  unpackDate _ acc <span class="fu">=</span> acc
+
+<span class="co">-- 2</span>
+<span class="ot">filterDbNumber ::</span> [<span class="dt">DatabaseItem</span>] <span class="ot">-&gt;</span> [<span class="dt">Integer</span>]
+filterDbNumber <span class="fu">=</span> foldr unpackNum [] <span class="kw">where</span>
+  unpackNum (<span class="dt">DbNumber</span> num) acc <span class="fu">=</span> num <span class="fu">:</span> acc
+  unpackNum _ acc <span class="fu">=</span> acc
+
+<span class="co">-- 3 </span>
+<span class="ot">mostRecent ::</span> [<span class="dt">DatabaseItem</span>] <span class="ot">-&gt;</span> <span class="dt">UTCTime</span>
+mostRecent db <span class="fu">=</span> foldr compareDate base db <span class="kw">where</span>
+  compareDate (<span class="dt">DbDate</span> utc) acc <span class="fu">=</span> max utc acc  
+  compareDate _ acc <span class="fu">=</span> acc
+  base <span class="fu">=</span> (filterDbDate2 db) <span class="fu">!!</span> <span class="dv">0</span>
+
+<span class="co">-- 4 </span>
+<span class="ot">sumDb ::</span> [<span class="dt">DatabaseItem</span>] <span class="ot">-&gt;</span> <span class="dt">Integer</span>
+sumDb <span class="fu">=</span> foldr addNum <span class="dv">0</span> <span class="kw">where</span>
+  addNum (<span class="dt">DbNumber</span> int) acc <span class="fu">=</span> int <span class="fu">+</span> acc
+  addNum _ acc <span class="fu">=</span> acc
+
+<span class="co">-- 5</span>
+<span class="ot">avgDb ::</span> [<span class="dt">DatabaseItem</span>] <span class="ot">-&gt;</span> <span class="dt">Double</span> 
+avgDb db <span class="fu">=</span> (fromIntegral <span class="fu">$</span> fst tup) <span class="fu">/</span> (fromIntegral <span class="fu">$</span> snd tup) <span class="kw">where</span>
+  tup <span class="fu">=</span> foldr addNum (<span class="dv">0</span>,<span class="dv">0</span>) db
+  addNum (<span class="dt">DbNumber</span> int) (num,den) <span class="fu">=</span> (int <span class="fu">+</span> num, den <span class="fu">+</span> <span class="dv">1</span>)
+  addNum _ acc <span class="fu">=</span> acc
+
+<span class="ot">avgDb2 ::</span> [<span class="dt">DatabaseItem</span>] <span class="ot">-&gt;</span> <span class="dt">Double</span>
+avgDb2 db <span class="fu">=</span> n <span class="fu">/</span> d <span class="kw">where</span>
+  n <span class="fu">=</span> (fromIntegral <span class="fu">$</span> sumDb db) 
+  d <span class="fu">=</span> (fromIntegral <span class="fu">$</span> length <span class="fu">$</span> filterDbNumber db)</code></pre></div>
+<h2 id="scans">10.9 Scans</h2>
+<h3 id="scans-exercises">Scans Exercises</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Scans</span> <span class="kw">where</span>
+
+fibs <span class="fu">=</span> <span class="dv">1</span> <span class="fu">:</span> scanl (<span class="fu">+</span>) <span class="dv">1</span> fibs
+fibsN x <span class="fu">=</span> fibs <span class="fu">!!</span> x
+
+<span class="co">--1</span>
+fibsToN n <span class="fu">=</span> take n <span class="fu">$</span> fibs
+
+<span class="co">--2</span>
+fibsLessThan n <span class="fu">=</span> takeWhile (<span class="fu">&lt;</span> n) fibs
+
+<span class="co">--3</span>
+factorials <span class="fu">=</span> <span class="dv">1</span> <span class="fu">:</span> scanl ratio <span class="dv">1</span> factorials
+  <span class="kw">where</span> ratio m n <span class="fu">=</span> (m <span class="ot">`div`</span> n <span class="fu">+</span> <span class="dv">1</span>) <span class="fu">*</span> m
+
+factorials2 <span class="fu">=</span> scanl (<span class="fu">*</span>) <span class="dv">1</span> [<span class="dv">1</span><span class="fu">..</span>]
+lazyCaterers <span class="fu">=</span> scanl (<span class="fu">+</span>) <span class="dv">1</span> [<span class="dv">1</span><span class="fu">..</span>]</code></pre></div>
+<h2 id="chapter-exercises-8">10.10 Chapter Exercises</h2>
+<h3 id="warm-up-and-reveiw">Warm-up and reveiw</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--10/WarmUp.hs</span>
+<span class="kw">module</span> <span class="dt">WarmUp</span> <span class="kw">where</span>
+
+<span class="co">-- 1</span>
+stops <span class="fu">=</span> <span class="st">&quot;pbtdkg&quot;</span>
+vowels <span class="fu">=</span> <span class="st">&quot;aeiou&quot;</span>
+
+<span class="co">-- 1a</span>
+stopVowelStop <span class="fu">=</span> [(a, b, c) <span class="fu">|</span> a <span class="ot">&lt;-</span> stops, b <span class="ot">&lt;-</span> vowels, c <span class="ot">&lt;-</span> stops]
+
+<span class="co">-- 1b</span>
+pVowelStop <span class="fu">=</span> [(<span class="ch">'p'</span>, b, c) <span class="fu">|</span> b <span class="ot">&lt;-</span> vowels, c <span class="ot">&lt;-</span> stops]
+
+<span class="co">-- 1c</span>
+nouns <span class="fu">=</span> [<span class="st">&quot;cat&quot;</span>, <span class="st">&quot;dog&quot;</span>, <span class="st">&quot;ball&quot;</span>, <span class="st">&quot;box&quot;</span>]
+verbs <span class="fu">=</span> [<span class="st">&quot;throws&quot;</span>, <span class="st">&quot;catches&quot;</span>, <span class="st">&quot;jumps&quot;</span>, <span class="st">&quot;fetches&quot;</span>]
+
+nounVerbNoun <span class="fu">=</span>   [(a, b, c) <span class="fu">|</span> a <span class="ot">&lt;-</span> nouns, b <span class="ot">&lt;-</span> verbs, c <span class="ot">&lt;-</span> nouns]
+
+<span class="co">-- 2</span>
+seekritFunc x <span class="fu">=</span> div (sum (map length (words x))) (length (words x))
+
+<span class="co">-- function is average word length</span>
+<span class="ot">avgWordLength ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Int</span>
+avgWordLength x <span class="fu">=</span> div totalWordLengths numberOfWords 
+  <span class="kw">where</span>
+    wordList <span class="fu">=</span> words x
+    numberOfWords <span class="fu">=</span> length wordList 
+    wordLengths <span class="fu">=</span> map length wordList
+    totalWordLengths <span class="fu">=</span> sum wordLengths
+
+<span class="co">-- 3</span>
+<span class="ot">preciseAvgWordLength ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Double</span>
+preciseAvgWordLength x <span class="fu">=</span> totalWordLength <span class="fu">/</span> numberOfWords
+  <span class="kw">where</span> 
+    totalWordLength <span class="fu">=</span> fromIntegral <span class="fu">$</span> sum <span class="fu">$</span> map length <span class="fu">$</span> words x
+    numberOfWords   <span class="fu">=</span> fromIntegral <span class="fu">$</span> length <span class="fu">$</span> words x</code></pre></div>
+<h3 id="rewriting-functions-using-folds">Rewriting functions using folds</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--10/FunctionsUsingFolds.hs</span>
+<span class="kw">module</span> <span class="dt">FunctionsUsingFolds</span> <span class="kw">where</span>
+
+<span class="ot">myAnd ::</span> [<span class="dt">Bool</span>] <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+myAnd <span class="fu">=</span> foldr (<span class="fu">&amp;&amp;</span>) <span class="dt">True</span>
+
+<span class="co">-- 1 </span>
+<span class="ot">myOr ::</span> [<span class="dt">Bool</span>] <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+myOr <span class="fu">=</span> foldr (<span class="fu">||</span>) <span class="dt">False</span>
+
+<span class="co">-- 2</span>
+<span class="ot">myAny ::</span> (a <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+myAny f x <span class="fu">=</span> foldl check <span class="dt">False</span> x <span class="kw">where</span>
+  check x y <span class="fu">=</span> x <span class="fu">||</span> f y 
+
+<span class="co">-- 3 </span>
+
+<span class="ot">myElem ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+myElem x xs <span class="fu">=</span> myAny ((<span class="fu">==</span>) x) xs
+
+<span class="co">-- 4</span>
+<span class="ot">myReverse ::</span> [a] <span class="ot">-&gt;</span> [a]
+myReverse <span class="fu">=</span> foldl (flip (<span class="fu">:</span>)) []
+
+<span class="co">-- 5</span>
+<span class="ot">myMap ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [b]
+myMap f xs <span class="fu">=</span> foldr ((<span class="fu">:</span>) <span class="fu">.</span> f) [] xs
+
+<span class="co">-- 6 </span>
+<span class="ot">myFilter ::</span> (a <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [a]
+myFilter f xs <span class="fu">=</span>  foldr g [] xs <span class="kw">where</span>
+  g x y <span class="fu">=</span> <span class="kw">if</span> (f x) <span class="kw">then</span> (x <span class="fu">:</span> y) <span class="kw">else</span> y
+
+<span class="co">-- 7 </span>
+<span class="ot">squish ::</span> [[a]] <span class="ot">-&gt;</span> [a] 
+squish <span class="fu">=</span> foldr (<span class="fu">++</span>) []
+
+<span class="co">-- 8</span>
+<span class="ot">squishMap ::</span> (a <span class="ot">-&gt;</span> [b]) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [b]
+squishMap f <span class="fu">=</span> foldr ((<span class="fu">++</span>) <span class="fu">.</span> f) []
+
+<span class="co">-- 9</span>
+<span class="ot">squishAgain ::</span> [[a]] <span class="ot">-&gt;</span> [a]
+squishAgain <span class="fu">=</span> squishMap id 
+
+<span class="co">-- 10</span>
+<span class="ot">myMaximumBy ::</span> (a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Ordering</span>) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> a
+myMaximumBy ord xs <span class="fu">=</span> foldr1 g xs
+  <span class="kw">where</span> g x y <span class="fu">=</span> <span class="kw">if</span> (ord x y) <span class="fu">==</span> <span class="dt">GT</span> <span class="kw">then</span> x <span class="kw">else</span> y
+
+<span class="co">-- 11</span>
+<span class="ot">myMinimumBy ::</span> (a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Ordering</span>) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> a
+myMinimumBy ord xs <span class="fu">=</span> foldr1 g xs
+  <span class="kw">where</span> g x y <span class="fu">=</span> <span class="kw">if</span> (ord x y) <span class="fu">==</span> <span class="dt">LT</span> <span class="kw">then</span> x <span class="kw">else</span> y</code></pre></div>
+<h2 id="follow-up-resources-6">10.12 Follow-up resources</h2>
+<ol style="list-style-type: decimal">
+<li><p><a href="https://wiki.haskell.org/Fold">Haskell Wiki. Fold.</a></p></li>
+<li><p><a href="Programming%20using%20Haskell%20(1998).">Richard Bird. Sections 4.5 and 4.6 of Introduction to Functional</a></p></li>
+<li><p>Antoni Diller. Introduction to Haskell.</p></li>
+<li><p><a href="http://www.cs.nott.ac.uk/~gmh/fold.pdf">Graham Hutton. A tutorial on the universality and expressive- ness of fold.</a></p></li>
+</ol>
+<h1 id="algebraic-datatypes">11 Algebraic Datatypes</h1>
+<h2 id="data-constructors-and-values">11.5 Data constructors and values</h2>
+<h3 id="exercises-dog-types">Exercises: Dog Types</h3>
+<ol style="list-style-type: decimal">
+<li>type constructor</li>
+<li><code>* -&gt; *</code></li>
+<li><code>*</code></li>
+<li><code>Num a =&gt; Doggies a</code></li>
+<li><code>Doggies Integer</code></li>
+<li><code>Doggies String</code></li>
+<li><code>data constructor (both?)</code></li>
+<li><code>a -&gt; DogueDeBordeaux a</code></li>
+<li><code>DogueDeBordeaux String</code></li>
+</ol>
+<h2 id="whats-a-type-and-whats-data">11.6 What’s a type and what’s data?</h2>
+<h3 id="exercises-vehicles">Exercises: Vehicles</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--11/Vehicles.hs</span>
+<span class="kw">module</span> <span class="dt">Vehicles</span> <span class="kw">where</span>
+
+<span class="kw">data</span> <span class="dt">Price</span> <span class="fu">=</span> <span class="dt">Price</span> <span class="dt">Integer</span> <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+<span class="kw">data</span> <span class="dt">Manufacturer</span> <span class="fu">=</span> <span class="dt">Mini</span> <span class="fu">|</span> <span class="dt">Mazda</span> <span class="fu">|</span> <span class="dt">Tata</span> <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+<span class="kw">data</span> <span class="dt">Size</span> <span class="fu">=</span> <span class="dt">Small</span> <span class="fu">|</span> <span class="dt">Medium</span> <span class="fu">|</span> <span class="dt">Large</span> <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+<span class="kw">data</span> <span class="dt">Airline</span> <span class="fu">=</span> <span class="dt">PapuAir</span> 
+             <span class="fu">|</span> <span class="dt">CatapultsR'Us</span> 
+             <span class="fu">|</span> <span class="dt">TakeYourChancesUnited</span> 
+             <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">data</span> <span class="dt">Vehicle</span> <span class="fu">=</span> <span class="dt">Car</span> <span class="dt">Manufacturer</span> <span class="dt">Price</span> 
+             <span class="fu">|</span> <span class="dt">Plane</span> <span class="dt">Airline</span> <span class="dt">Size</span>
+             <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+myCar <span class="fu">=</span> <span class="dt">Car</span> <span class="dt">Mini</span> (<span class="dt">Price</span> <span class="dv">14000</span>)
+urCar <span class="fu">=</span> <span class="dt">Car</span> <span class="dt">Mazda</span> (<span class="dt">Price</span> <span class="dv">20000</span>)
+clownCar <span class="fu">=</span> <span class="dt">Car</span> <span class="dt">Tata</span> (<span class="dt">Price</span> <span class="dv">7000</span>)
+doge <span class="fu">=</span> <span class="dt">Plane</span> <span class="dt">PapuAir</span> <span class="dt">Small</span>
+
+<span class="co">-- 1. Vehicle</span>
+
+<span class="co">-- 2</span>
+<span class="ot">isCar ::</span> <span class="dt">Vehicle</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+isCar (<span class="dt">Car</span> _ _) <span class="fu">=</span> <span class="dt">True</span>
+isCar _ <span class="fu">=</span> <span class="dt">False</span>
+
+<span class="ot">isPlane ::</span> <span class="dt">Vehicle</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+isPlane (<span class="dt">Plane</span> _ _) <span class="fu">=</span> <span class="dt">True</span>
+isPlane _ <span class="fu">=</span> <span class="dt">False</span>
+
+<span class="ot">areCars ::</span> [<span class="dt">Vehicle</span>] <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+areCars <span class="fu">=</span> any isCar 
+
+<span class="co">-- 3</span>
+
+<span class="ot">getManu ::</span> <span class="dt">Vehicle</span> <span class="ot">-&gt;</span> <span class="dt">Manufacturer</span>
+getManu (<span class="dt">Car</span> manu _) <span class="fu">=</span> manu
+
+<span class="co">-- 4: non-exhaustive patterns</span>
+
+<span class="co">-- 5 see above</span></code></pre></div>
+<h2 id="what-makes-these-datatypes-algebraic">11.8 What makes these datatypes algebraic?</h2>
+<h3 id="exercises-cardinality">Exercises: Cardinality</h3>
+<ol style="list-style-type: decimal">
+<li>cardinality is 1</li>
+<li><code>3</code></li>
+<li><code>2^16 = 65536</code></li>
+<li><code>2^64</code></li>
+<li><code>Int8</code> is an 8 bit integer. <code>2^8</code> is 256.</li>
+</ol>
+<h3 id="exercises-for-example">Exercises: For Example</h3>
+<ol style="list-style-type: decimal">
+<li><code>MakeExample</code>’s type is <code>Example</code>, <code>Example</code> does not have a type, it is a type</li>
+<li><code>Example</code> has data constructor <code>MakeExample</code> with an instance of typeclass <code>Show</code></li>
+<li><code>MakeExample</code> is a function from <code>Int</code> to <code>Example</code></li>
+</ol>
+<h2 id="newtype">11.9 newtype</h2>
+<h3 id="exercises-logic-goats">Exercises: Logic Goats</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">{-# LANGUAGE GeneralizedNewtypeDeriving, FlexibleInstances #-}</span>
+
+<span class="co">--10/LogicGoats.hs</span>
+<span class="kw">module</span> <span class="dt">LogicGoats</span> <span class="kw">where</span>
+
+<span class="kw">class</span> <span class="dt">TooMany</span> a <span class="kw">where</span>
+<span class="ot">  tooMany ::</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+
+<span class="kw">instance</span> <span class="dt">TooMany</span> <span class="dt">Int</span> <span class="kw">where</span>
+  tooMany n <span class="fu">=</span> n <span class="fu">&gt;</span> <span class="dv">42</span>
+
+<span class="kw">instance</span> <span class="dt">TooMany</span> (<span class="dt">Int</span>, <span class="dt">String</span>) <span class="kw">where</span>
+  tooMany (n, str) <span class="fu">=</span> n <span class="fu">&gt;</span> <span class="dv">42</span> <span class="fu">||</span> (length str) <span class="fu">&gt;</span> <span class="dv">42</span>
+
+<span class="co">-- instance TooMany (Int, Int) where</span>
+<span class="co">-- tooMany (n, m) = n + m &gt; 42</span>
+
+<span class="kw">instance</span> (<span class="dt">Num</span> a, <span class="dt">TooMany</span> a) <span class="ot">=&gt;</span> <span class="dt">TooMany</span> (a, a) <span class="kw">where</span>
+  tooMany (n, m) <span class="fu">=</span> tooMany (n <span class="fu">+</span> m)
+
+<span class="kw">newtype</span> <span class="dt">Goats</span> <span class="fu">=</span> <span class="dt">Goats</span> <span class="dt">Int</span> <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>, <span class="dt">TooMany</span>)</code></pre></div>
+<h2 id="sum-types">11.10 Sum types</h2>
+<h3 id="exercises-pity-the-bool">Exercises: Pity the Bool</h3>
+<ol style="list-style-type: decimal">
+<li>4, <code>Bool</code> has cardinality 2 and there are 2 <code>Bools</code> in the sum type, so <code>2 + 2 = 4</code></li>
+<li>258, the type can either be <code>BoolyBool True</code>, <code>BoolyBool False</code> or a <code>Numba</code>. If you go over the Int8 bounds, you get a compiler warning <code>-Woverflowedliterals</code></li>
+</ol>
+<h2 id="normal-form">11.12 Normal Form</h2>
+<h2 id="exercises-how-does-your-garden-grow">Exercises: How Does Your Garden Grow?</h2>
+<ol style="list-style-type: decimal">
+<li><pre><code>data Garden = Gardenia String 
+            | Daisy String 
+            | Rose String
+            | Lilac String
+            deriving Show</code></pre></li>
+</ol>
+<h2 id="constructing-and-deconstructing-values">11.13 Constructing and deconstructing values</h2>
+<h3 id="exercises-programmers">Exercises: Programmers</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--11/Programmers.hs</span>
+<span class="kw">module</span> <span class="dt">Programmers</span> <span class="kw">where</span>
+
+<span class="kw">data</span> <span class="dt">OperatingSystem</span> <span class="fu">=</span> <span class="dt">GnuPlusLinux</span> <span class="fu">|</span> <span class="dt">OpenBSDPlus</span> <span class="fu">|</span> <span class="dt">Mac</span> <span class="fu">|</span> <span class="dt">Windows</span>  
+                        <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+<span class="kw">data</span> <span class="dt">ProgrammingLanguage</span> <span class="fu">=</span> <span class="dt">Haskell</span> <span class="fu">|</span> <span class="dt">Agda</span> <span class="fu">|</span> <span class="dt">Idris</span> <span class="fu">|</span> <span class="dt">PureScript</span>
+                           <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">data</span> <span class="dt">Programmer</span> <span class="fu">=</span> <span class="dt">Programmer</span> {<span class="ot"> os   ::</span> <span class="dt">OperatingSystem</span>
+                             ,<span class="ot"> lang ::</span> <span class="dt">ProgrammingLanguage</span> }
+                  <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="co">-- exercise</span>
+
+<span class="ot">allOperatingSystems ::</span> [<span class="dt">OperatingSystem</span>]
+allOperatingSystems <span class="fu">=</span> [ <span class="dt">GnuPlusLinux</span>
+                      , <span class="dt">OpenBSDPlus</span>
+                      , <span class="dt">Mac</span>
+                      , <span class="dt">Windows</span>
+                      ]
+
+<span class="ot">allLanguages ::</span> [<span class="dt">ProgrammingLanguage</span>]
+allLanguages <span class="fu">=</span> [<span class="dt">Haskell</span>, <span class="dt">Agda</span>, <span class="dt">Idris</span>, <span class="dt">PureScript</span>]
+
+<span class="ot">allProgrammers ::</span> [<span class="dt">Programmer</span>]
+allProgrammers <span class="fu">=</span> [(<span class="dt">Programmer</span> os lang) <span class="fu">|</span> os   <span class="ot">&lt;-</span> allOperatingSystems
+                                       , lang <span class="ot">&lt;-</span> allLanguages ]</code></pre></div>
+<h2 id="function-type-is-exponential">11.14 Function type is exponential</h2>
+<p>Here’s how I visualize why the function type is exponential:</p>
+<p>The set theory defintion is, roughly, that a function is a set of pairs of elements some input set <code>A</code> and elements of some ouput set <code>B</code>, such that there for each element <code>a</code> in <code>A</code>, there is one and only one pair <code>(a, _)</code> in <code>f</code> (assuming the function is total).</p>
+<p>Suppose we’re considering functions from <code>Bool</code> to <code>Bool</code>. As haskell code:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">f1 ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+f1 <span class="dt">True</span> <span class="fu">=</span> <span class="dt">True</span>
+f1 <span class="dt">False</span> <span class="fu">=</span> <span class="dt">True</span></code></pre></div>
+<p>But written as a set, <code>f1</code> looks like:</p>
+<pre><code>{ {T, T},  {F, T} }</code></pre>
+<p>Another function <code>f2</code> might be:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">f2 ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+f2 <span class="dt">True</span> <span class="fu">=</span> <span class="dt">True</span>
+f2 <span class="dt">False</span> <span class="fu">=</span> <span class="dt">False</span></code></pre></div>
+<pre><code>{ {T, T},  {F, F} }</code></pre>
+<p>So now let’s ask ourselves: How many distinct functions from <code>Bool</code> to <code>Bool</code> are there?</p>
+<p>Well, <code>Bool</code> is small so we can just list them out:</p>
+<pre><code>{ {T, T},  {F, T} }
+{ {T, T},  {F, F} }
+{ {T, F},  {F, T} }
+{ {T, F},  {F, F} }</code></pre>
+<p>So there are four, which from the book makes sense because <code>Bool</code> has a cardinality of 2 and function types as exponentials implies that the cardinality of <code>Bool -&gt; Bool</code> is <code>2^2 = 4</code>.</p>
+<p>But, why is this the case? Here’s something interesting, in the listing of possible functions as sets:</p>
+<pre><code>{ {T, T},  {F, T} }
+{ {T, T},  {F, F} }
+{ {T, F},  {F, T} }
+{ {T, F},  {F, F} }</code></pre>
+<p>We’re actually repeating a lot of information in each line. See how all the <code>T</code>’s and <code>F</code>’s line up? We already know that in each function from <code>Bool</code> there’s going to be a pair with <code>True</code> and a pair with <code>False</code> in the first position. What makes the function unique is really the outputs, not the inputs.</p>
+<p>Let’s rewrite the function listing, by picking an order for elements of <code>Bool</code>: True, False.</p>
+<p>Then we can rewrite:</p>
+<pre><code>{ {T, T},  {F, T} } = TT 
+{ {T, T},  {F, F} } = TF
+{ {T, F},  {F, T} } = FT
+{ {T, F},  {F, F} } = FF</code></pre>
+<p>As long as we know the ordering <code>True, False</code>, we can figure out that the first symbol in the pair <code>TF</code>, for example, refers to to the output from <code>True</code> and the second symbol refers to the output from <code>False</code>.</p>
+<p>In other words, when we look at a function, we can look up the function’s output for a given input by looking at what symbol appears the input’s position in the ordering.</p>
+<p>For example, what does the function <code>FT</code> return for the input <code>True</code>? <code>FT</code> has an <code>F</code> for <code>False</code> in the <code>True</code> position, so it returns <code>False</code>.</p>
+<p>The function <code>FT</code> and <code>FF</code> are the same in the <code>True</code> position, and differ in the `False position.</p>
+<p>This may remind you of how digits work in numbers, except instead of the ones position, tens postion etc, the places represent inputs.</p>
+<p>Watch what happens if we map the symbol <code>T</code> to <code>1</code> and the symbol <code>F</code> to <code>0</code>:</p>
+<pre><code>TT = 11
+TF = 10
+FT = 01
+FF = 00</code></pre>
+<p>These are all the 2 digit binary numbers. There are four of them, because each digit can be either <code>1</code> or <code>0</code>, and there are two digits, so <code>2 symbols ^ 2 digits = 4</code></p>
+<p>If there were three digits, there would be <code>2^3 = 8</code> possibile numbers. If there were three digits in base ten there would be <code>10^3 = 1000</code> possible numbers.</p>
+<p>The elements of a function’s input set can be mapped to “digit” positions, and the elements of the output set can be mapped to “digit” symbols. Then you can write down a unique representation of the function by writing the ouput symbols in the input positions. Because the number of possible unique representations is the same as the number of possible functions, and because the number of representations is the number of base symbols raised to the number of digits (base ^ digitnumber = uniques), the number of possible unique functions from one set to another is the number elements in the output set raised to the number of element in the input set.</p>
+<h2 id="exercises-the-quad">Exercises: The Quad</h2>
+<ol style="list-style-type: decimal">
+<li>8</li>
+<li>16</li>
+<li>4^4 = 256</li>
+<li>2<em>2</em>2 = 8</li>
+<li>2<sup>2</sup>2 = 16</li>
+<li>(4<sup>4)</sup>2 = 65536</li>
+</ol>
+<h2 id="binary-tree">11.17 Binary Tree</h2>
+<h3 id="binarytree">BinaryTree</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--11/BinaryTree.hs</span>
+<span class="kw">module</span> <span class="dt">BinaryTree</span> <span class="kw">where</span>
+
+<span class="kw">data</span> <span class="dt">BinaryTree</span> a <span class="fu">=</span> <span class="dt">Leaf</span> <span class="fu">|</span> <span class="dt">Node</span> (<span class="dt">BinaryTree</span> a) a (<span class="dt">BinaryTree</span> a)
+                    <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>, <span class="dt">Ord</span>)
+<span class="co">-- insert</span>
+<span class="ot">insert' ::</span> <span class="dt">Ord</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">BinaryTree</span> a <span class="ot">-&gt;</span> <span class="dt">BinaryTree</span> a
+insert' b <span class="dt">Leaf</span> <span class="fu">=</span> <span class="dt">Node</span> <span class="dt">Leaf</span> b <span class="dt">Leaf</span>
+insert' b (<span class="dt">Node</span> left a right)
+  <span class="fu">|</span> b <span class="fu">==</span> a <span class="fu">=</span> <span class="dt">Node</span> left a right
+  <span class="fu">|</span> b <span class="fu">&lt;</span> a  <span class="fu">=</span> <span class="dt">Node</span> (insert' b left) a right
+  <span class="fu">|</span> b <span class="fu">&gt;</span> a  <span class="fu">=</span> <span class="dt">Node</span> left a (insert' b right)
+
+<span class="co">-- map</span>
+<span class="ot">mapTree ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">BinaryTree</span> a <span class="ot">-&gt;</span> <span class="dt">BinaryTree</span> b
+mapTree _ <span class="dt">Leaf</span> <span class="fu">=</span> <span class="dt">Leaf</span>
+mapTree f (<span class="dt">Node</span> left a right) <span class="fu">=</span> (<span class="dt">Node</span> (mapTree f left) (f a) (mapTree f right))
+
+<span class="ot">testTree' ::</span> <span class="dt">BinaryTree</span> <span class="dt">Integer</span>
+testTree' <span class="fu">=</span> <span class="dt">Node</span> (<span class="dt">Node</span> <span class="dt">Leaf</span> <span class="dv">3</span> <span class="dt">Leaf</span>) <span class="dv">1</span> (<span class="dt">Node</span> <span class="dt">Leaf</span> <span class="dv">4</span> <span class="dt">Leaf</span>)
+
+mapExpected <span class="fu">=</span> <span class="dt">Node</span> (<span class="dt">Node</span> <span class="dt">Leaf</span> <span class="dv">4</span> <span class="dt">Leaf</span>) <span class="dv">2</span> (<span class="dt">Node</span> <span class="dt">Leaf</span> <span class="dv">5</span> <span class="dt">Leaf</span>)
+
+mapOkay <span class="fu">=</span> mapTree (<span class="fu">+</span><span class="dv">1</span>) testTree' <span class="fu">==</span> mapExpected
+
+<span class="co">-- list</span>
+<span class="ot">preorder ::</span> <span class="dt">BinaryTree</span> a <span class="ot">-&gt;</span> [a]
+preorder <span class="dt">Leaf</span> <span class="fu">=</span> []
+preorder (<span class="dt">Node</span> left a right) <span class="fu">=</span> [a] <span class="fu">++</span> (preorder left) <span class="fu">++</span> (preorder right)
+
+<span class="ot">inorder ::</span> <span class="dt">BinaryTree</span> a <span class="ot">-&gt;</span> [a]
+inorder <span class="dt">Leaf</span> <span class="fu">=</span> []
+inorder (<span class="dt">Node</span> left a right) <span class="fu">=</span> (inorder left) <span class="fu">++</span> [a] <span class="fu">++</span>  (inorder right)
+
+<span class="ot">postorder ::</span> <span class="dt">BinaryTree</span> a <span class="ot">-&gt;</span> [a]
+postorder <span class="dt">Leaf</span> <span class="fu">=</span> []
+postorder (<span class="dt">Node</span> left a right) <span class="fu">=</span> (postorder left) <span class="fu">++</span> (postorder right) <span class="fu">++</span> [a]
+
+<span class="ot">testTree ::</span> <span class="dt">BinaryTree</span> <span class="dt">Integer</span>
+testTree <span class="fu">=</span> <span class="dt">Node</span> (<span class="dt">Node</span> <span class="dt">Leaf</span> <span class="dv">1</span> <span class="dt">Leaf</span>) <span class="dv">2</span> (<span class="dt">Node</span> <span class="dt">Leaf</span> <span class="dv">3</span> <span class="dt">Leaf</span>)
+
+testPreorder <span class="fu">=</span> preorder testTree <span class="fu">==</span> [<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">3</span>]
+
+testInorder <span class="fu">=</span> inorder testTree <span class="fu">==</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]
+
+testPostorder <span class="fu">=</span> postorder testTree <span class="fu">==</span> [<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">2</span>]
+
+<span class="ot">foldTree ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> <span class="dt">BinaryTree</span> a <span class="ot">-&gt;</span> b
+foldTree f ac <span class="dt">Leaf</span> <span class="fu">=</span> ac
+foldTree f ac (<span class="dt">Node</span> left v right) <span class="fu">=</span> foldTree f (foldTree f (f v ac) left) right
+
+<span class="ot">foldTree' ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> <span class="dt">BinaryTree</span> a <span class="ot">-&gt;</span> b
+foldTree' f ac bt <span class="fu">=</span> foldr f ac (inorder bt)
+
+<span class="ot">mapTree' ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">BinaryTree</span> a <span class="ot">-&gt;</span> <span class="dt">BinaryTree</span> b
+mapTree' f bt <span class="fu">=</span> foldTree g <span class="dt">Leaf</span> bt
+  <span class="kw">where</span> g v acc <span class="fu">=</span> <span class="dt">Node</span> acc (f v) <span class="dt">Leaf</span>
+
+<span class="ot">mapTree2 ::</span> <span class="dt">Ord</span> b <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">BinaryTree</span> a <span class="ot">-&gt;</span> <span class="dt">BinaryTree</span> b
+mapTree2 f bt <span class="fu">=</span> foldTree g <span class="dt">Leaf</span> bt
+  <span class="kw">where</span> g v acc <span class="fu">=</span> insert' (f v) acc
+
+testTree2 <span class="fu">=</span> <span class="dt">Node</span> (<span class="dt">Node</span> (<span class="dt">Leaf</span>) <span class="dv">2</span> (<span class="dt">Node</span> <span class="dt">Leaf</span> <span class="dv">5</span> <span class="dt">Leaf</span>)) <span class="dv">1</span>
+                 (<span class="dt">Node</span> (<span class="dt">Node</span> <span class="dt">Leaf</span> <span class="dv">6</span> <span class="dt">Leaf</span>) <span class="dv">3</span> (<span class="dt">Node</span> <span class="dt">Leaf</span> <span class="dv">7</span> <span class="dt">Leaf</span>))
+
+ 
+<span class="ot">foldTree1 ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> <span class="dt">BinaryTree</span> a <span class="ot">-&gt;</span> b
+foldTree1 f a <span class="dt">Leaf</span> <span class="fu">=</span> a
+foldTree1 f a (<span class="dt">Node</span> left v right) <span class="fu">=</span> 
+  f v (foldTree1 f a left) (foldTree1 f a right)
+
+<span class="ot">mapTree1 ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">BinaryTree</span> a <span class="ot">-&gt;</span> <span class="dt">BinaryTree</span> b
+mapTree1 f bt <span class="fu">=</span> foldTree1 g <span class="dt">Leaf</span> bt <span class="kw">where</span>
+  g a left right <span class="fu">=</span> <span class="dt">Node</span> left (f a) right</code></pre></div>
+<h2 id="chapter-exercises-9">11.18 Chapter Exercises</h2>
+<h3 id="multiple-choice-3">Multiple Choice</h3>
+<ol style="list-style-type: decimal">
+<li>a</li>
+<li>c</li>
+<li>b</li>
+<li>c</li>
+</ol>
+<h3 id="ciphers-1">Ciphers</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--11/Vignere.hs</span>
+<span class="kw">module</span> <span class="dt">Vignere</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Data.Char</span>
+
+<span class="ot">vignere ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
+vignere key cleartext <span class="fu">=</span> map caeserHelper <span class="fu">$</span> zip key' clr' <span class="kw">where</span>
+    pre <span class="fu">=</span> (map toLower <span class="fu">.</span> filter isAlpha)
+    clr' <span class="fu">=</span> (pre cleartext)
+    key' <span class="fu">=</span> take (length clr') <span class="fu">$</span> cycle (pre key)
+    caeserHelper (a, b) <span class="fu">=</span> chr ((ord a <span class="fu">+</span> ord b <span class="fu">-</span> <span class="dv">2</span><span class="fu">*</span>ord <span class="ch">'a'</span>) <span class="ot">`mod`</span> <span class="dv">26</span> <span class="fu">+</span> ord <span class="ch">'a'</span>)
+
+<span class="ot">unVignere ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
+unVignere key ciphertext <span class="fu">=</span> map caeserHelper <span class="fu">$</span> zip key' ciphertext <span class="kw">where</span>
+    pre <span class="fu">=</span> (map toLower <span class="fu">.</span> filter isAlpha)
+    key' <span class="fu">=</span> take (length ciphertext) <span class="fu">$</span> cycle (pre key)
+    caeserHelper (a, b) <span class="fu">=</span> chr ((ord b <span class="fu">-</span> ord a) <span class="ot">`mod`</span> <span class="dv">26</span> <span class="fu">+</span> ord <span class="ch">'a'</span>)</code></pre></div>
+<h3 id="as-patterns">As-patterns</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--11/AsPatterns.hs</span>
+<span class="kw">module</span> <span class="dt">AsPatterns</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Data.Char</span>
+
+<span class="ot">doubleUp ::</span> [a] <span class="ot">-&gt;</span> [a]
+doubleUp [] <span class="fu">=</span> []
+doubleUp xs<span class="fu">@</span>(x<span class="fu">:</span>_) <span class="fu">=</span> x <span class="fu">:</span> xs
+
+<span class="co">-- 1</span>
+<span class="ot">isSubsequenceOf ::</span> (<span class="dt">Eq</span> a) <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+isSubsequenceOf [] _ <span class="fu">=</span> <span class="dt">True</span>
+isSubsequenceOf _ [] <span class="fu">=</span> <span class="dt">False</span>
+isSubsequenceOf (x<span class="fu">:</span>xs) b <span class="fu">=</span> elem x b <span class="fu">&amp;&amp;</span> isSubsequenceOf xs b
+
+<span class="co">-- 2</span>
+<span class="ot">capWords ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> [(<span class="dt">String</span>, <span class="dt">String</span>)]
+capWords str <span class="fu">=</span> map cap <span class="fu">$</span> words str <span class="kw">where</span>
+  cap a<span class="fu">@</span>(x<span class="fu">:</span>xs) <span class="fu">=</span> (,) a <span class="fu">$</span> (toUpper x)<span class="fu">:</span>xs</code></pre></div>
+<h3 id="language-exercises">Language exercises</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--11/LanguageExercises.hs</span>
+<span class="kw">module</span> <span class="dt">LanguageExercises</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Data.Char</span>
+
+<span class="ot">capWord ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
+capWord a<span class="fu">@</span>(x<span class="fu">:</span>xs) <span class="fu">=</span> <span class="kw">if</span> x <span class="fu">&gt;=</span> <span class="ch">'a'</span> <span class="fu">&amp;&amp;</span> x <span class="fu">&lt;=</span> <span class="ch">'z'</span> 
+                          <span class="kw">then</span> chr((ord x) <span class="fu">-</span> <span class="dv">32</span>)<span class="fu">:</span>xs 
+                          <span class="kw">else</span> a
+
+<span class="ot">capParagraph ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
+capParagraph p <span class="fu">=</span> init <span class="fu">$</span> concat <span class="fu">$</span> map (<span class="fu">++</span> <span class="st">&quot; &quot;</span>) <span class="fu">$</span> capp <span class="fu">$</span> words p <span class="kw">where</span>
+  capp  [] <span class="fu">=</span> []
+  capp  (x<span class="fu">:</span>xs) <span class="fu">=</span> <span class="kw">if</span> (last x) <span class="fu">==</span> <span class="ch">'.'</span> <span class="kw">then</span> x<span class="fu">:</span>(capp' xs) <span class="kw">else</span> x<span class="fu">:</span>(capp xs)
+  capp' [] <span class="fu">=</span> []
+  capp' (x<span class="fu">:</span>xs) <span class="fu">=</span> <span class="kw">if</span> (last x) <span class="fu">==</span> <span class="ch">'.'</span> <span class="kw">then</span> (capWord x)<span class="fu">:</span>(capp' xs) <span class="kw">else</span> x<span class="fu">:</span>(capp xs)</code></pre></div>
+<h3 id="phone-exercise">Phone exercise</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--11/Phone.hs</span>
+<span class="kw">module</span> <span class="dt">Phone</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Data.List</span>
+<span class="kw">import </span><span class="dt">Data.Char</span>
+
+<span class="kw">data</span> <span class="dt">Phone</span> <span class="fu">=</span> <span class="dt">Phone</span> {<span class="ot">buttons ::</span> [<span class="dt">Button</span>]} <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">data</span> <span class="dt">Mode</span> <span class="fu">=</span> <span class="dt">Shift</span> <span class="fu">|</span> <span class="dt">None</span> <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+<span class="kw">data</span> <span class="dt">Button</span> <span class="fu">=</span> <span class="dt">Button</span> {<span class="ot">key ::</span> <span class="dt">Key</span>,<span class="ot"> output ::</span> <span class="dt">String</span>} <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+<span class="kw">type</span> <span class="dt">Key</span> <span class="fu">=</span> <span class="dt">Char</span> 
+<span class="kw">type</span> <span class="dt">Press</span> <span class="fu">=</span> <span class="dt">Int</span>
+
+<span class="ot">daPhone ::</span> <span class="dt">Phone</span>
+daPhone <span class="fu">=</span> <span class="dt">Phone</span> 
+          [ <span class="dt">Button</span> <span class="ch">'1'</span> <span class="st">&quot;1&quot;</span>    , <span class="dt">Button</span> <span class="ch">'2'</span> <span class="st">&quot;ABC2&quot;</span>, <span class="dt">Button</span> <span class="ch">'3'</span> <span class="st">&quot;DEF3&quot;</span>
+          , <span class="dt">Button</span> <span class="ch">'4'</span> <span class="st">&quot;GHI4&quot;</span> , <span class="dt">Button</span> <span class="ch">'5'</span> <span class="st">&quot;JKL5&quot;</span>, <span class="dt">Button</span> <span class="ch">'6'</span> <span class="st">&quot;MNO6&quot;</span>
+          , <span class="dt">Button</span> <span class="ch">'7'</span> <span class="st">&quot;PQRS7&quot;</span>, <span class="dt">Button</span> <span class="ch">'8'</span> <span class="st">&quot;TUV8&quot;</span>, <span class="dt">Button</span> <span class="ch">'9'</span> <span class="st">&quot;WXYZ9&quot;</span>
+          , <span class="dt">Button</span> <span class="ch">'*'</span> <span class="st">&quot;^*&quot;</span>   , <span class="dt">Button</span> <span class="ch">'0'</span> <span class="st">&quot; 0&quot;</span>  , <span class="dt">Button</span> <span class="ch">'#'</span> <span class="st">&quot;.,#&quot;</span>
+          ]
+
+convo <span class="fu">=</span> [<span class="st">&quot;Wanna play 20 questions&quot;</span>, 
+         <span class="st">&quot;Ya&quot;</span>,
+         <span class="st">&quot;U 1st haha&quot;</span>,
+         <span class="st">&quot;Lol ok. Have u ever tated alcohol lol&quot;</span>,
+         <span class="st">&quot;Lol ya&quot;</span>,  
+         <span class="st">&quot;Wow ur cool haha. Ur turn&quot;</span>,
+         <span class="st">&quot;Ok. Do u think I am pretty lol&quot;</span>,
+         <span class="st">&quot;lol ya&quot;</span>,
+         <span class="st">&quot;Haha thanks just makin sure rofl ur turn&quot;</span>]
+
+<span class="ot">keyMap ::</span> <span class="dt">Phone</span> <span class="ot">-&gt;</span> (<span class="dt">Key</span>, <span class="dt">Press</span>) <span class="ot">-&gt;</span> <span class="dt">Mode</span> <span class="ot">-&gt;</span> <span class="dt">Char</span>
+keyMap phone (k, p) mode <span class="fu">=</span> 
+  <span class="kw">if</span> mode <span class="fu">==</span> <span class="dt">Shift</span> <span class="kw">then</span> out <span class="kw">else</span> toLower out <span class="kw">where</span>
+    out <span class="fu">=</span> outCycle <span class="fu">!!</span> ((p <span class="fu">-</span> <span class="dv">1</span>) <span class="ot">`mod`</span> (length outCycle))
+    outCycle <span class="fu">=</span> unpack <span class="fu">$</span> lookup k <span class="fu">$</span> zip (map key pb) (map output pb)
+    pb <span class="fu">=</span> (buttons phone)
+    unpack (<span class="dt">Just</span> a) <span class="fu">=</span> a
+
+<span class="ot">textOut ::</span> <span class="dt">Phone</span> <span class="ot">-&gt;</span> [(<span class="dt">Key</span>, <span class="dt">Press</span>)] <span class="ot">-&gt;</span> <span class="dt">String</span>
+textOut phone kps <span class="fu">=</span> go phone kps <span class="dt">None</span> <span class="kw">where</span>
+  go phone [] _ <span class="fu">=</span> [] 
+  go phone ((<span class="ch">'*'</span>, <span class="dv">1</span>)<span class="fu">:</span>kps) <span class="dt">None</span> <span class="fu">=</span> go phone kps <span class="dt">Shift</span>
+  go phone ((<span class="ch">'*'</span>, <span class="dv">1</span>)<span class="fu">:</span>kps) <span class="dt">Shift</span> <span class="fu">=</span> go phone kps <span class="dt">None</span>
+  go phone (kp<span class="fu">:</span>kps) m <span class="fu">=</span>  ((keyMap phone) (shift kp) m) <span class="fu">:</span> go phone kps <span class="dt">None</span>
+  shift (k, p) <span class="fu">=</span> <span class="kw">if</span> k <span class="fu">==</span> <span class="ch">'*'</span> <span class="kw">then</span> (k, p <span class="fu">-</span> <span class="dv">1</span>) <span class="kw">else</span> (k, p)
+
+<span class="ot">invButton ::</span> <span class="dt">Button</span> <span class="ot">-&gt;</span> [(<span class="dt">Char</span>, (<span class="dt">Key</span>, <span class="dt">Press</span>))]
+invButton b <span class="fu">=</span> go ((key b), (output b)) <span class="dv">1</span> <span class="kw">where</span>
+  go (k, []) _ <span class="fu">=</span> []
+  go (k, (c<span class="fu">:</span>cs)) n <span class="fu">=</span> (c, (k, n)) <span class="fu">:</span> go (k, cs) (n <span class="fu">+</span> <span class="dv">1</span>)
+
+<span class="ot">invKeyMap ::</span> <span class="dt">Phone</span> <span class="ot">-&gt;</span> <span class="dt">Char</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (<span class="dt">Key</span>, <span class="dt">Press</span>)
+invKeyMap phone c <span class="fu">=</span> lookup c <span class="fu">$</span> concatMap invButton <span class="fu">$</span> buttons daPhone
+
+<span class="ot">keyPressIn ::</span> <span class="dt">Phone</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> [<span class="dt">Maybe</span> (<span class="dt">Key</span>, <span class="dt">Press</span>)]
+keyPressIn phone [] <span class="fu">=</span> [] 
+keyPressIn phone (x<span class="fu">:</span>xs) <span class="fu">=</span> <span class="kw">if</span> isUpper x <span class="kw">then</span> up <span class="kw">else</span> lo <span class="kw">where</span>
+  up <span class="fu">=</span> (<span class="dt">Just</span> (<span class="ch">'*'</span>, <span class="dv">1</span>))<span class="fu">:</span>(invKeyMap phone x)<span class="fu">:</span>(keyPressIn phone xs)
+  lo <span class="fu">=</span> (invKeyMap phone (toUpper x))<span class="fu">:</span>(keyPressIn phone xs)
+
+<span class="ot">fingerTaps ::</span> [<span class="dt">Maybe</span> (<span class="dt">Key</span>, <span class="dt">Press</span>)] <span class="ot">-&gt;</span> <span class="dt">Press</span>
+fingerTaps a <span class="fu">=</span> go a <span class="dv">0</span> <span class="kw">where</span>
+  go [] n <span class="fu">=</span> n
+  go ((<span class="dt">Nothing</span>)<span class="fu">:</span>xs) n <span class="fu">=</span> go xs n
+  go ((<span class="dt">Just</span> (k, p))<span class="fu">:</span>xs) n <span class="fu">=</span> go xs (p <span class="fu">+</span> n)
+
+<span class="ot">mostPopularLetter ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Char</span>
+mostPopularLetter str <span class="fu">=</span> head <span class="fu">$</span> maximumBy cmp <span class="fu">$</span> group str <span class="kw">where</span>
+  cmp a b <span class="fu">=</span> compare (length a) (length b)
+
+<span class="ot">costOfMostPopularLetter ::</span> <span class="dt">Phone</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Press</span>
+costOfMostPopularLetter phone str <span class="fu">=</span> fingerTaps <span class="fu">$</span> keyPressIn phone [a] <span class="kw">where</span>
+  a <span class="fu">=</span> mostPopularLetter str
+
+<span class="ot">coolestLtr ::</span> [<span class="dt">String</span>] <span class="ot">-&gt;</span> <span class="dt">Char</span>
+coolestLtr msgs <span class="fu">=</span> mostPopularLetter <span class="fu">$</span> map mostPopularLetter msgs
+
+<span class="ot">coolestWord ::</span> [<span class="dt">String</span>] <span class="ot">-&gt;</span> <span class="dt">String</span>
+coolestWord msgs <span class="fu">=</span> head <span class="fu">$</span> maximumBy cmp <span class="fu">$</span> group <span class="fu">$</span> concatMap words msgs <span class="kw">where</span> 
+  cmp a b <span class="fu">=</span> compare (length a) (length b)</code></pre></div>
+<p>[TODO: I’m looking back on this code several months after writing it. It’s awkward, but I’ll leave it as is for now, since it’s an okay example of solving the problem with only the tools covered in the book thus far. I think I should do an example of how this project gets a lot easier when you can use things like the State monad.]</p>
+<h3 id="huttons-razor">Hutton’s Razor</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--11/Hutton.hs</span>
+<span class="kw">module</span> <span class="dt">Hutton</span> <span class="kw">where</span>
+
+<span class="co">--1</span>
+<span class="kw">data</span> <span class="dt">Expr</span> <span class="fu">=</span> <span class="dt">Lit</span> <span class="dt">Integer</span> <span class="fu">|</span> <span class="dt">Add</span> <span class="dt">Expr</span> <span class="dt">Expr</span>
+
+<span class="ot">eval ::</span> <span class="dt">Expr</span> <span class="ot">-&gt;</span> <span class="dt">Integer</span>
+eval (<span class="dt">Lit</span> n) <span class="fu">=</span> n
+eval (<span class="dt">Add</span> a b) <span class="fu">=</span> (<span class="fu">+</span>) (eval a) (eval b) 
+
+<span class="co">-- 2</span>
+
+<span class="ot">printExpr ::</span> <span class="dt">Expr</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
+printExpr (<span class="dt">Lit</span> n) <span class="fu">=</span> show n
+printExpr (<span class="dt">Add</span> a b) <span class="fu">=</span> (printExpr a) <span class="fu">++</span> <span class="st">&quot; + &quot;</span> <span class="fu">++</span> (printExpr b)</code></pre></div>
+<h1 id="signaling-adversity">12 Signaling adversity</h1>
 
         </div>
         <div id="footer">
