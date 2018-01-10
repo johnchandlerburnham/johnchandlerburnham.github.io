@@ -2074,7 +2074,20 @@ From [Gonzalez's "How to Desugar Haskell Code"](https://github.com/johnchandlerb
 
 ### Exercises: Guard Duty
 
-see avgGrade.hs
+```haskell
+--07/AvgGrade.hs
+module AvgGrade where
+
+avgGrade :: (Fractional a, Ord a) => a -> Char
+avgGrade x
+  | y >= 0.7 = 'C'
+  | y >= 0.9 = 'A'
+  | y >= 0.8 = 'B'
+  | y >= 0.59 = 'D'
+  | otherwise = 'F'
+  where 
+    y = x / 100  
+```
 
 1. Can't do otherwise if theres no wise to other. 
 2. No, because the conditions are not exclusive.
@@ -2107,49 +2120,49 @@ see avgGrade.hs
         works perfectly well.
 
 
-    b. Yup. 
+    b.  Yup. 
 
-    c. Well let's do this properly:
+    c.  Well let's do this properly:
 
-       ```haskell
-       -- 07/Digit.hs
+        ```haskell
+        -- 07/Digit.hs
 
-       baseDigit :: Integral a => a -> a -> a -> Maybe a
-       baseDigit base digit x                                                          
-         | base == 0 = Nothing
-         | digit < 0 = Nothing
-         | otherwise = Just $ (flip mod) base $ div x (base ^ digit)                   
-       ```
-        
-       So that 
+        baseDigit :: Integral a => a -> a -> a -> Maybe a
+        baseDigit base digit x
+          | base == 0 = Nothing
+          | digit < 0 = Nothing
+          | otherwise = Just $ (flip mod) base $ div x (base ^ digit)
+        ```
        
-       ```haskell
-       *Main> baseDigit 10 2 1234
-       Just 2
-       *Main> baseDigit 10 2 123456
-       Just 4
-       *Main> baseDigit 10 2 9876543210
-       Just 2
-       *Main> 
-       ```
+        So that 
+        
+        ```haskell
+        *Main> baseDigit 10 2 1234
+        Just 2
+        *Main> baseDigit 10 2 123456
+        Just 4
+        *Main> baseDigit 10 2 9876543210
+        Just 2
+        *Main> 
+        ```
 
-2.   ```haskell
-     -- 07/FoldBool.hs
-                                                                                     
-     foldBool :: a -> a -> Bool -> a
-     foldBool x y b = case b of
-         True -> x
-         False -> y
+2.  ```haskell
+    -- 07/FoldBool.hs
+                                                                                   
+    foldBool :: a -> a -> Bool -> a
+    foldBool x y b = case b of
+       True -> x
+       False -> y
 
-     foldBool2 :: a -> a -> Bool -> a
-     foldBool2 x y b
-       | b == True = x
-       | b == False = y
-     ```
+    foldBool2 :: a -> a -> Bool -> a
+    foldBool2 x y b
+     | b == True = x
+     | b == False = y
+    ```
 
 3. `g f (a, b) = (f a, b)`
 
-4.  ```
+4.  ```haskell
     -- 07/arith4.hs
 
     roundTrip :: (Show a, Read a) => a -> a
@@ -2685,3 +2698,830 @@ myMinimum = myMinimumBy compare
 2. [Ninety-nine Haskell problems.](https://wiki.haskell.org/H-99:_Ninety-Nine_Haskell_Problems)
 
 # 10 Folding lists
+
+Okay, so here's the thing about the term "catamorphism":
+
+"Kata" in Greek means "down". The opposite of "kata" is "ana" which means "up".
+
+So we have "catamorphisms" and "anamorphisms". Remember that "morph" means
+"form", so a "catamorphism" is a "down-form thing" and an "anamorphism"
+is an "up-form thing".
+
+But what the heck do "up" and "down" have to do with "forms". There's a
+metaphor that recurs (heh) again and again in functional programming between
+height and complexity: Things that have more structure or are more complex are
+upwards and things that are simpler are downwards.
+
+So an `Integer` is pretty simple, and is downwards of `[Integer]` or `Maybe
+Integer` or `Map String Integer`. 
+
+Functions that go "upwards" in this complexity-space, like from `Integer ->
+[Integer]` are, roughly speaking, anamorphisms. Functions that go "downwards"
+are catamorphisms.
+
+
+## 10.4 Fold right
+
+### Exercises: Understanding folds
+
+```haskell
+module Folds where
+
+-- 1: 
+one = (==) (foldr (*) 1 [1..5]) (foldl (*) 1 [1..5])
+
+-- 2
+two = scanl (flip (*)) 1 [1..3]
+
+--3: c
+
+--4: reduce structure
+
+--5
+fiveA = foldr (++) "" ["woot", "WOOT", "woot"]
+fiveB = foldr max 'a' "fear is the little death"
+fiveC = foldr (&&) True [False, True]
+fiveD = foldr (||) True [False, True]
+fiveE = foldr ((++) . show) "" [1..5]
+fiveF = foldl const 'a'  [1..5]
+fiveG = foldl const 0 "tacos"
+fiveH = foldr (flip const) 0 "burritos"
+fiveI = foldr (flip const) 'z' [1..5]
+```
+
+### Exercises: Database Processing
+
+```haskell
+module DatabaseProcessing where
+
+import Data.Time
+
+data DatabaseItem = DbString String
+                  | DbNumber Integer
+                  | DbDate   UTCTime
+                  deriving (Eq, Ord, Show)
+
+theDatabase :: [DatabaseItem]
+theDatabase = 
+  [ DbDate (UTCTime
+            (fromGregorian 1911 5 1)
+            (secondsToDiffTime 34123))
+  , DbNumber 9001
+  , DbString "Hello, World!"
+  , DbDate (UTCTime
+            (fromGregorian 1921 5 1)
+            (secondsToDiffTime 34123))
+  ]
+
+-- 1 
+filterDbDate :: [DatabaseItem] -> [UTCTime]
+filterDbDate = map unpack . filter isADbDate where
+  isADbDate (DbDate _) = True
+  isADbDate _ = False
+  unpack (DbDate utc) = utc
+
+filterDbDate2 :: [DatabaseItem] -> [UTCTime]
+filterDbDate2 = foldr unpackDate [] where
+  unpackDate (DbDate utc) acc = utc : acc
+  unpackDate _ acc = acc
+
+-- 2
+filterDbNumber :: [DatabaseItem] -> [Integer]
+filterDbNumber = foldr unpackNum [] where
+  unpackNum (DbNumber num) acc = num : acc
+  unpackNum _ acc = acc
+
+-- 3 
+mostRecent :: [DatabaseItem] -> UTCTime
+mostRecent db = foldr compareDate base db where
+  compareDate (DbDate utc) acc = max utc acc  
+  compareDate _ acc = acc
+  base = (filterDbDate2 db) !! 0
+
+-- 4 
+sumDb :: [DatabaseItem] -> Integer
+sumDb = foldr addNum 0 where
+  addNum (DbNumber int) acc = int + acc
+  addNum _ acc = acc
+
+-- 5
+avgDb :: [DatabaseItem] -> Double 
+avgDb db = (fromIntegral $ fst tup) / (fromIntegral $ snd tup) where
+  tup = foldr addNum (0,0) db
+  addNum (DbNumber int) (num,den) = (int + num, den + 1)
+  addNum _ acc = acc
+
+avgDb2 :: [DatabaseItem] -> Double
+avgDb2 db = n / d where
+  n = (fromIntegral $ sumDb db) 
+  d = (fromIntegral $ length $ filterDbNumber db)
+```
+
+## 10.9 Scans
+
+### Scans Exercises
+
+```haskell
+module Scans where
+
+fibs = 1 : scanl (+) 1 fibs
+fibsN x = fibs !! x
+
+--1
+fibsToN n = take n $ fibs
+
+--2
+fibsLessThan n = takeWhile (< n) fibs
+
+--3
+factorials = 1 : scanl ratio 1 factorials
+  where ratio m n = (m `div` n + 1) * m
+
+factorials2 = scanl (*) 1 [1..]
+lazyCaterers = scanl (+) 1 [1..]
+```
+## 10.10 Chapter Exercises
+
+### Warm-up and reveiw
+
+```haskell
+--10/WarmUp.hs
+module WarmUp where
+
+-- 1
+stops = "pbtdkg"
+vowels = "aeiou"
+
+-- 1a
+stopVowelStop = [(a, b, c) | a <- stops, b <- vowels, c <- stops]
+
+-- 1b
+pVowelStop = [('p', b, c) | b <- vowels, c <- stops]
+
+-- 1c
+nouns = ["cat", "dog", "ball", "box"]
+verbs = ["throws", "catches", "jumps", "fetches"]
+
+nounVerbNoun =   [(a, b, c) | a <- nouns, b <- verbs, c <- nouns]
+
+-- 2
+seekritFunc x = div (sum (map length (words x))) (length (words x))
+
+-- function is average word length
+avgWordLength :: String -> Int
+avgWordLength x = div totalWordLengths numberOfWords 
+  where
+    wordList = words x
+    numberOfWords = length wordList 
+    wordLengths = map length wordList
+    totalWordLengths = sum wordLengths
+
+-- 3
+preciseAvgWordLength :: String -> Double
+preciseAvgWordLength x = totalWordLength / numberOfWords
+  where 
+    totalWordLength = fromIntegral $ sum $ map length $ words x
+    numberOfWords   = fromIntegral $ length $ words x
+
+```
+
+### Rewriting functions using folds
+
+```haskell
+--10/FunctionsUsingFolds.hs
+module FunctionsUsingFolds where
+
+myAnd :: [Bool] -> Bool
+myAnd = foldr (&&) True
+
+-- 1 
+myOr :: [Bool] -> Bool
+myOr = foldr (||) False
+
+-- 2
+myAny :: (a -> Bool) -> [a] -> Bool
+myAny f x = foldl check False x where
+  check x y = x || f y 
+
+-- 3 
+
+myElem :: Eq a => a -> [a] -> Bool
+myElem x xs = myAny ((==) x) xs
+
+-- 4
+myReverse :: [a] -> [a]
+myReverse = foldl (flip (:)) []
+
+-- 5
+myMap :: (a -> b) -> [a] -> [b]
+myMap f xs = foldr ((:) . f) [] xs
+
+-- 6 
+myFilter :: (a -> Bool) -> [a] -> [a]
+myFilter f xs =  foldr g [] xs where
+  g x y = if (f x) then (x : y) else y
+
+-- 7 
+squish :: [[a]] -> [a] 
+squish = foldr (++) []
+
+-- 8
+squishMap :: (a -> [b]) -> [a] -> [b]
+squishMap f = foldr ((++) . f) []
+
+-- 9
+squishAgain :: [[a]] -> [a]
+squishAgain = squishMap id 
+
+-- 10
+myMaximumBy :: (a -> a -> Ordering) -> [a] -> a
+myMaximumBy ord xs = foldr1 g xs
+  where g x y = if (ord x y) == GT then x else y
+
+-- 11
+myMinimumBy :: (a -> a -> Ordering) -> [a] -> a
+myMinimumBy ord xs = foldr1 g xs
+  where g x y = if (ord x y) == LT then x else y
+```
+
+## 10.12 Follow-up resources
+
+1. [Haskell Wiki. Fold.](https://wiki.haskell.org/Fold)
+
+2. [Richard Bird. Sections 4.5 and 4.6 of Introduction to Functional](Programming using Haskell (1998).)
+
+3. Antoni Diller. Introduction to Haskell.
+
+4. [Graham Hutton. A tutorial on the universality and expressive-
+ness of fold.](http://www.cs.nott.ac.uk/~gmh/fold.pdf)
+
+# 11 Algebraic Datatypes
+
+## 11.5 Data constructors and values
+
+### Exercises: Dog Types
+
+1. type constructor
+2. `* -> *`
+3. `*`
+4. `Num a => Doggies a`
+5. `Doggies Integer`
+6. `Doggies String`
+7. `data constructor (both?)`
+8. `a -> DogueDeBordeaux a`
+9. `DogueDeBordeaux String`
+
+## 11.6 What's a type and what's data?
+
+### Exercises: Vehicles
+
+```haskell
+--11/Vehicles.hs
+module Vehicles where
+
+data Price = Price Integer deriving (Eq, Show)
+data Manufacturer = Mini | Mazda | Tata deriving (Eq, Show)
+data Size = Small | Medium | Large deriving (Eq, Show)
+data Airline = PapuAir 
+             | CatapultsR'Us 
+             | TakeYourChancesUnited 
+             deriving (Eq, Show)
+
+data Vehicle = Car Manufacturer Price 
+             | Plane Airline Size
+             deriving (Eq, Show)
+
+myCar = Car Mini (Price 14000)
+urCar = Car Mazda (Price 20000)
+clownCar = Car Tata (Price 7000)
+doge = Plane PapuAir Small
+
+-- 1. Vehicle
+
+-- 2
+isCar :: Vehicle -> Bool
+isCar (Car _ _) = True
+isCar _ = False
+
+isPlane :: Vehicle -> Bool
+isPlane (Plane _ _) = True
+isPlane _ = False
+
+areCars :: [Vehicle] -> Bool
+areCars = any isCar 
+
+-- 3
+
+getManu :: Vehicle -> Manufacturer
+getManu (Car manu _) = manu
+
+-- 4: non-exhaustive patterns
+
+-- 5 see above
+```
+
+
+## 11.8 What makes these datatypes algebraic?
+
+### Exercises: Cardinality
+
+1. cardinality is 1
+2. `3`
+3. `2^16 = 65536`
+4. `2^64`
+5. `Int8` is an 8 bit integer. `2^8` is 256. 
+
+### Exercises: For Example
+
+1. `MakeExample`'s type is `Example`, `Example` does not have a type, it is a type
+2. `Example` has data constructor `MakeExample` with an instance of typeclass `Show`
+3. `MakeExample` is a function from `Int` to `Example`
+
+## 11.9 newtype
+
+### Exercises: Logic Goats
+
+```haskell
+{-# LANGUAGE GeneralizedNewtypeDeriving, FlexibleInstances #-}
+
+--10/LogicGoats.hs
+module LogicGoats where
+
+class TooMany a where
+  tooMany :: a -> Bool
+
+instance TooMany Int where
+  tooMany n = n > 42
+
+instance TooMany (Int, String) where
+  tooMany (n, str) = n > 42 || (length str) > 42
+
+-- instance TooMany (Int, Int) where
+-- tooMany (n, m) = n + m > 42
+
+instance (Num a, TooMany a) => TooMany (a, a) where
+  tooMany (n, m) = tooMany (n + m)
+
+newtype Goats = Goats Int deriving (Eq, Show, TooMany)
+```
+
+## 11.10 Sum types
+
+### Exercises: Pity the Bool
+
+1. 4, `Bool` has cardinality 2 and there are 2 `Bools` in the sum type,
+   so `2 + 2 = 4`
+2. 258, the type can either be `BoolyBool True`, `BoolyBool False` or a `Numba`. 
+   If you go over the Int8 bounds, you get a compiler warning `-Woverflowedliterals`
+
+
+## 11.12 Normal Form
+
+## Exercises: How Does Your Garden Grow?
+
+1.  ```
+    data Garden = Gardenia String 
+                | Daisy String 
+                | Rose String
+                | Lilac String
+                deriving Show
+    ```
+
+## 11.13 Constructing and deconstructing values
+
+### Exercises: Programmers
+
+```haskell
+--11/Programmers.hs
+module Programmers where
+
+data OperatingSystem = GnuPlusLinux | OpenBSDPlus | Mac | Windows  
+                        deriving (Eq, Show)
+data ProgrammingLanguage = Haskell | Agda | Idris | PureScript
+                           deriving (Eq, Show)
+
+data Programmer = Programmer { os   :: OperatingSystem
+                             , lang :: ProgrammingLanguage }
+                  deriving (Eq, Show)
+
+-- exercise
+
+allOperatingSystems :: [OperatingSystem]
+allOperatingSystems = [ GnuPlusLinux
+                      , OpenBSDPlus
+                      , Mac
+                      , Windows
+                      ]
+
+allLanguages :: [ProgrammingLanguage]
+allLanguages = [Haskell, Agda, Idris, PureScript]
+
+allProgrammers :: [Programmer]
+allProgrammers = [(Programmer os lang) | os   <- allOperatingSystems
+                                       , lang <- allLanguages ]
+```
+
+## 11.14 Function type is exponential
+
+Here's how I visualize why the function type is exponential:
+
+The set theory defintion is, roughly, that a function is a set of
+pairs of elements some input set `A` and elements of some ouput set `B`,
+such that there for each element `a` in `A`, there is one and only one pair
+`(a, _)` in `f` (assuming the function is total).
+
+Suppose we're considering functions from `Bool` to `Bool`. As haskell code:
+
+```haskell
+f1 :: Bool -> Bool
+f1 True = True
+f1 False = True
+```
+
+But written as a set, `f1` looks like:
+
+```
+{ {T, T},  {F, T} }
+```
+
+Another function `f2` might be:
+
+```haskell
+f2 :: Bool -> Bool
+f2 True = True
+f2 False = False
+```
+
+```
+{ {T, T},  {F, F} }
+```
+
+So now let's ask ourselves: How many distinct functions from `Bool` to `Bool`
+are there?
+
+Well, `Bool` is small so we can just list them out:
+
+
+```
+{ {T, T},  {F, T} }
+{ {T, T},  {F, F} }
+{ {T, F},  {F, T} }
+{ {T, F},  {F, F} }
+```
+
+So there are four, which from the book makes sense because `Bool` has a
+cardinality of 2 and function types as exponentials implies that 
+the cardinality of `Bool -> Bool` is `2^2 = 4`.
+
+But, why is this the case? Here's something interesting, in the listing 
+of possible functions as sets:
+
+```
+{ {T, T},  {F, T} }
+{ {T, T},  {F, F} }
+{ {T, F},  {F, T} }
+{ {T, F},  {F, F} }
+```
+
+We're actually repeating a lot of information in each line. See how all
+the `T`'s and `F`'s line up? We already know that in each function from
+`Bool` there's going to be a pair with `True` and a pair with `False` in
+the first position. What makes the function unique is really the outputs,
+not the inputs.
+
+Let's rewrite the function listing, by picking an order for elements
+of `Bool`: True, False.
+
+Then we can rewrite:
+```
+{ {T, T},  {F, T} } = TT 
+{ {T, T},  {F, F} } = TF
+{ {T, F},  {F, T} } = FT
+{ {T, F},  {F, F} } = FF
+```
+
+As long as we know the ordering `True, False`, we can figure out that the first
+symbol in the pair `TF`, for example, refers to to the output from `True` and
+the second symbol refers to the output from `False`.
+
+In other words, when we look at a function, we can look up the function's
+output for a given input by looking at what symbol appears the input's position
+in the ordering. 
+
+For example, what does the function `FT` return for the 
+input `True`? `FT` has an `F` for `False` in the `True` position, so it
+returns `False`. 
+
+The function `FT` and `FF` are the same in the `True` position,
+and differ in the `False position.
+
+This may remind you of how digits work in numbers, except instead of
+the ones position, tens postion etc, the places represent inputs. 
+
+Watch what happens if we map the symbol `T` to `1` and the symbol `F` to `0`:
+
+```
+TT = 11
+TF = 10
+FT = 01
+FF = 00
+```
+
+These are all the 2 digit binary numbers. There are four of them,
+because each digit can be either `1` or `0`, and there are two digits,
+so `2 symbols ^ 2 digits = 4`
+
+If there were three digits, there would be `2^3 = 8` possibile numbers.
+If there were three digits in base ten there would be `10^3 = 1000` possible numbers.
+
+The elements of a function's input set can be mapped to 
+"digit" positions, and the elements of the output set can be mapped to "digit"
+symbols. Then you can write down a unique representation of the function
+by writing the ouput symbols in the input positions. Because the number of
+possible unique representations is the same as the number of possible functions,
+and because the number of representations is the number of base symbols raised
+to the number of digits (base ^ digitnumber = uniques), the number of possible
+unique functions from one set to another is the number elements in the output
+set raised to the number of element in the input set. 
+
+## Exercises: The Quad
+
+1. 8
+2. 16
+3. 4^4 = 256
+4. 2*2*2 = 8
+5. 2^2^2 = 16
+6. (4^4)^2 = 65536
+
+## 11.17 Binary Tree
+
+### BinaryTree
+
+```haskell
+--11/BinaryTree.hs
+module BinaryTree where
+
+data BinaryTree a = Leaf | Node (BinaryTree a) a (BinaryTree a)
+                    deriving (Eq, Show, Ord)
+-- insert
+insert' :: Ord a => a -> BinaryTree a -> BinaryTree a
+insert' b Leaf = Node Leaf b Leaf
+insert' b (Node left a right)
+  | b == a = Node left a right
+  | b < a  = Node (insert' b left) a right
+  | b > a  = Node left a (insert' b right)
+
+-- map
+mapTree :: (a -> b) -> BinaryTree a -> BinaryTree b
+mapTree _ Leaf = Leaf
+mapTree f (Node left a right) = (Node (mapTree f left) (f a) (mapTree f right))
+
+testTree' :: BinaryTree Integer
+testTree' = Node (Node Leaf 3 Leaf) 1 (Node Leaf 4 Leaf)
+
+mapExpected = Node (Node Leaf 4 Leaf) 2 (Node Leaf 5 Leaf)
+
+mapOkay = mapTree (+1) testTree' == mapExpected
+
+-- list
+preorder :: BinaryTree a -> [a]
+preorder Leaf = []
+preorder (Node left a right) = [a] ++ (preorder left) ++ (preorder right)
+
+inorder :: BinaryTree a -> [a]
+inorder Leaf = []
+inorder (Node left a right) = (inorder left) ++ [a] ++  (inorder right)
+
+postorder :: BinaryTree a -> [a]
+postorder Leaf = []
+postorder (Node left a right) = (postorder left) ++ (postorder right) ++ [a]
+
+testTree :: BinaryTree Integer
+testTree = Node (Node Leaf 1 Leaf) 2 (Node Leaf 3 Leaf)
+
+testPreorder = preorder testTree == [2, 1, 3]
+
+testInorder = inorder testTree == [1, 2, 3]
+
+testPostorder = postorder testTree == [1, 3, 2]
+
+foldTree :: (a -> b -> b) -> b -> BinaryTree a -> b
+foldTree f ac Leaf = ac
+foldTree f ac (Node left v right) = foldTree f (foldTree f (f v ac) left) right
+
+foldTree' :: (a -> b -> b) -> b -> BinaryTree a -> b
+foldTree' f ac bt = foldr f ac (inorder bt)
+
+mapTree' :: (a -> b) -> BinaryTree a -> BinaryTree b
+mapTree' f bt = foldTree g Leaf bt
+  where g v acc = Node acc (f v) Leaf
+
+mapTree2 :: Ord b => (a -> b) -> BinaryTree a -> BinaryTree b
+mapTree2 f bt = foldTree g Leaf bt
+  where g v acc = insert' (f v) acc
+
+testTree2 = Node (Node (Leaf) 2 (Node Leaf 5 Leaf)) 1
+                 (Node (Node Leaf 6 Leaf) 3 (Node Leaf 7 Leaf))
+
+ 
+foldTree1 :: (a -> b -> b -> b) -> b -> BinaryTree a -> b
+foldTree1 f a Leaf = a
+foldTree1 f a (Node left v right) = 
+  f v (foldTree1 f a left) (foldTree1 f a right)
+
+mapTree1 :: (a -> b) -> BinaryTree a -> BinaryTree b
+mapTree1 f bt = foldTree1 g Leaf bt where
+  g a left right = Node left (f a) right
+```
+
+
+## 11.18 Chapter Exercises
+
+### Multiple Choice
+
+1. a
+2. c
+3. b
+4. c
+
+### Ciphers
+
+```haskell
+--11/Vignere.hs
+module Vignere where
+
+import Data.Char
+
+vignere :: String -> String -> String
+vignere key cleartext = map caeserHelper $ zip key' clr' where
+    pre = (map toLower . filter isAlpha)
+    clr' = (pre cleartext)
+    key' = take (length clr') $ cycle (pre key)
+    caeserHelper (a, b) = chr ((ord a + ord b - 2*ord 'a') `mod` 26 + ord 'a')
+
+unVignere :: String -> String -> String
+unVignere key ciphertext = map caeserHelper $ zip key' ciphertext where
+    pre = (map toLower . filter isAlpha)
+    key' = take (length ciphertext) $ cycle (pre key)
+    caeserHelper (a, b) = chr ((ord b - ord a) `mod` 26 + ord 'a')
+```
+
+### As-patterns 
+
+```haskell
+--11/AsPatterns.hs
+module AsPatterns where
+
+import Data.Char
+
+doubleUp :: [a] -> [a]
+doubleUp [] = []
+doubleUp xs@(x:_) = x : xs
+
+-- 1
+isSubsequenceOf :: (Eq a) => [a] -> [a] -> Bool
+isSubsequenceOf [] _ = True
+isSubsequenceOf _ [] = False
+isSubsequenceOf (x:xs) b = elem x b && isSubsequenceOf xs b
+
+-- 2
+capWords :: String -> [(String, String)]
+capWords str = map cap $ words str where
+  cap a@(x:xs) = (,) a $ (toUpper x):xs
+```
+
+### Language exercises
+
+```haskell
+--11/LanguageExercises.hs
+module LanguageExercises where
+
+import Data.Char
+
+capWord :: String -> String
+capWord a@(x:xs) = if x >= 'a' && x <= 'z' 
+                          then chr((ord x) - 32):xs 
+                          else a
+
+capParagraph :: String -> String
+capParagraph p = init $ concat $ map (++ " ") $ capp $ words p where
+  capp  [] = []
+  capp  (x:xs) = if (last x) == '.' then x:(capp' xs) else x:(capp xs)
+  capp' [] = []
+  capp' (x:xs) = if (last x) == '.' then (capWord x):(capp' xs) else x:(capp xs)
+``` 
+
+### Phone exercise
+
+
+```haskell
+--11/Phone.hs
+module Phone where
+
+import Data.List
+import Data.Char
+
+data Phone = Phone {buttons :: [Button]} deriving (Eq, Show)
+
+data Mode = Shift | None deriving (Eq, Show)
+data Button = Button {key :: Key, output :: String} deriving (Eq, Show)
+type Key = Char 
+type Press = Int
+
+daPhone :: Phone
+daPhone = Phone 
+          [ Button '1' "1"    , Button '2' "ABC2", Button '3' "DEF3"
+          , Button '4' "GHI4" , Button '5' "JKL5", Button '6' "MNO6"
+          , Button '7' "PQRS7", Button '8' "TUV8", Button '9' "WXYZ9"
+          , Button '*' "^*"   , Button '0' " 0"  , Button '#' ".,#"
+          ]
+
+convo = ["Wanna play 20 questions", 
+         "Ya",
+         "U 1st haha",
+         "Lol ok. Have u ever tated alcohol lol",
+         "Lol ya",  
+         "Wow ur cool haha. Ur turn",
+         "Ok. Do u think I am pretty lol",
+         "lol ya",
+         "Haha thanks just makin sure rofl ur turn"]
+
+keyMap :: Phone -> (Key, Press) -> Mode -> Char
+keyMap phone (k, p) mode = 
+  if mode == Shift then out else toLower out where
+    out = outCycle !! ((p - 1) `mod` (length outCycle))
+    outCycle = unpack $ lookup k $ zip (map key pb) (map output pb)
+    pb = (buttons phone)
+    unpack (Just a) = a
+
+textOut :: Phone -> [(Key, Press)] -> String
+textOut phone kps = go phone kps None where
+  go phone [] _ = [] 
+  go phone (('*', 1):kps) None = go phone kps Shift
+  go phone (('*', 1):kps) Shift = go phone kps None
+  go phone (kp:kps) m =  ((keyMap phone) (shift kp) m) : go phone kps None
+  shift (k, p) = if k == '*' then (k, p - 1) else (k, p)
+
+invButton :: Button -> [(Char, (Key, Press))]
+invButton b = go ((key b), (output b)) 1 where
+  go (k, []) _ = []
+  go (k, (c:cs)) n = (c, (k, n)) : go (k, cs) (n + 1)
+
+invKeyMap :: Phone -> Char -> Maybe (Key, Press)
+invKeyMap phone c = lookup c $ concatMap invButton $ buttons daPhone
+
+keyPressIn :: Phone -> String -> [Maybe (Key, Press)]
+keyPressIn phone [] = [] 
+keyPressIn phone (x:xs) = if isUpper x then up else lo where
+  up = (Just ('*', 1)):(invKeyMap phone x):(keyPressIn phone xs)
+  lo = (invKeyMap phone (toUpper x)):(keyPressIn phone xs)
+
+fingerTaps :: [Maybe (Key, Press)] -> Press
+fingerTaps a = go a 0 where
+  go [] n = n
+  go ((Nothing):xs) n = go xs n
+  go ((Just (k, p)):xs) n = go xs (p + n)
+
+mostPopularLetter :: String -> Char
+mostPopularLetter str = head $ maximumBy cmp $ group str where
+  cmp a b = compare (length a) (length b)
+
+costOfMostPopularLetter :: Phone -> String -> Press
+costOfMostPopularLetter phone str = fingerTaps $ keyPressIn phone [a] where
+  a = mostPopularLetter str
+
+coolestLtr :: [String] -> Char
+coolestLtr msgs = mostPopularLetter $ map mostPopularLetter msgs
+
+coolestWord :: [String] -> String
+coolestWord msgs = head $ maximumBy cmp $ group $ concatMap words msgs where 
+  cmp a b = compare (length a) (length b)
+```
+
+[TODO: I'm looking back on this code several months after writing it. It's
+awkward, but I'll leave it as is for now, since it's an okay example
+of solving the problem with only the tools covered in the book thus far. I
+think I should do an example of how this project gets a lot easier when you can
+use things like the State monad.]
+
+### Hutton's Razor
+
+```haskell
+--11/Hutton.hs
+module Hutton where
+
+--1
+data Expr = Lit Integer | Add Expr Expr
+
+eval :: Expr -> Integer
+eval (Lit n) = n
+eval (Add a b) = (+) (eval a) (eval b) 
+
+-- 2
+
+printExpr :: Expr -> String
+printExpr (Lit n) = show n
+printExpr (Add a b) = (printExpr a) ++ " + " ++ (printExpr b)
+```
+
+# 12 Signaling adversity
