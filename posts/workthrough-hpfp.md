@@ -23,7 +23,7 @@ fun.
 
 Okay, maybe that's a little hyperbolic. I don't want to give the impression
 that HPFP is a text without flaws. In my notes on the rest of this page, I
-imagine I'll be going into those flaws in some depth. But before I do I want to
+imagine I'll be going into those flaws at some point. But before I do I want to
 make it perfectly clear that this book is spectacular and any criticism of mine
 is made with the greatest possible love and affection. 
 
@@ -1970,6 +1970,7 @@ ad-hoc-polymorphism.pdf)
 2. [Cordelia V. Hall, Kevin Hammond, Simon L. Peyton Jones, and Philip L.
 Wadler. Typeclasses in Haskell.] (http://ropas.snu.ac.kr/lib/dock/HaHaJoWa1996.pdf)
 
+---
 
 # 7 More functional patterns 
 
@@ -2192,6 +2193,8 @@ Languages, page 11 for explanation of currying.](http://www.cs.cmu.edu/~crary/81
 4. [J.N. Oliveira. An introduction to pointfree programming.](http://www.di.uminho.pt/~jno/ps/iscalc_1.ps.gz)
 5. [Manuel Alcino Pereira da Cunha. Point-free Program Calculation.](http://www4.di.uminho.pt/~mac/Publications/phd.pdf)
 
+---
+
 # 8 Recursion
 
 ## 8.2 Factorial
@@ -2347,6 +2350,8 @@ digits n = go n []
 wordNumber :: Int -> String
 wordNumber n = concat $ intersperse "-" $ map digitToWord $ digits n
 ```
+
+---
 
 # 9 Lists
 
@@ -2697,6 +2702,8 @@ myMinimum = myMinimumBy compare
 
 2. [Ninety-nine Haskell problems.](https://wiki.haskell.org/H-99:_Ninety-Nine_Haskell_Problems)
 
+---
+
 # 10 Folding lists
 
 Okay, so here's the thing about the term "catamorphism":
@@ -2954,6 +2961,8 @@ myMinimumBy ord xs = foldr1 g xs
 
 4. [Graham Hutton. A tutorial on the universality and expressive-
 ness of fold.](http://www.cs.nott.ac.uk/~gmh/fold.pdf)
+
+---
 
 # 11 Algebraic Datatypes
 
@@ -3523,5 +3532,1871 @@ printExpr :: Expr -> String
 printExpr (Lit n) = show n
 printExpr (Add a b) = (printExpr a) ++ " + " ++ (printExpr b)
 ```
+---
 
 # 12 Signaling adversity
+
+## 12.5 Chapter Exercises
+
+### Determine the kinds
+
+1. `*`
+2. `a` is `*`, `f` is `* -> *`
+
+### String processing
+
+```haskell
+--12/StringProcessing.hs
+module StringProcessing where
+
+notThe :: String -> Maybe String
+notThe str = if str == "the" then Nothing else Just str
+
+wurdz :: String -> [String]
+wurdz str = (fst a):(if (snd a) == [] then [] else (wurdz $ tail $ snd a))
+  where a = break ((==) ' ') str
+
+wurdzMap ::  (String -> String) -> String -> String
+wurdzMap f str = (f (fst a)) ++ (if (snd a) == [] 
+                                 then "" 
+                                 else " " ++ (wurdzMap f $ tail $ snd a))
+  where a = break ((==) ' ') str
+
+replaceThe :: String -> String
+replaceThe str = init $ go (words str) where
+  go [] = []
+  go (x:xs) = (if notThe x == Nothing then "a" else u $ notThe x) 
+                ++ " " ++ (go xs)
+  u (Just a) = a
+
+replaceThe' :: String -> String
+replaceThe' str = init $ concatMap (g . f) $ wurdz str where
+  g x = ((++) x " ")
+  f x = (if notThe x == Nothing then "a" else u $ notThe x)
+  u (Just a) = a
+
+replaceThe2 :: String -> String
+replaceThe2 str = wurdzMap (f .notThe) str where
+  f (Nothing) = "a"
+  f (Just a) = a
+
+-- 2
+
+isVowel :: Char -> Bool
+isVowel c = (elem c "aeiouAEIOU")
+
+countTheBeforeVowel :: String -> Integer
+countTheBeforeVowel str = go (words str) 0 where
+  go [] n = n
+  go [x] n = n
+  go (x:(c:cs):xss) n = if (x == "the" && (isVowel c)) 
+                       then go xss (n + 1) 
+                       else go xss n
+
+countVowels :: String -> Integer
+countVowels str = foldr f 0 str where 
+  f x y = if isVowel x then y + 1 else y
+
+countConsonants :: String -> Integer
+countConsonants str = foldr f 0 str where 
+  f x y = if not $ isVowel x then y + 1 else y
+
+-- Validate the word
+
+newtype Word' = Word' String deriving (Eq, Show)
+
+vowels = "aeiou"
+
+mkWord :: String -> Maybe Word'
+mkWord str = if countConsonants str >= countVowels str
+             then (Just (Word' str)) else Nothing
+```
+
+
+### Validate the word
+
+see `12/StringProcessing.hs,
+
+### It's only Natural
+
+```haskell
+--12/Natural.hs
+module Natural where
+
+data Nat = Zero | Succ Nat deriving (Eq, Show)
+
+natToInteger :: Nat -> Integer
+natToInteger nat = go nat 0 
+  where
+    go Zero n = n
+    go (Succ a) n = go a (n + 1)
+
+integerToNat :: Integer -> Maybe Nat
+integerToNat n 
+  | n < 0 = Nothing
+  | otherwise = (Just $ go n Zero) 
+  where
+    go 0 nat = nat
+    go n nat = go (n - 1) (Succ nat)
+```  
+
+### Small library for Maybe
+
+```haskell
+--12/MaybeLib.hs
+module MaybeLib where
+
+-- 1
+isJust :: Maybe a -> Bool
+isJust Nothing = False
+isJust (Just a) = True
+
+isNothing :: Maybe a -> Bool 
+isNothing = not . isJust 
+
+-- 2 
+mayybee :: b -> (a -> b) -> Maybe a -> b
+mayybee b f (Just a) = (f a) 
+mayybee b f Nothing = b
+
+-- 3
+fromMaybe :: a -> Maybe a -> a 
+fromMaybe a m = mayybee a id m
+
+-- 4
+listToMaybe :: [a] -> Maybe a
+listToMaybe [] = Nothing
+listToMaybe (x:xs) = (Just x)
+
+maybeToList :: Maybe a -> [a]
+maybeToList Nothing = []
+maybeToList (Just a) = [a] 
+
+-- 5
+catMaybes :: [Maybe a] -> [a]
+catMaybes [] = [] 
+catMaybes ((Just a):xs) = a : (catMaybes xs)
+catMaybes (Nothing:xs) = catMaybes xs 
+
+-- 6
+flipMaybe :: [Maybe a] -> Maybe [a]
+flipMaybe ms = go ms [] where
+  go [] acc = Just acc
+  go ((Just x):xs) acc = go xs (x:acc)
+  go (Nothing:xs) _ = Nothing
+```
+
+### Small library for Either
+
+```haskell
+--12/EitherLib.hs
+module EitherLib where
+
+lefts' :: [Either a b] -> [a]
+lefts' es = foldr f [] es where
+  f (Left x) acc = x:acc
+  f _ acc = acc
+
+rights' :: [Either a b] -> [b]
+rights' es = foldr f [] es where
+  f (Right x) acc = x:acc
+  f _ acc = acc
+
+partitionEithers' :: [Either a b] -> ([a], [b])
+partitionEithers' es = (lefts' es, rights' es)
+
+eitherMaybe' :: (b -> c) -> Either a b -> Maybe c
+eitherMaybe' f (Left a) = Nothing
+eitherMaybe' f (Right b) = Just $ f b
+
+either' :: (a -> c) -> (b -> c) -> Either a b -> c 
+either' f g (Left a) = f a
+either' f g (Right b) = g b
+
+eitherMaybe'' :: (b -> c) -> Either a b -> Maybe c
+eitherMaybe'' f e = either' (const Nothing) (Just . f) e
+```
+
+### Write your own iterate and unfoldr
+
+```haskell
+--12/Unfolds.hs
+module Unfolds where
+
+import Data.List
+
+myIterate :: (a -> a) -> a -> [a]
+myIterate f a = a : myIterate f (f a)
+
+myUnfoldr :: (b -> Maybe (a, b)) -> b -> [a]
+myUnfoldr f s = go f s (f s) where 
+  go f s Nothing = []
+  go f s (Just (a, b)) = a : go f b (f b)
+
+betterIterate :: (a -> a) -> a -> [a]
+betterIterate f s = myUnfoldr (g f) s where
+  g f s = Just (s, (f s))
+``` 
+
+### Finally something other than a list
+
+```haskell
+--12/BinaryTreeUnfold.hs
+module BinaryTreeUnfold where
+
+data BinaryTree a = Leaf | Node (BinaryTree a) a (BinaryTree a)
+                    deriving (Eq, Show, Ord)
+
+unfold :: (a -> Maybe (a, b, a)) -> a -> BinaryTree b
+unfold f s = case f s of
+  Nothing -> Leaf
+  Just (l, v, r) -> Node (unfold f l) v (unfold f r)
+
+treeBuild :: Integer -> BinaryTree Integer
+treeBuild n = unfold (f n) 0 where
+  f n x = if x >= n then Nothing else Just (x+1, x, x+1) 
+```
+
+# 13 Building Projects
+
+## 13.6 More on importing modules
+
+## Imtermission: Check your understanding
+
+1. `forever`, `when`
+2. `Data.Bits`, `Database.Blacktip.Types` 
+3. Types for `blacktip`'s database
+4. 
+- a. `MV` is `Control.Concurrent.MVar`, `FPC` is `Filesystem.Path.CurrentOS`,
+  `CC` is `Control.Concurrent`
+- b. `Filesystem`
+- c. `Control.Monad`
+
+## Chapter Exercises
+
+### Hangman game logic
+
+See my [hangman project on GitHub](
+https://github.com/johnchandlerburnham/haskellbook/tree/master/13/hangman)
+
+I debated whether or not to include code snippets of full-fledged stack
+projects in this document. I've decided against it. It's one thing to include
+self-contained modules as question answers, but if I were to, for example,
+include the `Main.hs` file for the hangman project here, there'd be some
+implicit dependencies like dict.txt and hangman.cabal, and if the past 524
+pages of this book have taught me anything, implicit dependencies are bad news.
+
+### Modifying code
+
+1.  ```
+    --13/CipherIO.hs
+    module CipherIO where
+
+    import Data.Char
+    import System.Exit (exitSuccess)
+
+    caesar :: Int -> String -> String
+    caesar key string = go key $ (map toLower . filter isAlpha) string
+      where go _ "" = ""
+            go n (c:cs) = chr ((ord c + n - ord 'a') `mod` 26 + ord 'a') : go n cs
+
+    unCaesar :: Int -> String -> String
+    unCaesar key string = caesar (negate key) string 
+
+    vignere :: String -> String -> String
+    vignere key cleartext = map caeserHelper $ zip key' clr' where
+        pre = (map toLower . filter isAlpha)
+        clr' = (pre cleartext)
+        key' = take (length clr') $ cycle (pre key)
+        caeserHelper (a, b) = chr ((ord a + ord b - 2*ord 'a') `mod` 26 + ord 'a')
+
+    unVignere :: String -> String -> String
+    unVignere key ciphertext = map caeserHelper $ zip key' ciphertext where
+        pre = (map toLower . filter isAlpha)
+        key' = take (length ciphertext) $ cycle (pre key)
+        caeserHelper (a, b) = chr ((ord b - ord a) `mod` 26 + ord 'a')
+
+    testCaesar :: Int -> String -> Bool
+    testCaesar n s = (map toLower . filter isAlpha) s == (unCaesar n . caesar n) s 
+
+    testVignere :: String -> String -> Bool
+    testVignere key s = 
+      (map toLower . filter isAlpha) s == (unVignere key . vignere key) s 
+
+    encrypt :: IO ()
+    encrypt = do
+      putStrLn "Cleartext:"
+      clearText <- getLine
+      putStrLn "Caeser Key: " 
+      cKey <- getLine
+      putStrLn "Vignere Key: " 
+      vKey <- getLine
+      putStrLn "Caesar Ciphertext is: "
+      print (caesar (read cKey) clearText)
+      putStrLn "Vignere Ciphertext is: "
+      print (vignere vKey clearText)
+    ```
+
+2.  ```
+    --13/ExitSuccess.hs
+    module ExitSuccess where
+
+    import Data.Char
+    import Control.Monad
+    import System.Exit (exitSuccess)
+
+    palindrome :: IO ()
+    palindrome = forever $ do
+      line1 <- getLine
+      if isPalindrome line1
+      then putStrLn "It's a palindrome!"
+      else do putStrLn "nope" 
+              exitSuccess
+
+    isPalindrome :: String -> Bool
+    isPalindrome str = (str' == reverse str')
+      where str' = filter isAlpha $ map toLower str
+    ```
+
+4.  ```
+    --13/Person.hs
+    module Person where
+
+    type Name = String
+    type Age = Integer
+
+    data Person = Person Name Age deriving Show
+    data PersonInvalid = NameEmpty | AgeTooLow | Unknown String deriving (Eq, Show)
+
+    mkPerson :: Name -> Age -> Either PersonInvalid Person
+    mkPerson name age
+      | name /= "" && age > 0 = Right $ Person name age
+      | name == ""            = Left NameEmpty
+      | not (age > 0)         = Left AgeTooLow
+      | otherwise             = Left $ Unknown $ "Name was: " ++ show name 
+                                             ++ " Age was: "  ++ show age
+
+    gimmePerson :: IO ()
+    gimmePerson = do
+      putStrLn "Name: "
+      name <- getLine 
+      putStrLn "Age: "
+      age <- getLine
+      let person = mkPerson name (read age) in
+        case person of
+          (Left _)  -> putStrLn ("Invalid person: " ++ (show person))
+          (Right _) -> putStrLn ("Valid person: " ++ (show person))
+
+    -- best way to handle parse error for read is to change mkPerson
+    ```
+
+## 13.15 Follow-up resources
+
+1. [Stack](https://github.com/commercialhaskell/stack)
+2. [How I Start: Haskell](http://bitemyapp.com/posts/2014-11-18-how-i-start-haskell.html)
+3. [Cabal FAQ](https://www.haskell.org/cabal/FAQ.html)
+4. [Cabal user’s guide](https://www.haskell.org/cabal/users-guide/)
+5. [A Gentle Introduction to Haskell, Modules chapter.](https://www.haskell.org/tutorial/modules.html)
+
+---
+
+# 14 Testing
+
+## Intermission: Short Exercise
+```haskell
+-- /14/addition/Addition.hs
+module Addition where 
+
+import Test.Hspec
+import Test.QuickCheck
+
+main :: IO ()
+main = hspec $ do
+  describe "Addition" $ do
+    it "1 + 1 is greater than 1" $ do
+      (1 + 1) > 1 `shouldBe` True
+    it "2 + 2 is equal to 4" $ do
+      2 + 2 `shouldBe` 4
+    it "x + 1 is always greater than x" $ do
+      property $ \x -> x + 1 > (x :: Int)
+  describe "Division" $ do
+    it "15 divided by 3 is 5" $ do
+      dividedBy 15 3 `shouldBe` (5, 0)
+    it "22 divided by 5 is 4 remainder 2" $ do
+      dividedBy 22 5 `shouldBe` (4, 2)
+  describe "Multiplication" $ do
+    it "1 * 1 is 1" $ do
+      rMult 1 1 `shouldBe` 1
+    it "2 * 2 is 4" $ do
+      rMult 2 2 `shouldBe` 4
+    it "2 * 0 is 0" $ do
+      rMult 2 0 `shouldBe` 0
+    it "0 * 2 is 0" $ do
+      rMult 0 2 `shouldBe` 0
+    it "0 * 0 is 0" $ do
+      rMult 0 0 `shouldBe` 0
+    it "3 * 4 is 12" $ do
+      rMult 3 4 `shouldBe` 12
+
+dividedBy :: Integral a => a -> a -> (a, a)
+dividedBy num denom = go num denom 0
+  where go n d count
+         | n < d = (count, n)
+         | otherwise = go (n - d) d (count + 1)
+
+rMult :: (Integral a) => a -> a -> a
+rMult a b = go a b 0
+  where go a b c
+          | b == 0 = c
+          | otherwise = go a (b - 1) (c + a)
+
+sayHello :: IO ()
+sayHello = putStrLn "hello!"
+```
+
+## 14.7 Chapter Exercises
+
+### Validating numbers into words
+```haskell
+-- 14/exercises/test/Spec.hs
+module ExercisesTest where
+
+import qualified WordNumberTest as WN
+import qualified Exercises as EX
+import Data.Char (toUpper)
+import Data.List (sort)
+import Test.QuickCheck
+
+-- 1
+halfIdentity :: Fractional a => a -> a
+halfIdentity = (*2) . EX.half
+ 
+prop_twiceHalf :: (Eq a, Fractional a) => a -> Bool
+prop_twiceHalf n = (halfIdentity n) == n
+
+--2
+listOrdered ::  (Ord a) => [a] -> Bool
+listOrdered xs = snd $ foldr go (Nothing, True) xs where
+  go _ status@(_ , False) = status
+  go y (Nothing, t) = (Just y, t)
+  go y (Just x, t) = (Just y, x >= y)
+
+prop_sort :: (Ord a) => [a] -> Bool
+prop_sort = listOrdered . sort
+
+-- 3
+plusAssociative :: (Eq a, Num a) => a -> a -> a -> Bool
+plusAssociative x y z = x + (y + z) == (x + y) + z
+
+plusCommutative :: (Eq a, Num a) => a -> a -> Bool
+plusCommutative x y = x + y == y + x
+
+-- 4
+multAssociative :: (Eq a, Num a) => a -> a -> a -> Bool
+multAssociative x y z = x + (y + z) == (x + y) + z
+
+multCommutative :: (Eq a, Num a) => a -> a -> Bool
+multCommutative x y = x + y == y + x
+
+-- 5
+quotRemRule :: Integral a => a -> a -> Bool
+quotRemRule x y = (quot x y)*y + (rem x y) == x
+
+divModRule :: Integral a => a -> a -> Bool
+divModRule x y = (quot x y)*y + (rem x y) == x
+
+-- 6
+expAssociative :: (Num a, Integral a, Eq a) => a -> a -> a -> Bool
+expAssociative x y z = (x ^ y) ^ z == x ^ (y ^ z)
+
+expCommutative :: (Num a, Integral a, Eq a) => a -> a -> Bool
+expCommutative x y = x ^ y == y ^ x
+
+-- 7
+listReverse :: (Eq a) => [a] -> Bool
+listReverse list = (reverse . reverse) list == list
+
+-- 8 
+prop_apply :: (Eq b) => (a -> b) -> a -> Bool 
+prop_apply f x = (f $ x) == (f x)
+
+prop_compose :: (Eq c) => (b -> c) -> (a -> b) -> a -> Bool
+prop_compose f g x = (f . g) x == f (g x)
+
+instance Show (a -> b) where show _ = "Arbitrary Function"
+
+-- 9
+prop_compareCons :: (Eq a) => [a] -> [a] -> Bool
+prop_compareCons xs ys = foldr (:) xs ys == (++) xs ys
+
+prop_compareCons' :: (Eq a) => [a] -> [a] -> Bool
+prop_compareCons' xs ys = foldr (:) xs ys == (flip (++)) xs ys
+
+prop_compareConcat :: (Eq a, Foldable t) => t [a] -> Bool
+prop_compareConcat xs = foldr (++) [] xs == concat xs
+
+-- 10
+prop_take :: Int -> [b] -> Bool
+prop_take n xs = length (take n xs) == n
+
+-- 11
+prop_read :: (Eq a, Show a, Read a) => a -> Bool
+prop_read x = (read (show x)) == x 
+
+-- Idempotence 
+twice f = f . f
+fourTimes = twice . twice
+
+idem1 ::  String -> Bool
+idem1 x = (capw x == twice capw x) && (capw x == fourTimes capw x) where
+  capw (x:xs) = (toUpper x) : xs
+  capw [] = []
+
+idem2 :: (Eq a, Ord a) => [a] -> Bool
+idem2 x = (sort x == twice sort x) && (sort x == fourTimes sort x)
+
+-- Make a Gen
+data Fool = Fulse | Frue deriving (Eq, Show)
+
+instance Arbitrary Fool where
+  arbitrary = frequency [(1, return Fulse), (1, return Frue)]
+
+foolGen :: Gen Fool
+foolGen = arbitrary
+
+fulsishFoolGen :: Gen Fool
+fulsishFoolGen = do
+  a <- arbitrary
+  frequency [(2, return a), (1, return a)]
+
+main :: IO ()
+main = do
+  WN.main
+  quickCheck (prop_twiceHalf :: Double -> Bool)
+  quickCheck (prop_sort :: [Int] -> Bool)
+  quickCheck (plusAssociative :: Int -> Int -> Int -> Bool)
+  quickCheck (plusCommutative :: Int -> Int -> Bool)
+  quickCheck (multAssociative :: Int -> Int -> Int -> Bool)
+  quickCheck (multCommutative :: Int -> Int -> Bool)
+  quickCheck (quotRemRule :: Int -> Int -> Bool)
+  quickCheck (divModRule :: Int -> Int -> Bool)
+  quickCheck (expAssociative :: Int -> Int -> Int -> Bool)
+  quickCheck (expCommutative :: Int -> Int -> Bool)
+  quickCheck (listReverse :: [Char] -> Bool)
+  quickCheck (prop_apply :: (Int -> Int) -> Int -> Bool)
+  quickCheck (prop_compose :: (Int -> Int) -> (Int -> Int) -> Int -> Bool)
+  quickCheck (prop_compareCons :: String -> String -> Bool)
+  quickCheck (prop_compareCons' :: String -> String -> Bool)
+  quickCheck (prop_compareConcat :: [String] -> Bool)
+  quickCheck (prop_take :: Int -> String -> Bool)
+  quickCheck (prop_read :: Int -> Bool)
+  quickCheck idem1 
+  quickCheck (idem2 :: String -> Bool)
+```
+### Using QuickCheck
+see `14/exercises/test/Spec.hs`
+
+### Failure
+
+Irrational numbers like e.g. the sqaure root of 2 cannot be represented
+with infinite precision in a finite amount of memory. So an expression
+like (sqrt 2) is not actually equal to the square root of 2, but rather
+is an accurate approximation to some precision. So even though square
+is the inverse of square root, because sqrt cannot be infinitely accurate
+the square of a square root will have some error. E.g.
+
+```
+sqrt 2 = 1.4142135, (sqrt 2) ^ 2 = 1.9999999
+```
+### Idempotence
+see `14/exercises/test/Spec.hs`
+
+### Make a Gen random generator for the datatype
+see `14/exercises/test/Spec.hs`
+
+
+### Hangman testing 
+### Validating ciphers
+skipping these, I think that this testing chapter is probably better 
+understood after you understand what monads are. The reader here only barely
+has the tools to build something for which testing is important.
+
+## 14.9 Follow-up resources
+
+1. [Pedro Vasconcelos; An introduction to QuickCheck testing;](https://www.fpcomplete.com/user/pbv/an-introduction-to-quickcheck-testing)
+2. Koen Claessen and John Hughes; (2000)
+QuickCheck: A Lightweight Tool for Random Testing of Haskell
+Programs
+3. [Pedro Vasconcelos;Verifying a Simple Compiler Using
+Property-based Random Testing;](
+http://www.dcc.fc.up.pt/dcc/Pubs/TReports/TR13/dcc-2013-06.pdf)
+
+---
+
+# 15 Monoid, Semigroup
+
+## 15.10 Reusing algebras by asking for algebras
+
+### Exercise: Optional Monoid
+
+```haskell
+--15/Optional.hs
+module Optional where
+
+import Data.Monoid
+
+data Optional a = Nada | Only a deriving (Eq, Show)
+
+instance Monoid a => Monoid (Optional a) where
+  mempty = Nada
+  mappend Nada Nada = Nada
+  mappend Nada (Only x) = (Only x)
+  mappend (Only x) Nada = (Only x)
+  mappend (Only x) (Only y) = (Only (mappend x y))
+```
+
+
+## 15.11 Madness
+
+```haskell
+--15/Madness.hs
+module Madness where
+
+import Data.Monoid
+
+type Verb = String
+type Adjective = String
+type Adverb = String
+type Noun = String
+type Exclamation = String
+
+madlibbin' :: Exclamation -> Adverb -> Noun -> Adjective -> String
+madlibbin' e adv noun adj = 
+  e <> "! he said" <> adv <> " as he jumped into his car " <>
+  noun  <> " and drove off with his " <> adj <> " wife."
+
+madlibbinBetter' :: Exclamation -> Adverb -> Noun -> Adjective -> String
+madlibbinBetter' e adv noun adj = 
+  mconcat [ e, "! he said", adv, " as he jumped into his car ", noun  
+          , " and drove off with his ", adj,  " wife."
+          ]
+```
+
+## 15.12 Better living through QuickCheck
+
+### Testing QuickCheck's patience
+
+```haskell
+--15/Patience.hs
+module Patience where
+
+import Control.Monad
+import Data.Monoid
+import Test.QuickCheck
+
+data Bull = Fools | Twoo deriving (Eq, Show)
+
+instance Arbitrary Bull where 
+  arbitrary = frequency [ (1, return Fools), (1, return Twoo) ]
+
+instance Monoid Bull where
+  mempty = Fools
+  mappend _ _ = Fools
+
+type BullMappend = Bull -> Bull -> Bull -> Bool
+
+monoidAssoc :: (Eq m, Monoid m) => m -> m -> m -> Bool
+monoidAssoc a b c = (a <> (b <> c)) == ((a <> b) <> c)
+
+monoidLeftIdentity :: (Eq m, Monoid m) => m -> Bool
+monoidLeftIdentity a = (mempty <> a) == a
+
+monoidRightIdentity :: (Eq m, Monoid m) => m -> Bool
+monoidRightIdentity a = (a <> mempty) == a
+
+main :: IO ()
+main = do
+  let ma = monoidAssoc
+      mli = monoidLeftIdentity
+      mlr = monoidRightIdentity
+  quickCheck (ma :: BullMappend)
+  quickCheck (mli :: Bull -> Bool)
+  quickCheck (mlr :: Bull -> Bool)
+```
+
+### Exercise: Maybe Another Monoid
+
+```haskell
+--15/MaybeAnother.hs
+module MaybeAnother where
+
+import Control.Monad
+import Data.Monoid
+import Test.QuickCheck
+
+data Optional a = Nada | Only a deriving (Eq, Show)
+
+instance Monoid a => Monoid (Optional a) where
+  mempty = Nada
+  mappend Nada Nada = Nada
+  mappend Nada (Only x) = (Only x)
+  mappend (Only x) Nada = (Only x)
+  mappend (Only x) (Only y) = (Only (mappend x y))
+
+newtype First' a = First' { getFirst' :: Optional a } deriving (Eq, Show)
+
+instance Arbitrary a => Arbitrary (First' a) where
+  arbitrary = do
+    a <- arbitrary
+    oneof [return (First' (Only a)), return (First' Nada)]
+
+instance Monoid (First' a ) where 
+  mempty = First' Nada
+  mappend (First' Nada) (First' Nada) = (First' Nada)
+  mappend (First' Nada) (First' (Only x)) = (First' (Only x))
+  mappend (First' (Only x)) _ = (First' (Only x))
+
+type FirstMappend = First' String -> First' String -> First' String -> Bool
+
+type FstId = First' String -> Bool
+
+monoidAssoc :: (Eq m, Monoid m) => m -> m -> m -> Bool
+monoidAssoc a b c = (a <> (b <> c)) == ((a <> b) <> c)
+
+monoidLeftIdentity :: (Eq m, Monoid m) => m -> Bool
+monoidLeftIdentity a = (mempty <> a) == a
+
+monoidRightIdentity :: (Eq m, Monoid m) => m -> Bool
+monoidRightIdentity a = (a <> mempty) == a
+
+main :: IO ()
+main = do
+  quickCheck (monoidAssoc :: FirstMappend)
+  quickCheck (monoidLeftIdentity :: FstId)
+  quickCheck (monoidRightIdentity :: FstId)
+```   
+
+
+## 15.15 Chapter Exercises
+
+### Semigroup exercises & Monoid exercises
+
+```haskell
+--15/SemigroupMonoidExercises.hs
+module SemigroupMonoidExercises where
+
+import Test.QuickCheck
+import Test.QuickCheck.Gen.Unsafe
+import Data.Semigroup
+import qualified Data.Monoid as M
+
+-- 1
+data Trivial = Trivial deriving (Eq, Show)
+
+instance Semigroup Trivial where
+  _ <> _ = Trivial 
+
+instance Monoid Trivial where
+  mempty = Trivial
+  mappend = (<>) 
+
+instance Arbitrary Trivial where
+  arbitrary = return Trivial
+
+type TrivAssoc = Trivial -> Trivial -> Trivial -> Bool
+
+-- 2
+newtype Identity a = Identity a deriving (Eq, Show)
+
+instance Arbitrary a => Arbitrary (Identity a) where
+  arbitrary = do 
+    a' <- arbitrary 
+    return (Identity a')
+
+instance (Semigroup a) => Semigroup (Identity a) where
+  (Identity a1) <> (Identity a2) = (Identity (a1 <> a2))
+
+instance (Monoid a) => Monoid (Identity a) where
+  mempty = Identity mempty
+  mappend (Identity a) (Identity b) = Identity ((M.<>) a b)
+
+-- instance Semigroup (Identity a) where
+--  (Identity a) <> _ = (Identity a)
+
+type IdentAssoc = Identity String -> Identity String -> Identity String -> Bool 
+
+-- 3
+data Two a b = Two a b deriving (Eq, Show)
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Two a b) where
+  arbitrary = do
+    a' <- arbitrary  
+    b' <- arbitrary
+    return (Two a' b')
+
+instance (Semigroup a, Semigroup b) => Semigroup (Two a b) where
+  (Two a1 b1) <> (Two a2 b2) = Two (a1 <> a2) (b1 <> b2)
+
+instance (Monoid a, Monoid b) => Monoid (Two a b) where
+  mempty = Two mempty mempty
+  mappend (Two a1 b1) (Two a2 b2) = Two ((M.<>) a1 a2) ((M.<>) b1 b2)
+
+type TwoAssoc = 
+  (Two String String) -> (Two String String) -> (Two String String) -> Bool 
+
+-- 4
+data Three a b c = Three a b c deriving (Eq, Show)
+
+instance (Arbitrary a, Arbitrary b, Arbitrary c) => Arbitrary (Three a b c) where
+  arbitrary = do
+    a' <- arbitrary  
+    b' <- arbitrary
+    c' <- arbitrary
+    return (Three a' b' c')
+
+instance (Semigroup a, Semigroup b, Semigroup c) => Semigroup (Three a b c) where
+  (Three a1 b1 c1) <> (Three a2 b2 c2) = Three (a1 <> a2) (b1 <> b2) (c1 <> c2)
+
+type ThreeAssoc = (Three String String String) -> 
+                  (Three String String String) -> 
+                  (Three String String String) -> 
+                  Bool 
+
+-- 5
+data Four a b c d = Four a b c d deriving (Eq, Show)
+
+instance (Arbitrary a, Arbitrary b, Arbitrary c, Arbitrary d) => 
+  Arbitrary (Four a b c d) where
+    arbitrary = do
+      a' <- arbitrary  
+      b' <- arbitrary
+      c' <- arbitrary
+      d' <- arbitrary
+      return (Four a' b' c' d')
+
+instance (Semigroup a, Semigroup b, Semigroup c, Semigroup d) => 
+  Semigroup (Four a b c d) where
+    (Four a1 b1 c1 d1) <> (Four a2 b2 c2 d2) = 
+      Four (a1 <> a2) (b1 <> b2) (c1 <> c2) (d1 <> d2)
+
+type FourAssoc = (Four String String String String) -> 
+                 (Four String String String String) -> 
+                 (Four String String String String) -> 
+                 Bool 
+
+-- 6
+newtype BoolConj = BoolConj Bool deriving (Eq, Show)
+
+instance Arbitrary BoolConj where
+  arbitrary = do
+    a <- arbitrary :: Gen Bool
+    return (BoolConj a)
+
+instance Semigroup BoolConj where
+  (BoolConj True) <> (BoolConj True) = (BoolConj True)
+  _ <> _ = (BoolConj False)
+
+instance Monoid BoolConj where
+  mempty = BoolConj True
+  mappend (BoolConj True) (BoolConj True) = (BoolConj True)
+  mappend _ _ = (BoolConj False)
+
+type BoolConjAssoc = BoolConj -> BoolConj -> BoolConj -> Bool
+
+-- 7
+newtype BoolDisj = BoolDisj Bool deriving (Eq, Show)
+
+instance Arbitrary BoolDisj where
+  arbitrary = do
+    a <- arbitrary :: Gen Bool
+    return (BoolDisj a)
+
+instance Semigroup BoolDisj where
+  (BoolDisj False) <> (BoolDisj False) = (BoolDisj False)
+  _ <> _ = (BoolDisj True)
+
+instance Monoid BoolDisj where
+  mempty = BoolDisj False
+  mappend (BoolDisj False) (BoolDisj False) = (BoolDisj False)
+  mappend _ _ = (BoolDisj True)
+
+type BoolDisjAssoc = BoolDisj -> BoolDisj -> BoolDisj -> Bool
+
+-- 8 
+data Or a b = Fst a | Snd b deriving (Eq, Show)
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Or a b) where
+  arbitrary = do
+    a' <- arbitrary  
+    b' <- arbitrary
+    oneof [return (Fst a'), return (Snd b')]
+
+instance Semigroup (Or a b) where
+  (Snd b) <> _       = (Snd b)
+  _       <> (Snd b) = (Snd b)
+  _       <> (Fst a) = (Fst a)
+
+type OrAssoc = 
+  (Or String String) -> (Or String String) -> (Or String String) -> Bool 
+
+-- 9 
+newtype Combine a b = Combine { unCombine :: (a -> b) }
+
+instance (Show a, Show b) => Show (Combine a b) where 
+  show _ = "Combine"
+
+instance (Semigroup b) => Semigroup (Combine a b) where
+  (Combine f) <> (Combine g) = Combine (\n -> (f n) <> (g n))
+
+instance (Monoid b) => Monoid (Combine a b) where
+  mempty = Combine (\n -> mempty) 
+  mappend (Combine f) (Combine g) = Combine (\n -> (M.<>) (f n) (g n))
+
+instance (CoArbitrary a, Arbitrary b) => Arbitrary (Combine a b) where
+  arbitrary = fmap Combine $ promote (\n -> coarbitrary n arbitrary)
+
+combineAssoc :: (Combine String String) -> 
+                (Combine String String) -> 
+                (Combine String String) -> 
+                String -> 
+                Bool 
+combineAssoc a b c s = 
+  (unCombine (a <> (b <> c)) s) == (unCombine ((a <> b) <> c) s)
+
+combineLeftIdentity :: (Combine String String) -> String -> Bool
+combineLeftIdentity a s = ((unCombine (mempty M.<> a)) s) == ((unCombine a) s)
+
+combineRightIdentity :: (Combine String String) -> String -> Bool
+combineRightIdentity a s = ((unCombine (a M.<> mempty)) s) == ((unCombine a) s)
+
+
+-- 10 
+newtype Comp a = Comp { unComp :: (a -> a) }
+
+instance Show (Comp a) where 
+  show _ = "Comp"
+
+instance (Semigroup a) => Semigroup (Comp a) where
+  (Comp f) <> (Comp g) = Comp (f . g)
+
+instance (Monoid a) => Monoid (Comp a) where
+  mempty = Comp id
+  mappend (Comp f) (Comp g) = Comp (f . g)
+
+instance (CoArbitrary a, Arbitrary a) => Arbitrary (Comp a) where
+  arbitrary = fmap Comp $ promote (\n -> coarbitrary n arbitrary)
+
+compAssoc :: (Comp String) -> (Comp String) -> (Comp String) -> String -> Bool 
+compAssoc a b c s = (unComp (a <> (b <> c)) s) == (unComp ((a <> b) <> c) s)
+
+compLeftIdentity :: (Comp String) -> String -> Bool
+compLeftIdentity a s = ((unComp (mempty M.<> a)) s) == ((unComp a) s)
+
+compRightIdentity :: (Comp String) -> String -> Bool
+compRightIdentity a s = ((unComp (a M.<> mempty)) s) == ((unComp a) s)
+
+-- 11 
+data Validation a b = Fail a | Pass b deriving (Eq, Show)
+
+instance Semigroup a => Semigroup (Validation a b) where 
+  (Fail a) <> (Fail b) = (Fail (a <> b))
+  _        <> (Fail a) = (Fail a)
+  (Fail a) <> _        = (Fail a)
+  _        <> (Pass b) = (Pass b)
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Validation a b) where
+  arbitrary = do
+    a <- arbitrary  
+    b <- arbitrary
+    oneof [return (Fail a), return (Pass b)]
+
+type ValidationAssoc = (Validation String String) -> 
+                       (Validation String String) -> 
+                       (Validation String String) -> 
+                       Bool 
+
+-- 12 
+newtype AccRight a b = AccRight (Validation a b) deriving (Eq, Show)
+
+instance (Semigroup b) => Semigroup (AccRight a b) where
+  (AccRight (Pass a)) <> (AccRight (Pass b)) = AccRight (Pass (a <> b))
+  (AccRight (Fail a)) <> _                   = AccRight (Fail a)
+  _                   <> (AccRight (Fail b)) = AccRight (Fail b)
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (AccRight a b) where
+  arbitrary = do
+    a <- arbitrary  
+    b <- arbitrary
+    oneof [return (AccRight (Fail a)), return (AccRight (Pass b))]
+
+type AccRightAssoc = (AccRight String String) -> 
+                     (AccRight String String) -> 
+                     (AccRight String String) -> 
+                     Bool 
+
+-- 13
+newtype AccBoth a b = AccBoth (Validation a b) deriving (Eq, Show)
+
+instance (Semigroup a, Semigroup b) => Semigroup (AccBoth a b) where
+  (AccBoth (Pass a)) <> (AccBoth (Pass b)) = AccBoth (Pass (a <> b))
+  (AccBoth (Fail a)) <> (AccBoth (Fail b)) = AccBoth (Fail (a <> b))
+  _                  <> (AccBoth (Fail b)) = AccBoth (Fail b)
+  (AccBoth (Fail a)) <> _                  = AccBoth (Fail a)
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (AccBoth a b) where
+  arbitrary = do
+    a <- arbitrary  
+    b <- arbitrary
+    oneof [return (AccBoth (Fail a)), return (AccBoth (Pass b))]
+
+type AccBothAssoc = (AccBoth String String) -> 
+                    (AccBoth String String) -> 
+                    (AccBoth String String) -> 
+                    Bool 
+-- Testing
+semigroupAssoc :: (Eq m, Semigroup m) => m -> m -> m -> Bool
+semigroupAssoc a b c = (a <> (b <> c)) == ((a <> b) <> c)
+
+monoidLeftIdentity :: (Eq m, Monoid m) => m -> Bool
+monoidLeftIdentity a = ((M.<>) mempty a) == a
+
+monoidRightIdentity :: (Eq m, Monoid m) => m -> Bool
+monoidRightIdentity a = ((M.<>) a mempty) == a
+
+main :: IO ()
+main = do
+  quickCheck (semigroupAssoc :: TrivAssoc)
+  quickCheck (monoidLeftIdentity :: Trivial -> Bool)
+  quickCheck (monoidRightIdentity :: Trivial -> Bool)
+  quickCheck (semigroupAssoc :: IdentAssoc)
+  quickCheck (monoidLeftIdentity :: Identity String -> Bool)
+  quickCheck (monoidRightIdentity :: Identity String -> Bool)
+  quickCheck (semigroupAssoc :: TwoAssoc)
+  quickCheck (monoidLeftIdentity :: Two String String -> Bool)
+  quickCheck (monoidRightIdentity :: Two String String -> Bool)
+  quickCheck (semigroupAssoc :: ThreeAssoc)
+  quickCheck (semigroupAssoc :: FourAssoc)
+  quickCheck (semigroupAssoc :: BoolConjAssoc)
+  quickCheck (monoidLeftIdentity :: BoolConj -> Bool)
+  quickCheck (monoidRightIdentity :: BoolConj -> Bool)
+  quickCheck (semigroupAssoc :: BoolDisjAssoc)
+  quickCheck (monoidLeftIdentity :: BoolDisj -> Bool)
+  quickCheck (monoidRightIdentity :: BoolDisj -> Bool)
+  quickCheck (semigroupAssoc :: OrAssoc)
+  quickCheck combineAssoc
+  quickCheck combineLeftIdentity
+  quickCheck combineRightIdentity
+  quickCheck compAssoc
+  quickCheck compLeftIdentity
+  quickCheck compRightIdentity
+  quickCheck (semigroupAssoc :: ValidationAssoc)
+  quickCheck (semigroupAssoc :: AccRightAssoc)
+  quickCheck (semigroupAssoc :: AccBothAssoc)
+```
+
+```haskell
+--15/Mem.hs
+module Mem where 
+
+import Data.Monoid
+import Test.QuickCheck
+
+newtype Mem s a = Mem { runMem :: s -> (a , s) }
+
+instance Monoid a => Monoid (Mem s a) where
+  mempty = Mem (\n -> (mempty, n))
+  mappend (Mem f) (Mem g) = Mem h where
+    h = (\n -> ((fst $ f n) <> (fst $ g n), snd $ f $ snd $ g n))
+
+f' = Mem $ \s -> ("hi", s + 1)
+
+main = do
+  let rmzero = runMem mempty 0
+      rmleft = runMem (f' <> mempty) 0
+      rmright = runMem (mempty <> f') 0
+  print $ rmleft
+  print $ rmright
+  print $ (rmzero :: (String, Int))
+  print $ rmleft == runMem f' 0
+  print $ rmright == runMem f' 0
+```
+
+## 15.17 Follow-up resources 
+
+1. Algebraic structure; Simple English Wikipedia
+2. Haskell Monoids and Their Uses; Dan Piponi
+
+---
+
+# 16  Functor
+
+## 16.4 Let's talk about 4, baby
+
+### Excercises: Be Kind
+
+1. `*`
+2. `b` is `* -> *`, `T` is `* -> *`
+3. `* -> * -> *`
+
+## 16.7 Commonly used functors
+
+### Exercises: Heavy Lifting 
+
+```haskell
+--16/HeavyLifting.hs
+module HeavyLifting where
+
+-- 1 
+a = (+1) <$> read "[1]" :: [Int]
+
+-- 2
+b = (fmap . fmap) (++ "lol") (Just ["Hi,", "Hello"])
+
+-- 3
+c = (*2) . (\x -> x - 2)
+
+-- 4 
+d = ((return '1' ++) . show) . (\x -> [x, 1..3])
+
+-- 5, this one is a lot less scary if you break it into its pieces first
+--    the input and output are both IO Integer and the rest is just legos
+e :: IO Integer
+e = let ioi = readIO "1" :: IO Integer
+        changed = read <$> ("123"++) <$> show <$> ioi
+    in (*3) <$> changed
+```
+
+## 16.10 Exercises: Instances of Func
+```haskell
+--16/FunctorInstances.hs
+module FunctorInstances where
+
+import Test.QuickCheck
+import Test.QuickCheck.Function
+
+-- 1
+newtype Identity a = Identity a deriving (Eq, Show)
+
+instance Arbitrary a => Arbitrary (Identity a) where
+  arbitrary = do 
+    a' <- arbitrary 
+    return (Identity a')
+
+instance Functor Identity where
+  fmap f (Identity a) = Identity (f a)
+
+-- 2 
+data Pair a = Pair a a deriving (Eq, Show)
+
+instance Arbitrary a => Arbitrary (Pair a) where
+  arbitrary = do 
+    a <- arbitrary 
+    a' <- arbitrary 
+    return (Pair a a')
+
+instance Functor Pair where
+  fmap f (Pair a a') = Pair (f a) (f a')
+
+-- 3
+data Two a b = Two a b deriving (Eq, Show)
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Two a b) where
+  arbitrary = do
+    a' <- arbitrary  
+    b' <- arbitrary
+    return (Two a' b')
+
+instance Functor (Two a) where
+  fmap f (Two a b) = Two a (f b)
+
+-- 4
+data Three a b c = Three a b c deriving (Eq, Show)
+
+instance (Arbitrary a, Arbitrary b, Arbitrary c) => Arbitrary (Three a b c) where
+  arbitrary = do
+    a' <- arbitrary  
+    b' <- arbitrary
+    c' <- arbitrary
+    return (Three a' b' c')
+
+instance Functor (Three a b) where
+  fmap f (Three a b c) = Three a b (f c)
+
+-- 5
+data Three' a b = Three' a b b deriving (Eq, Show)
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Three' a b) where
+  arbitrary = do
+    a <- arbitrary  
+    b <- arbitrary
+    b' <- arbitrary
+    return (Three' a b b')
+
+instance Functor (Three' a) where
+  fmap f (Three' a b b') = Three' a (f b) (f b')
+
+-- 6
+data Four a b c d = Four a b c d deriving (Eq, Show)
+
+instance (Arbitrary a, Arbitrary b, Arbitrary c, Arbitrary d) => 
+  Arbitrary (Four a b c d) where
+    arbitrary = do
+      a' <- arbitrary  
+      b' <- arbitrary
+      c' <- arbitrary
+      d' <- arbitrary
+      return (Four a' b' c' d')
+
+instance Functor (Four a b c) where
+  fmap f (Four a b c d) = Four a b c (f d)
+
+-- 7
+data Four' a b = Four' a a a b deriving (Eq, Show)
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Four' a b) where
+    arbitrary = do
+      a <- arbitrary  
+      a' <- arbitrary
+      a'' <- arbitrary
+      b <- arbitrary
+      return (Four' a a' a'' b)
+
+instance Functor (Four' a) where
+  fmap f (Four' a a' a'' b) = Four' a a' a'' (f b)
+
+-- Testing
+type IntToInt = Fun Int Int
+
+functorIdentity :: (Functor f, Eq (f a)) => f a -> Bool
+functorIdentity f = fmap id f == f
+
+functorCompose :: (Eq (f c), Functor f) => (a -> b) -> (b -> c) -> f a -> Bool
+functorCompose f g x = (fmap g (fmap f x)) == (fmap (g . f) x)
+
+functorCompose' :: (Eq (f c), Functor f) => Fun a b -> Fun b c -> f a -> Bool
+functorCompose' (Fun _ f) (Fun _ g) x = (fmap g (fmap f x)) == (fmap (g . f) x)
+
+main :: IO ()
+main = do
+  quickCheck (functorIdentity :: (Identity Int) -> Bool)
+  quickCheck (functorCompose' :: IntToInt -> IntToInt -> (Identity Int) -> Bool)
+  quickCheck (functorIdentity :: (Pair Int) -> Bool)
+  quickCheck (functorCompose' :: IntToInt -> IntToInt -> (Pair Int) -> Bool)
+  quickCheck (functorIdentity :: (Two Int Int) -> Bool)
+  quickCheck (functorCompose' :: IntToInt -> IntToInt -> (Two Int Int) -> Bool)
+  quickCheck (functorIdentity :: (Three Int Int Int) -> Bool)
+  quickCheck (functorCompose' :: IntToInt -> IntToInt -> (Three Int Int Int) -> Bool)
+  quickCheck (functorIdentity :: (Three' Int Int) -> Bool)
+  quickCheck (functorCompose' :: IntToInt -> IntToInt -> (Three' Int Int) -> Bool)
+  quickCheck (functorIdentity :: (Four Int Int Int Int) -> Bool)
+  quickCheck (functorCompose' :: IntToInt -> IntToInt -> (Four Int Int Int Int) -> Bool)
+  quickCheck (functorIdentity :: (Four' Int Int) -> Bool)
+  quickCheck (functorCompose' :: IntToInt -> IntToInt -> (Four' Int Int) -> Bool)
+```
+
+8. Trivial doesn't have anything inside it that fmap can apply a function to,
+   fmap doesn't make sense for things with kind `*`, or rather fmap on type
+   constants is just function application, which is all f and no map.
+
+## 16.11 Ignoring possibilities
+
+### Exercise: Possibly 
+```haskell
+--16/PossiblyEither.hs
+module PossiblyEither where
+
+data Possibly a = LolNope | Yeppers a deriving (Eq, Show)
+
+instance Functor Possibly where 
+  fmap f (Yeppers a) = Yeppers (f a)
+
+data Sum a b = First a | Second b deriving (Eq, Show)
+
+
+instance Functor (Sum a) where 
+  fmap f (Second b) = Second (f b)
+  fmap _ (First a) = First a
+```
+
+### Short Exercise
+see PossiblyEither.hs 
+
+2.  The `a` in `First a` might be a different type than the `b` in 
+   `Second b`. The function we pass to fmap can only operate on one of those
+types, but not both. In other words the function that fmap maps is of type `b
+-> c` and kind `*`. Furthermore, we have to apply the function to `Second b`
+rather than `First a`, because the structure that fmaps maps onto is of kind `*
+-> *`. Our structure is `(Sum a)` because `Sum` is of kind `* -> * -> *` and
+it needs to have accepted every type constructer but the last before its
+something that fmap can work on. But that doesn't mean we're barred from
+writing another function that does something different to `Sum`, but something
+different wont be fmap.
+
+
+## 16.7 Chapter Exercises
+
+Determine if a valid Fucntor can be written for the datatype provided:
+
+1. No, Bool has kind `*` but fmap only works on `* -> *` 
+2. Yes, note that `False'` and `True'` both take the same type `a`
+3. Yes, fmap can ignore `Falsish`
+4. Yes... but why...
+5. Nope, theres nothing to fmap over, kind `*`
+
+Rearrange the arguments:
+```haskell
+--16/Rearrange.hs
+module Rearrange where
+
+-- 1. 
+data Sum b a = First a | Second b
+
+instance Functor (Sum e) where
+  fmap f (First a)= First (f a)
+  fmap f (Second b) = Second b
+
+-- 2. 
+data Company a c b = DeepBlue a c | Something b
+
+instance Functor (Company e e') where
+  fmap f (Something b) = Something (f b)
+  fmap _ (DeepBlue a c) = DeepBlue a c
+
+-- 3.
+data More b a = L a b a | R b a b deriving (Eq, Show)
+
+instance Functor (More x) where
+  fmap f (L a b a') = L (f a) b (f a')
+  fmap f (R b a b') = R b (f a) b'
+```
+
+Write Functor instances:
+```haskell
+--16/Instances.hs
+{-# LANGUAGE FlexibleInstances #-}
+module Instances where
+
+-- 1
+data Quant a b = Finance | Desk a | Bloor b
+
+instance Functor (Quant a) where
+  fmap f (Bloor b) = Bloor (f b)
+  fmap _ (Desk a) = (Desk a)
+  fmap _ Finance = Finance
+
+-- 2
+data K a b = K a 
+
+instance Functor (K a) where
+  fmap _ (K a) = (K a)
+
+-- 3
+newtype Flip f a b = Flip (f b a) deriving (Eq, Show) 
+
+newtype K' a b = K' a
+
+instance Functor (Flip K' a) where
+  fmap f (Flip (K' a)) = Flip (K' (f a)) 
+
+-- 4
+data EvilGoateeConst a b = GoatyConst b
+
+instance Functor (EvilGoateeConst a) where
+  fmap f (GoatyConst b) = GoatyConst (f b)
+
+-- 5 
+data LiftItOut f a = LiftItOut (f a)
+
+instance Functor f => Functor (LiftItOut f) where
+  fmap f (LiftItOut fa ) = LiftItOut (fmap f fa)
+
+-- 6 
+data Parappa f g a = DaWrappa (f a) (g a)
+
+instance (Functor f, Functor g) => Functor (Parappa f g) where
+  fmap f (DaWrappa fa gb) = DaWrappa (fmap f fa) (fmap f gb)
+
+-- 7
+
+data IgnoreOne f g a b = IgnoringSomething (f a) (g b)
+
+instance (Functor f, Functor g) => Functor (IgnoreOne f g a) where
+  fmap f (IgnoringSomething fa gb) = IgnoringSomething fa (fmap f gb)
+
+-- 8
+data Notorious g o a t = Notorious (g o) (g a) (g t)
+
+instance (Functor g) => Functor (Notorious g o a) where
+  fmap f (Notorious go ga gt) = Notorious go ga (fmap f gt)
+
+-- 9
+data List a = Nil | Cons a (List a)
+
+instance Functor List where
+  fmap f (Cons a l) = Cons (f a) (fmap f l)
+  fmap _ Nil = Nil
+
+-- 10
+
+data GLord a = NoG | OneG a | MoreG (GLord a) (GLord a) (GLord a)
+
+instance Functor GLord where
+  fmap f (MoreG g g' g'') = MoreG (fmap f g) (fmap f g') (fmap f g'')
+  fmap f (OneG a) = OneG (f a)
+  fmap _ NoG = NoG
+
+-- 11
+data TalkToMe a = Halt | Print String a | Read (String -> a)
+
+instance Functor TalkToMe where
+  fmap f (Read g) = Read (f . g)
+  fmap f (Print s a) = Print s (f a)
+  fmap _ Halt = Halt
+```
+
+## 16.19 Follow-up resources
+
+1. [Haskell Wikibook; The Functor class.](https://en.wikibooks.org/wiki/Haskell/The_Functor_class)
+
+2. Mark P. Jones; A system of constructor classes: overloading and implicit higher-order polymorphism.
+
+3. Gabriel Gonzalez; The functor design pattern.
+
+---
+
+# 17 Applicative
+
+## 17.5 Applicative in use
+
+### Exercises: Lookups
+```haskell
+--17/Lookups.hs
+module Lookups where
+
+import Data.List (elemIndex)
+
+-- 1
+added :: Maybe Integer
+added = (+3) <$> (lookup 3 $ zip [1, 2, 3] [4, 5, 6])
+
+-- 2 
+y :: Maybe Integer
+y = lookup 2 $ zip [1, 2, 3] [4, 5, 6]
+
+z :: Maybe Integer
+z = lookup 2 $ zip [1, 2, 3] [4, 5, 6]
+
+tupled :: Maybe (Integer, Integer)
+tupled = (,) <$> y <*> z
+
+tupled2 :: Maybe (Integer, Integer)
+tupled2 = (pure (,)) <*> y <*> z
+
+-- that's cool, the first tupled builds the function ((,) y) inside the maybe
+-- the second tupled lifts (,) inside the maybe then applies both args to it
+
+-- 3
+x3 :: Maybe Int
+x3 = elemIndex 3 [1, 2, 3, 4, 5]
+
+y3 :: Maybe Int
+y3 = elemIndex 4 [1, 2, 3, 4, 5]
+
+max' :: Int -> Int -> Int
+max' = max
+
+maxed :: Maybe Int
+maxed = (pure max') <*> x3 <*> y3
+
+-- 4
+xs = [1, 2, 3]
+ys = [4, 5, 6]
+
+x4 :: Maybe Integer
+x4 = lookup 3 $ zip xs ys
+
+y4 :: Maybe Integer
+y4 = lookup 2 $ zip xs ys
+
+summed :: Maybe Integer
+summed = (pure sum) <*> ((,) <$> x4 <*> y4)
+
+summed2 :: Maybe Integer
+summed2 = sum <$> ((,) <$> x4 <*> y4)
+```
+
+## Exercises: Identity Instance
+```haskell
+--17/Identity.hs
+module Identity where
+
+newtype Identity a = Identity a deriving (Eq, Ord, Show)
+
+instance Functor Identity where
+  fmap f (Identity a) = Identity (f a) 
+
+instance Applicative Identity where
+  pure f = (Identity f) 
+  (<*>) (Identity f) (Identity a) = Identity (f a)
+```
+## Exercise: Fixer Upper
+```haskell
+--17/FixerUpper.hs
+module FixerUpper where
+
+-- 1
+one = const <$> Just "Hello" <*> (pure "World")
+
+-- 2
+two = (,,,) <$> Just 90 <*> Just 10 <*> Just "Tierness" <*> pure [1, 2, 3]
+```
+
+## List Applicative Exercise
+```haskell
+--17/applicativeexercises/src/ListApplicative.hs
+module ListApplicative where
+
+import Control.Applicative
+import Data.Monoid
+import Test.QuickCheck
+import Test.QuickCheck.Checkers
+import Test.QuickCheck.Classes
+
+data List a = Nil | Cons a (List a) deriving (Eq, Show)
+
+instance Functor List where
+  fmap f (Cons a as) = Cons (f a) (fmap f as)
+  fmap _ Nil = Nil
+
+instance Applicative List where
+  pure x = Cons x Nil
+  (<*>) _  Nil = Nil 
+  (<*>) Nil _ = Nil 
+  (<*>) fs as = flatMap (flip fmap as) fs
+--  (<*>) (Cons f fs) as = (fmap f as) `append` ((<*>) fs as)
+--  (<*>) fs as = flatMap (\f -> fmap f as) fs
+
+instance Arbitrary a => Arbitrary (List a) where
+  arbitrary = do
+    as <- arbitrary 
+    return (mkList as)
+
+instance Eq a => EqProp (List a) where
+  (=-=) = eq
+
+newtype ZipList' a = ZipList' (List a) deriving (Eq, Show)
+
+instance Eq a => EqProp (ZipList' a) where
+  xs =-= ys = xs' `eq` ys'
+    where xs' = let (ZipList' l) = xs
+                in take' 3000 l
+          ys' = let (ZipList' l) = ys
+                in take' 3000 l
+
+instance Functor ZipList' where
+  fmap f (ZipList' xs) = ZipList' $ fmap f xs
+
+instance Applicative ZipList' where
+  pure a = ZipList' $ repeat' a 
+  (<*>) (ZipList' fs) (ZipList' xs) = ZipList' (zipWith' fs xs)
+
+instance Arbitrary a => Arbitrary (ZipList' a) where
+  arbitrary = do
+    as <- arbitrary 
+    return (ZipList' as)
+
+zipWith' :: List (a -> b) -> List a -> List b
+zipWith' Nil _ = Nil
+zipWith' _ Nil = Nil
+zipWith' (Cons f fs) (Cons x xs) = Cons (f x) $ zipWith' fs xs
+
+take' :: Int -> List a -> List a
+take' n xs = go n Nil xs where
+  go 0 ys _ = ys
+  go n ys Nil = ys
+  go n ys (Cons x xs) = go (n - 1) (Cons x ys) xs
+
+repeat' :: a -> List a
+repeat' a = Cons a $ (repeat' a)
+
+append :: List a -> List a -> List a
+append Nil ys = ys
+append (Cons x xs) ys = Cons x (append xs ys)
+
+fold :: (a -> b -> b) -> b -> List a -> b
+fold _ b Nil = b
+fold f b (Cons h t) = f h (fold f b t)
+
+concat' :: List (List a) -> List a 
+concat' = fold append Nil
+
+flatMap :: (a -> List b) -> List a -> List b
+flatMap f as = concat' (fmap f as)
+
+mkList :: [a] -> List a
+mkList xs = foldr Cons Nil xs
+
+main :: IO ()
+main = do
+  let test = [(1, 2, 3), (4, 5, 6)] :: [(Int, Int, Int)]
+  quickBatch $ applicative (mkList test)
+  quickBatch $ applicative (ZipList' $ mkList test)
+```
+
+## ZipList Applicative Exercise
+see `applicativeexercises/src/ListApplicative.hs`
+
+## Exercise: Variations on Either
+```haskell
+--17/applicativeexercises/src/VariationEither.hs
+module VariationEither where
+
+import Control.Applicative
+import Data.Monoid
+import Test.QuickCheck
+import Test.QuickCheck.Checkers
+import Test.QuickCheck.Classes
+
+data Validation' e a = Failure' e | Success' a deriving (Eq, Show)
+
+instance Functor (Validation' e) where
+  fmap f (Success' a) = Success' (f a)
+  fmap f (Failure' e) = Failure' e
+
+instance Monoid e => Applicative (Validation' e) where
+  pure a = Success' a
+  (<*>) (Failure' e) (Failure' r) = Failure' (e `mappend` r)
+  (<*>) _           (Failure' e) = Failure' e
+  (<*>) (Failure' e) _           = Failure' e
+  (<*>) (Success' a) (Success' b) = Success' (a b)
+
+instance (Arbitrary e, Arbitrary a) => Arbitrary (Validation' e a) where
+  arbitrary = do
+    a <- arbitrary
+    e <- arbitrary
+    oneof [return (Failure' e), return (Success' a)]
+
+instance (Eq e, Eq a) => EqProp (Validation' e a) where
+  (=-=) = eq
+
+main :: IO ()
+main = do
+  let test :: Validation' (String, String, String) (String, String, String)
+      test = Success' ("a", "b", "c")
+  quickBatch $ applicative test 
+```
+
+
+## 17.9 Chapter Exercises
+```haskell
+--17/applicativeexercises/src/ChapterExercises.hs
+module ChapterExercises where
+
+import Control.Applicative
+import Data.Monoid
+import Test.QuickCheck
+import Test.QuickCheck.Checkers
+import Test.QuickCheck.Classes
+
+-- Specialize
+-- 1
+listPure :: a -> [a]
+listPure = pure 
+
+listApply :: [(a -> b)] -> [a] -> [b]
+listApply = (<*>) 
+
+-- 2
+ioPure :: a -> IO a
+ioPure = pure 
+
+ioApply :: IO (a -> b) -> IO a -> IO b
+ioApply = (<*>)
+ 
+-- 3
+tuplePure  :: (Monoid a, Monoid c) => a -> (c, a)
+tuplePure = pure
+
+tupleApply :: (Monoid a, Monoid c) => (c, (a -> b)) -> (c, a) -> (c, b)
+tupleApply = (<*>)
+
+-- 4
+funcPure :: a -> (e -> a)
+funcPure = pure
+
+funcApply :: (e -> (a -> b)) -> (e -> a) -> (e -> b)
+funcApply = (<*>)
+
+-- Instances
+-- 1 
+data Pair a = Pair a a deriving (Eq, Show)
+
+instance Arbitrary a => Arbitrary (Pair a) where
+  arbitrary = do 
+    a <- arbitrary 
+    a' <- arbitrary 
+    return (Pair a a')
+
+instance Functor Pair where
+  fmap f (Pair a a') = Pair (f a) (f a')
+
+instance Applicative Pair where
+  pure a = Pair a a 
+  (<*>) (Pair f f') (Pair a a') = Pair (f a) (f' a')
+
+instance (Eq a) => EqProp (Pair a) where
+  (=-=) = eq
+
+-- 2 
+data Two a b = Two a b deriving (Eq, Show)
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Two a b) where
+  arbitrary = do
+    a' <- arbitrary  
+    b' <- arbitrary
+    return (Two a' b')
+
+instance Functor (Two a) where
+  fmap f (Two a b) = Two a (f b)
+
+instance Monoid a => Applicative (Two a) where
+  pure x = Two mempty x
+  (<*>) (Two a b) (Two c d) = Two (a <> c) (b d)
+
+instance (Eq a, Eq b) => EqProp (Two a b) where
+  (=-=) = eq
+
+-- 3
+data Three a b c = Three a b c deriving (Eq, Show)
+
+instance (Arbitrary a, Arbitrary b, Arbitrary c) => Arbitrary (Three a b c) where
+  arbitrary = do
+    a' <- arbitrary  
+    b' <- arbitrary
+    c' <- arbitrary
+    return (Three a' b' c')
+
+instance Functor (Three a b) where
+  fmap f (Three a b c) = Three a b (f c)
+
+instance (Monoid a, Monoid b) => Applicative (Three a b) where
+  pure x = Three mempty mempty x
+  (<*>) (Three a b c) (Three e f g) = Three (a <> e) (b <> f) (c g)
+
+instance (Eq a, Eq b, Eq c) => EqProp (Three a b c) where
+  (=-=) = eq
+
+-- 4
+
+data Three' a b = Three' a b b deriving (Eq, Show)
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Three' a b) where
+  arbitrary = do
+    a <- arbitrary  
+    b <- arbitrary
+    b' <- arbitrary
+    return (Three' a b b')
+
+instance Functor (Three' a) where
+  fmap f (Three' a b b') = Three' a (f b) (f b')
+
+instance (Monoid a) => Applicative (Three' a) where
+  pure x = Three' mempty x x
+  (<*>) (Three' a b c) (Three' e f g) = Three' (a <> e) (b f) (c g)
+
+instance (Eq a, Eq b) => EqProp (Three' a b ) where
+  (=-=) = eq
+
+-- 5
+
+data Four a b c d = Four a b c d deriving (Eq, Show)
+
+instance (Arbitrary a, Arbitrary b, Arbitrary c, Arbitrary d) => 
+  Arbitrary (Four a b c d) where
+    arbitrary = do
+      a' <- arbitrary  
+      b' <- arbitrary
+      c' <- arbitrary
+      d' <- arbitrary
+      return (Four a' b' c' d')
+
+instance Functor (Four a b c) where
+  fmap f (Four a b c d) = Four a b c (f d)
+
+instance (Monoid a, Monoid b, Monoid c) => Applicative (Four a b c) where
+  pure x = Four mempty mempty mempty x
+  (<*>) (Four a b c d) (Four e f g h) = Four (a <> e) (b <> f) (c <> g) (d h)
+
+instance (Eq a, Eq b, Eq c, Eq d) => EqProp (Four a b c d) where
+  (=-=) = eq
+
+-- 6
+
+data Four' a b = Four' a a a b deriving (Eq, Show)
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Four' a b) where
+    arbitrary = do
+      a <- arbitrary  
+      a' <- arbitrary
+      a'' <- arbitrary
+      b <- arbitrary
+      return (Four' a a' a'' b)
+
+instance Functor (Four' a) where
+  fmap f (Four' a a' a'' b) = Four' a a' a'' (f b)
+
+instance (Monoid a) => Applicative (Four' a) where
+  pure x = Four' mempty mempty mempty x
+  (<*>) (Four' a b c d) (Four' e f g h) = Four' (a <> e) (b <> f) (c <> g) (d h)
+
+instance (Eq a, Eq b) => EqProp (Four' a b) where
+  (=-=) = eq
+
+-- Combinations
+
+stops :: String
+stops = "pbtdkg"
+
+vowels :: String
+vowels = "aeiou"
+
+combos :: [a] -> [b] -> [c] -> [(a, b, c)]
+-- combos a b c = liftA3 (\a b c -> (a, b, c)) a b c
+combos a b c = liftA3 (,,) a b c
+
+-- Testing
+
+test = (1, 2, 3)
+
+main :: IO ()
+main = do
+  let test = ("a", "b", "c")
+  quickBatch $ applicative (Pair test test)
+  quickBatch $ applicative (Two test test)
+  quickBatch $ applicative (Three test test test)
+  quickBatch $ applicative (Three' test test test)
+  quickBatch $ applicative (Four test test test test)
+  quickBatch $ applicative (Four' test test test test)
+```
+
+## 17.11 Follow-up resources
+
+1. [Tony Morris; Nick Partridge; Validation library](http://hackage.haskell.org/package/validation)
+
+2. [Conor McBride; Ross Paterson; Applicative Programming with Effects](http://staff.city.ac.uk/~ross/papers/Applicative.html)
+
+3. Jeremy Gibbons; Bruno C. d. S. Oliveira; Essence of the Iterator
+Pattern
+
+4. [Ross Paterson; Constructing Applicative Functors](http://staff.city.ac.uk/~ross/papers/Constructors.html)
+
+5.Sam Lindley; Philip Wadler; Jeremy Yallop; Idioms are oblivi-
+ous, arrows are meticulous, monads are promiscuous.
+Note:Idiom means applicative functor and is a useful search
+term for published work on applicative functors.
+
+---
+
+# 18 Monad
+
+
