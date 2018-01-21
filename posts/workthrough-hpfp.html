@@ -328,7 +328,42 @@
 <li><a href="#chapter-exercises-15">17.9 Chapter Exercises</a></li>
 <li><a href="#follow-up-resources-11">17.11 Follow-up resources</a></li>
 </ul></li>
-<li><a href="#monad">18 Monad</a></li>
+<li><a href="#monad">18 Monad</a><ul>
+<li><a href="#sorry---a-monad-is-not-a-burrito">18.2 Sorry - a monad is not a burrito</a><ul>
+<li><a href="#the-answer-is-the-exercise">The answer is the exercise</a></li>
+</ul></li>
+<li><a href="#examples-of-monad-use">18.4 Examples of Monad use</a><ul>
+<li><a href="#short-exercise-either-monad">Short Exercise: Either Monad</a></li>
+</ul></li>
+<li><a href="#chapter-exercises-16">Chapter Exercises</a></li>
+<li><a href="#follow-up-resources-12">18.9 Follow-up resources</a></li>
+</ul></li>
+<li><a href="#applying-structure">19 Applying structure</a><ul>
+<li><a href="#follow-up-resources-13">19.8 Follow-up resources</a></li>
+</ul></li>
+<li><a href="#foldable">20 Foldable</a><ul>
+<li><a href="#some-basic-derived-operations">20.5 Some basic derived operations</a></li>
+<li><a href="#chapter-exercises-17">20.6 Chapter Exercises</a></li>
+<li><a href="#follow-up-resources-14">20.7 Follow-up resources</a></li>
+</ul></li>
+<li><a href="#traversable">21 Traversable</a><ul>
+<li><a href="#chapter-exercises-18">21.12 Chapter Exercises</a></li>
+<li><a href="#follow-up-resources-15">21.13 Follow-up resources</a></li>
+<li><a href="#reader">22 Reader</a></li>
+<li><a href="#a-new-beginning">22.2 A new beginning</a><ul>
+<li><a href="#short-exercise-warming-up">Short Exercise: Warming Up</a></li>
+</ul></li>
+<li><a href="#but-uh-reader">22.5 But uh, Reader?</a></li>
+<li><a href="#exercise-ask">Exercise: Ask</a></li>
+<li><a href="#functions-have-an-applicative-too">22.6 Functions have an Applicative too</a></li>
+<li><a href="#exercise-readingcomprehension">Exercise: ReadingComprehension</a></li>
+<li><a href="#the-monad-of-functions">22.7 The Monad of functions</a><ul>
+<li><a href="#exercise-reader-monad">Exercise: Reader Monad</a></li>
+</ul></li>
+<li><a href="#chapter-exercises-19">22.11 Chapter Exercises</a></li>
+<li><a href="#follow-up-resources-16">22.13 Follow-up resources</a></li>
+<li><a href="#state">23 State</a></li>
+</ul></li>
 </ul>
 <hr>
 <p><strong>Work in progress</strong></p>
@@ -4374,10 +4409,746 @@ main <span class="fu">=</span> <span class="kw">do</span>
 <li><p><a href="http://staff.city.ac.uk/~ross/papers/Applicative.html">Conor McBride; Ross Paterson; Applicative Programming with Effects</a></p></li>
 <li><p>Jeremy Gibbons; Bruno C. d. S. Oliveira; Essence of the Iterator Pattern</p></li>
 <li><p><a href="http://staff.city.ac.uk/~ross/papers/Constructors.html">Ross Paterson; Constructing Applicative Functors</a></p></li>
+<li><p>Sam Lindley; Philip Wadler; Jeremy Yallop; Idioms are oblivi- ous, arrows are meticulous, monads are promiscuous. Note:Idiom means applicative functor and is a useful search term for published work on applicative functors.</p></li>
 </ol>
-<p>5.Sam Lindley; Philip Wadler; Jeremy Yallop; Idioms are oblivi- ous, arrows are meticulous, monads are promiscuous. Note:Idiom means applicative functor and is a useful search term for published work on applicative functors.</p>
 <hr />
 <h1 id="monad">18 Monad</h1>
+<h2 id="sorry---a-monad-is-not-a-burrito">18.2 Sorry - a monad is not a burrito</h2>
+<h3 id="the-answer-is-the-exercise">The answer is the exercise</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Bind</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Control.Monad</span> (join)
+
+<span class="ot">bind ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> m b) <span class="ot">-&gt;</span> m a <span class="ot">-&gt;</span> m b
+bind f m <span class="fu">=</span> join <span class="fu">$</span> fmap f m</code></pre></div>
+<h2 id="examples-of-monad-use">18.4 Examples of Monad use</h2>
+<h3 id="short-exercise-either-monad">Short Exercise: Either Monad</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--18/EitherMonad.hs</span>
+<span class="kw">module</span> <span class="dt">EitherMonad</span> <span class="kw">where</span>
+
+<span class="kw">data</span> <span class="dt">Sum</span> a b <span class="fu">=</span> <span class="dt">First</span> a <span class="fu">|</span> <span class="dt">Second</span> b <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Sum</span> a) <span class="kw">where</span>
+  fmap f (<span class="dt">Second</span> b) <span class="fu">=</span> <span class="dt">Second</span> (f b)
+  fmap _ (<span class="dt">First</span> a) <span class="fu">=</span> <span class="dt">First</span> a
+
+<span class="kw">instance</span> <span class="dt">Applicative</span> (<span class="dt">Sum</span> a) <span class="kw">where</span>
+  pure b <span class="fu">=</span> <span class="dt">Second</span> b
+  (<span class="fu">&lt;*&gt;</span>) _           (<span class="dt">First</span> e) <span class="fu">=</span> <span class="dt">First</span> e
+  (<span class="fu">&lt;*&gt;</span>) (<span class="dt">First</span> e) _           <span class="fu">=</span> <span class="dt">First</span> e
+  (<span class="fu">&lt;*&gt;</span>) (<span class="dt">Second</span> f) (<span class="dt">Second</span> b) <span class="fu">=</span> <span class="dt">Second</span> (f b)
+
+<span class="kw">instance</span> <span class="dt">Monad</span> (<span class="dt">Sum</span> a) <span class="kw">where</span>
+  return <span class="fu">=</span> pure 
+  (<span class="fu">&gt;&gt;=</span>) (<span class="dt">Second</span> b) f <span class="fu">=</span> (f b)</code></pre></div>
+<h2 id="chapter-exercises-16">Chapter Exercises</h2>
+<p>monadexercises/src/ChapterExercises.hs</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--18/monadexercises/src/ChapterExercises.hs</span>
+<span class="kw">module</span> <span class="dt">ChapterExercises</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Control.Monad</span>
+<span class="kw">import </span><span class="dt">Test.QuickCheck</span>
+<span class="kw">import </span><span class="dt">Test.QuickCheck.Checkers</span>
+<span class="kw">import </span><span class="dt">Test.QuickCheck.Classes</span>
+
+<span class="co">--1</span>
+<span class="kw">data</span> <span class="dt">Nope</span> a <span class="fu">=</span> <span class="dt">NopeDotJpg</span> <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">Nope</span> <span class="kw">where</span>
+  fmap f <span class="dt">NopeDotJpg</span> <span class="fu">=</span> <span class="dt">NopeDotJpg</span>
+
+<span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">Nope</span> <span class="kw">where</span>
+  pure _ <span class="fu">=</span> <span class="dt">NopeDotJpg</span>
+  (<span class="fu">&lt;*&gt;</span>) _ _ <span class="fu">=</span> <span class="dt">NopeDotJpg</span>
+
+<span class="kw">instance</span> <span class="dt">Monad</span> <span class="dt">Nope</span> <span class="kw">where</span>
+  return _ <span class="fu">=</span> <span class="dt">NopeDotJpg</span>
+  (<span class="fu">&gt;&gt;=</span>) _ _ <span class="fu">=</span> <span class="dt">NopeDotJpg</span>
+
+<span class="kw">instance</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Nope</span> a) <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> return <span class="dt">NopeDotJpg</span>
+
+<span class="kw">instance</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> <span class="dt">EqProp</span> (<span class="dt">Nope</span> a) <span class="kw">where</span> 
+  (<span class="fu">=-=</span>) <span class="fu">=</span> eq
+
+<span class="co">-- 2 </span>
+<span class="kw">data</span> <span class="dt">PhEither</span> b a <span class="fu">=</span> <span class="dt">Right'</span> b <span class="fu">|</span> <span class="dt">Left'</span> a <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">PhEither</span> b) <span class="kw">where</span>
+  fmap f (<span class="dt">Left'</span> a) <span class="fu">=</span> <span class="dt">Left'</span> (f a)
+  fmap f (<span class="dt">Right'</span> b) <span class="fu">=</span> <span class="dt">Right'</span> b
+
+<span class="kw">instance</span> <span class="dt">Applicative</span> (<span class="dt">PhEither</span> b) <span class="kw">where</span>
+  pure a <span class="fu">=</span> <span class="dt">Left'</span> a
+  (<span class="fu">&lt;*&gt;</span>) (<span class="dt">Right'</span> b) _ <span class="fu">=</span> <span class="dt">Right'</span> b
+  (<span class="fu">&lt;*&gt;</span>) _ (<span class="dt">Right'</span> b) <span class="fu">=</span> <span class="dt">Right'</span> b
+  (<span class="fu">&lt;*&gt;</span>) (<span class="dt">Left'</span> f) (<span class="dt">Left'</span> a) <span class="fu">=</span> <span class="dt">Left'</span> (f a)
+
+<span class="kw">instance</span> <span class="dt">Monad</span> (<span class="dt">PhEither</span> b) <span class="kw">where</span>
+  return <span class="fu">=</span> pure
+  (<span class="fu">&gt;&gt;=</span>) (<span class="dt">Left'</span> a) f  <span class="fu">=</span> (f a)
+  (<span class="fu">&gt;&gt;=</span>) (<span class="dt">Right'</span> b) f  <span class="fu">=</span> <span class="dt">Right'</span> b
+
+<span class="kw">instance</span> (<span class="dt">Arbitrary</span> a, <span class="dt">Arbitrary</span> b) <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">PhEither</span> b a)  <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> <span class="kw">do</span>
+    b' <span class="ot">&lt;-</span> arbitrary
+    a' <span class="ot">&lt;-</span> arbitrary  
+    oneof [return (<span class="dt">Left'</span> b'), return (<span class="dt">Right'</span> a')]
+
+<span class="kw">instance</span> (<span class="dt">Eq</span> b, <span class="dt">Eq</span> a) <span class="ot">=&gt;</span> <span class="dt">EqProp</span> (<span class="dt">PhEither</span> b a) <span class="kw">where</span> 
+  (<span class="fu">=-=</span>) <span class="fu">=</span> eq
+
+<span class="co">-- 3</span>
+<span class="kw">data</span> <span class="dt">Identity</span> a <span class="fu">=</span> <span class="dt">Identity</span> a <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Ord</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">Identity</span> <span class="kw">where</span>
+  fmap f (<span class="dt">Identity</span> a) <span class="fu">=</span> <span class="dt">Identity</span> (f a)
+
+<span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">Identity</span> <span class="kw">where</span>
+  pure a <span class="fu">=</span> <span class="dt">Identity</span> a
+  (<span class="fu">&lt;*&gt;</span>) (<span class="dt">Identity</span> f) (<span class="dt">Identity</span> a) <span class="fu">=</span> <span class="dt">Identity</span> (f a)
+
+<span class="kw">instance</span> <span class="dt">Monad</span> <span class="dt">Identity</span> <span class="kw">where</span>
+  return <span class="fu">=</span> pure
+  (<span class="fu">&gt;&gt;=</span>) (<span class="dt">Identity</span> a) f  <span class="fu">=</span> (f a)
+
+<span class="kw">instance</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Identity</span> a)  <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> <span class="kw">do</span>
+    a <span class="ot">&lt;-</span> arbitrary
+    return (<span class="dt">Identity</span> a)
+
+<span class="kw">instance</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> <span class="dt">EqProp</span> (<span class="dt">Identity</span> a) <span class="kw">where</span> 
+  (<span class="fu">=-=</span>) <span class="fu">=</span> eq
+
+<span class="co">-- 4</span>
+<span class="kw">data</span> <span class="dt">List</span> a <span class="fu">=</span> <span class="dt">Nil</span> <span class="fu">|</span> <span class="dt">Cons</span> a (<span class="dt">List</span> a) <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">List</span> <span class="kw">where</span>
+  fmap f <span class="dt">Nil</span> <span class="fu">=</span> <span class="dt">Nil</span> 
+  fmap f (<span class="dt">Cons</span> a as) <span class="fu">=</span> <span class="dt">Cons</span> (f a) (fmap f as)
+
+<span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">List</span> <span class="kw">where</span>
+  pure a <span class="fu">=</span> <span class="dt">Cons</span> a <span class="dt">Nil</span>
+  <span class="co">-- (&lt;*&gt;) fs as = toList $ [f a | f &lt;- (fromList fs), a &lt;- (fromList as)]</span>
+  (<span class="fu">&lt;*&gt;</span>) fs as <span class="fu">=</span> fold append <span class="dt">Nil</span> <span class="fu">$</span> fmap (\f <span class="ot">-&gt;</span> fmap f as) fs 
+
+<span class="kw">instance</span> <span class="dt">Monad</span> <span class="dt">List</span> <span class="kw">where</span>
+  return <span class="fu">=</span> pure
+  <span class="co">-- (&lt;*&gt;) fs as = fold append Nil $ fmap (\f -&gt; fmap f as) fs </span>
+  <span class="co">--(&gt;&gt;=) as f = toList $ [b | a &lt;- (fromList as), b &lt;- (fromList $ f a)]</span>
+  (<span class="fu">&gt;&gt;=</span>) as f <span class="fu">=</span> fold append <span class="dt">Nil</span> <span class="fu">$</span> fmap f as 
+
+<span class="ot">append ::</span> <span class="dt">List</span> a <span class="ot">-&gt;</span> <span class="dt">List</span> a <span class="ot">-&gt;</span> <span class="dt">List</span> a
+append <span class="dt">Nil</span> ys <span class="fu">=</span> ys
+append (<span class="dt">Cons</span> x xs) ys <span class="fu">=</span> <span class="dt">Cons</span> x (append xs ys)
+
+<span class="ot">fold ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> <span class="dt">List</span> a <span class="ot">-&gt;</span> b
+fold _ b <span class="dt">Nil</span> <span class="fu">=</span> b
+fold f b (<span class="dt">Cons</span> h t) <span class="fu">=</span> f h (fold f b t)
+
+<span class="ot">fromList ::</span> <span class="dt">List</span> a <span class="ot">-&gt;</span> [a]
+fromList <span class="dt">Nil</span> <span class="fu">=</span> [] 
+fromList (<span class="dt">Cons</span> a as) <span class="fu">=</span> a<span class="fu">:</span>(fromList as)
+
+<span class="ot">toList ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">List</span> a
+toList [] <span class="fu">=</span> <span class="dt">Nil</span> 
+toList (x<span class="fu">:</span>xs) <span class="fu">=</span> <span class="dt">Cons</span> x (toList xs)
+
+
+<span class="kw">instance</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">List</span> a) <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> <span class="kw">do</span>
+    as <span class="ot">&lt;-</span> arbitrary 
+    return (toList as)
+
+<span class="kw">instance</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> <span class="dt">EqProp</span> (<span class="dt">List</span> a) <span class="kw">where</span>
+  (<span class="fu">=-=</span>) <span class="fu">=</span> eq
+
+<span class="co">-- Write functions</span>
+
+<span class="co">-- 1</span>
+<span class="ot">j ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> m (m a) <span class="ot">-&gt;</span> m a
+j x <span class="fu">=</span> x <span class="fu">&gt;&gt;=</span> id
+
+<span class="co">-- 2</span>
+<span class="ot">l1 ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> m a <span class="ot">-&gt;</span> m b
+l1 <span class="fu">=</span> fmap
+
+<span class="co">-- 3</span>
+<span class="ot">l2 ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> m a <span class="ot">-&gt;</span> m b <span class="ot">-&gt;</span> m c
+l2 f ma mb <span class="fu">=</span> f <span class="fu">&lt;$&gt;</span> ma <span class="fu">&lt;*&gt;</span> mb
+
+<span class="co">-- 4</span>
+<span class="ot">a ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> m a <span class="ot">-&gt;</span> m (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> m b 
+a <span class="fu">=</span> flip (<span class="fu">&lt;*&gt;</span>) 
+
+<span class="co">-- 5</span>
+<span class="ot">meh ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> m b) <span class="ot">-&gt;</span> m [b]
+meh [] f <span class="fu">=</span> return [] 
+meh (a<span class="fu">:</span>as) f <span class="fu">=</span> liftM2 (<span class="fu">:</span>) (f a) (meh as f)
+
+<span class="co">-- 6</span>
+<span class="ot">flipType ::</span> (<span class="dt">Monad</span> m) <span class="ot">=&gt;</span> [m a] <span class="ot">-&gt;</span> m [a]
+flipType xs <span class="fu">=</span> meh xs id
+
+
+<span class="co">-- Testing</span>
+
+<span class="co">-- type SSS = (String, String, String)</span>
+<span class="kw">type</span> <span class="dt">III</span> <span class="fu">=</span> (<span class="dt">Int</span>, <span class="dt">Int</span>, <span class="dt">Int</span>)
+
+main <span class="fu">=</span> <span class="kw">do</span>
+  quickBatch <span class="fu">$</span> functor (<span class="dt">NopeDotJpg</span><span class="ot"> ::</span> <span class="dt">Nope</span> <span class="dt">III</span>)
+  quickBatch <span class="fu">$</span> applicative (<span class="dt">NopeDotJpg</span><span class="ot"> ::</span> <span class="dt">Nope</span> <span class="dt">III</span>)
+  quickBatch <span class="fu">$</span> monad (<span class="dt">NopeDotJpg</span><span class="ot"> ::</span> <span class="dt">Nope</span> <span class="dt">III</span>)
+  quickBatch <span class="fu">$</span> functor (undefined<span class="ot"> ::</span> <span class="dt">PhEither</span> <span class="dt">III</span> <span class="dt">III</span>)
+  quickBatch <span class="fu">$</span> applicative (undefined<span class="ot"> ::</span> <span class="dt">PhEither</span> <span class="dt">III</span> <span class="dt">III</span>)
+  quickBatch <span class="fu">$</span> monad (undefined<span class="ot"> ::</span> <span class="dt">PhEither</span> <span class="dt">III</span> <span class="dt">III</span>)
+  quickBatch <span class="fu">$</span> functor (undefined<span class="ot"> ::</span> <span class="dt">Identity</span> <span class="dt">III</span>)
+  quickBatch <span class="fu">$</span> applicative (undefined<span class="ot"> ::</span> <span class="dt">Identity</span> <span class="dt">III</span>)
+  quickBatch <span class="fu">$</span> monad (undefined<span class="ot"> ::</span> <span class="dt">Identity</span> <span class="dt">III</span>)
+  quickBatch <span class="fu">$</span> functor (undefined<span class="ot"> ::</span> <span class="dt">List</span> <span class="dt">III</span>)
+  quickBatch <span class="fu">$</span> applicative (undefined<span class="ot"> ::</span> <span class="dt">List</span> <span class="dt">III</span>)
+  quickBatch <span class="fu">$</span> monad (undefined<span class="ot"> ::</span> <span class="dt">List</span> <span class="dt">III</span>)</code></pre></div>
+<h2 id="follow-up-resources-12">18.9 Follow-up resources</h2>
+<ol style="list-style-type: decimal">
+<li><p><a href="https://wiki.haskell.org/What_a_Monad_is_not">What a Monad is not</a></p></li>
+<li><p>Gabriel Gonzalez; How to desugar Haskell code</p></li>
+<li><p><a href="http://dev.stephendiehl.com/hask/#monads">Stephen Diehl; What I wish I knew when Learning Haskell</a></p></li>
+<li><p><a href="http://www.stephendiehl.com/posts/monads.html">Stephen Diehl; Monads Made Difficult</a></p></li>
+<li><p><a href="https://wiki.haskell.org/Typeclassopedia">Brent Yorgey; Typeclassopedia</a></p></li>
+</ol>
+<h1 id="applying-structure">19 Applying structure</h1>
+<p>skipping notes on this chapter for now. Code is <a href="https://github.com/johnchandlerburnham/haskellbook/blob/master/19/applyingstructure/app/Main.hs">here</a></p>
+<h2 id="follow-up-resources-13">19.8 Follow-up resources</h2>
+<ol style="list-style-type: decimal">
+<li>The case of the mysterious explosion in space; Bryan O’Sullivan; Explains how GHC handles string literals.</li>
+</ol>
+<hr />
+<h1 id="foldable">20 Foldable</h1>
+<h2 id="some-basic-derived-operations">20.5 Some basic derived operations</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--20/LibraryFunctions.hs</span>
+<span class="kw">module</span> <span class="dt">LibraryFunctions</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Prelude</span> <span class="kw">hiding</span> 
+  (sum, product, elem, minimum, maximum, null, length)
+<span class="kw">import </span><span class="dt">Data.Foldable</span> <span class="kw">hiding</span> 
+  (sum, product, elem, minimum, maximum, null, length, toList, fold)
+<span class="kw">import </span><span class="dt">Data.Monoid</span> 
+
+<span class="co">-- 1</span>
+<span class="ot">sum' ::</span> (<span class="dt">Foldable</span> t, <span class="dt">Num</span> a) <span class="ot">=&gt;</span> t a <span class="ot">-&gt;</span> a
+sum' xs <span class="fu">=</span> foldr (<span class="fu">+</span>) <span class="dv">0</span> xs
+
+sum<span class="ot"> ::</span> (<span class="dt">Foldable</span> t, <span class="dt">Num</span> a) <span class="ot">=&gt;</span> t a <span class="ot">-&gt;</span> a
+sum xs <span class="fu">=</span> getSum <span class="fu">$</span> foldMap <span class="dt">Sum</span> xs 
+
+<span class="co">-- 2</span>
+<span class="ot">product' ::</span> (<span class="dt">Foldable</span> t, <span class="dt">Num</span> a) <span class="ot">=&gt;</span> t a <span class="ot">-&gt;</span> a
+product' xs <span class="fu">=</span> foldr (<span class="fu">*</span>) <span class="dv">1</span> xs 
+
+<span class="ot">product2 ::</span> (<span class="dt">Foldable</span> t, <span class="dt">Num</span> a) <span class="ot">=&gt;</span> t a <span class="ot">-&gt;</span> a
+product2 xs <span class="fu">=</span> getSum <span class="fu">$</span> foldMap <span class="dt">Sum</span> xs 
+
+<span class="co">-- 3</span>
+elem<span class="ot"> ::</span> (<span class="dt">Foldable</span> t, <span class="dt">Eq</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+elem x xs <span class="fu">=</span> foldr ((<span class="fu">||</span>) <span class="fu">.</span> (<span class="fu">==</span> x)) <span class="dt">False</span> xs
+
+<span class="ot">elem2 ::</span> (<span class="dt">Foldable</span> t, <span class="dt">Eq</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+elem2 x xs <span class="fu">=</span> getAny <span class="fu">$</span> foldMap (<span class="dt">Any</span> <span class="fu">.</span> (<span class="fu">==</span> x)) xs
+
+<span class="co">-- 4</span>
+<span class="kw">newtype</span> <span class="dt">Least</span> a <span class="fu">=</span> <span class="dt">Least</span> {<span class="ot"> getLeast ::</span> <span class="dt">Maybe</span> a } <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Ord</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> <span class="dt">Ord</span> a <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Least</span> a) <span class="kw">where</span>
+  mempty <span class="fu">=</span> <span class="dt">Least</span> <span class="dt">Nothing</span>
+  mappend (<span class="dt">Least</span> <span class="dt">Nothing</span>) a <span class="fu">=</span> a
+  mappend a (<span class="dt">Least</span> <span class="dt">Nothing</span>) <span class="fu">=</span> a
+  mappend (<span class="dt">Least</span> (<span class="dt">Just</span> a)) (<span class="dt">Least</span> (<span class="dt">Just</span> b)) <span class="fu">=</span> <span class="dt">Least</span> (<span class="dt">Just</span> (min a b))
+   
+
+minimum<span class="ot"> ::</span> (<span class="dt">Foldable</span> t, <span class="dt">Ord</span> a) <span class="ot">=&gt;</span> t a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a
+minimum xs <span class="fu">=</span> getLeast <span class="fu">$</span> foldMap (<span class="dt">Least</span> <span class="fu">.</span> <span class="dt">Just</span>) xs
+ 
+<span class="co">-- 5 </span>
+<span class="kw">newtype</span> <span class="dt">Most</span> a <span class="fu">=</span> <span class="dt">Most</span> {<span class="ot"> getMost ::</span> <span class="dt">Maybe</span> a } <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Ord</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> <span class="dt">Ord</span> a <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Most</span> a) <span class="kw">where</span>
+  mempty <span class="fu">=</span> <span class="dt">Most</span> <span class="dt">Nothing</span>
+  mappend (<span class="dt">Most</span> <span class="dt">Nothing</span>) a <span class="fu">=</span> a
+  mappend a (<span class="dt">Most</span> <span class="dt">Nothing</span>) <span class="fu">=</span> a
+  mappend (<span class="dt">Most</span> (<span class="dt">Just</span> a)) (<span class="dt">Most</span> (<span class="dt">Just</span> b)) <span class="fu">=</span> <span class="dt">Most</span> (<span class="dt">Just</span> (max a b))
+   
+maximum<span class="ot"> ::</span> (<span class="dt">Foldable</span> t, <span class="dt">Ord</span> a) <span class="ot">=&gt;</span> t a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a
+maximum xs <span class="fu">=</span> getMost <span class="fu">$</span> foldMap (<span class="dt">Most</span> <span class="fu">.</span> <span class="dt">Just</span>) xs
+
+<span class="co">-- 6</span>
+<span class="kw">newtype</span> <span class="dt">Null</span> a <span class="fu">=</span> <span class="dt">Null</span> {<span class="ot">getNull ::</span> <span class="dt">Bool</span>} <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> <span class="dt">Monoid</span> (<span class="dt">Null</span> a) <span class="kw">where</span>
+  mempty <span class="fu">=</span> <span class="dt">Null</span> <span class="dt">True</span>
+  mappend (<span class="dt">Null</span> <span class="dt">True</span>) (<span class="dt">Null</span> <span class="dt">True</span>) <span class="fu">=</span> <span class="dt">Null</span> <span class="dt">True</span>
+  mappend _ _ <span class="fu">=</span> <span class="dt">Null</span> <span class="dt">False</span>
+
+null<span class="ot"> ::</span> (<span class="dt">Foldable</span> t) <span class="ot">=&gt;</span> t a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+null xs <span class="fu">=</span> getNull <span class="fu">$</span> foldMap (<span class="dt">Null</span> <span class="fu">.</span> (const <span class="dt">False</span>)) xs
+
+<span class="co">-- 7</span>
+<span class="kw">newtype</span> <span class="dt">Long</span> a <span class="fu">=</span> <span class="dt">Long</span> {<span class="ot">getLong ::</span> <span class="dt">Int</span>} <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> <span class="dt">Monoid</span> (<span class="dt">Long</span> a) <span class="kw">where</span>
+  mempty <span class="fu">=</span> <span class="dt">Long</span> <span class="dv">0</span>
+  mappend (<span class="dt">Long</span> a) (<span class="dt">Long</span> b) <span class="fu">=</span> <span class="dt">Long</span> (a <span class="fu">+</span> b)
+
+length<span class="ot"> ::</span> (<span class="dt">Foldable</span> t) <span class="ot">=&gt;</span> t a <span class="ot">-&gt;</span> <span class="dt">Int</span>
+length xs <span class="fu">=</span> getLong <span class="fu">$</span> foldMap (<span class="dt">Long</span> <span class="fu">.</span> (const <span class="dv">1</span>)) xs
+
+<span class="co">-- 8 </span>
+<span class="ot">toList ::</span> (<span class="dt">Foldable</span> t) <span class="ot">=&gt;</span> t a <span class="ot">-&gt;</span> [a]
+toList xs <span class="fu">=</span> foldMap (<span class="fu">:</span>[]) xs
+
+<span class="co">-- 9</span>
+<span class="ot">fold ::</span> (<span class="dt">Foldable</span> t, <span class="dt">Monoid</span> m) <span class="ot">=&gt;</span> t m <span class="ot">-&gt;</span> m
+fold xs <span class="fu">=</span> foldMap id xs
+
+<span class="co">-- 10</span>
+<span class="ot">foldMap' ::</span> (<span class="dt">Foldable</span> t, <span class="dt">Monoid</span> m) <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> m) <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> m
+foldMap' f xs <span class="fu">=</span> foldr ((<span class="fu">&lt;&gt;</span>) <span class="fu">.</span> f mempty xs  </code></pre></div>
+<h2 id="chapter-exercises-17">20.6 Chapter Exercises</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--20/ChapterExercises.hs</span>
+<span class="kw">module</span> <span class="dt">ChapterExercises</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Data.Foldable</span>
+<span class="kw">import </span><span class="dt">Data.Monoid</span>
+
+<span class="co">-- 1</span>
+<span class="kw">data</span> <span class="dt">Constant</span> a b <span class="fu">=</span> <span class="dt">Constant</span> b <span class="kw">deriving</span> <span class="dt">Show</span>
+
+<span class="kw">instance</span> <span class="dt">Foldable</span> (<span class="dt">Constant</span> a) <span class="kw">where</span>
+  foldMap _ _ <span class="fu">=</span> mempty
+
+<span class="co">-- 2</span>
+<span class="kw">data</span> <span class="dt">Two</span> a b <span class="fu">=</span> <span class="dt">Two</span> a b
+
+<span class="kw">instance</span> <span class="dt">Foldable</span> (<span class="dt">Two</span> a) <span class="kw">where</span>
+  foldMap f (<span class="dt">Two</span> a b) <span class="fu">=</span> f b
+
+<span class="co">-- 3</span>
+<span class="kw">data</span> <span class="dt">Three</span> a b c <span class="fu">=</span> <span class="dt">Three</span> a b c 
+
+<span class="kw">instance</span> <span class="dt">Foldable</span> (<span class="dt">Three</span> a b) <span class="kw">where</span>
+  foldMap f (<span class="dt">Three</span> a b c) <span class="fu">=</span> f c
+
+<span class="co">-- 4  </span>
+<span class="kw">data</span> <span class="dt">Three'</span> a b <span class="fu">=</span> <span class="dt">Three'</span> a b b
+
+<span class="kw">instance</span> <span class="dt">Foldable</span> (<span class="dt">Three'</span> a) <span class="kw">where</span>
+  foldMap f (<span class="dt">Three'</span> a b c) <span class="fu">=</span> (f b) <span class="fu">&lt;&gt;</span> (f c) 
+
+<span class="co">-- 5</span>
+<span class="kw">data</span> <span class="dt">Four'</span> a b <span class="fu">=</span> <span class="dt">Four'</span> a b b b
+
+<span class="kw">instance</span> <span class="dt">Foldable</span> (<span class="dt">Four'</span> a) <span class="kw">where</span>
+  foldMap f (<span class="dt">Four'</span> a b c d) <span class="fu">=</span> (f b) <span class="fu">&lt;&gt;</span> (f c) <span class="fu">&lt;&gt;</span> (f d)
+
+
+<span class="co">--- filterF</span>
+<span class="ot">filterF ::</span> (<span class="dt">Applicative</span> f, <span class="dt">Foldable</span> t, <span class="dt">Monoid</span> (f a)) 
+           <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> f a
+filterF f xs <span class="fu">=</span> foldMap (g f) xs <span class="kw">where</span>
+  g f a <span class="fu">=</span> <span class="kw">if</span> f a <span class="kw">then</span> pure a <span class="kw">else</span> mempty </code></pre></div>
+<h2 id="follow-up-resources-14">20.7 Follow-up resources</h2>
+<ol style="list-style-type: decimal">
+<li>Jakub Arnold; Foldable and Traversable.</li>
+</ol>
+<hr />
+<h1 id="traversable">21 Traversable</h1>
+<h2 id="chapter-exercises-18">21.12 Chapter Exercises</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--21/traversable/src/TraversableInstances.hs</span>
+<span class="kw">module</span> <span class="dt">TraversableInstances</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Test.QuickCheck</span>
+<span class="kw">import </span><span class="dt">Test.QuickCheck.Classes</span>
+<span class="kw">import </span><span class="dt">Test.QuickCheck.Checkers</span>
+<span class="kw">import </span><span class="dt">Data.Monoid</span>
+
+<span class="co">-- Identity</span>
+<span class="kw">newtype</span> <span class="dt">Identity</span> a <span class="fu">=</span> <span class="dt">Identity</span> a <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Ord</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">Identity</span> <span class="kw">where</span>
+ fmap f (<span class="dt">Identity</span> a) <span class="fu">=</span> <span class="dt">Identity</span> (f a)
+
+<span class="kw">instance</span> <span class="dt">Foldable</span> <span class="dt">Identity</span> <span class="kw">where</span>
+  foldMap f (<span class="dt">Identity</span> a) <span class="fu">=</span> (f a)
+
+<span class="kw">instance</span> <span class="dt">Traversable</span> <span class="dt">Identity</span> <span class="kw">where</span>
+  traverse f (<span class="dt">Identity</span> a) <span class="fu">=</span> fmap <span class="dt">Identity</span> (f a)  
+
+<span class="kw">instance</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Identity</span> a) <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> <span class="dt">Identity</span> <span class="fu">&lt;$&gt;</span> arbitrary
+
+<span class="kw">instance</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> <span class="dt">EqProp</span> (<span class="dt">Identity</span> a) <span class="kw">where</span>
+  (<span class="fu">=-=</span>) <span class="fu">=</span> eq
+
+<span class="co">-- Constant</span>
+<span class="kw">newtype</span> <span class="dt">Constant</span> a b <span class="fu">=</span> <span class="dt">Constant</span> {<span class="ot"> getConstant ::</span> a } <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Ord</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Constant</span> a) <span class="kw">where</span>
+  fmap _ (<span class="dt">Constant</span> a) <span class="fu">=</span> <span class="dt">Constant</span> a
+
+<span class="kw">instance</span> <span class="dt">Foldable</span> (<span class="dt">Constant</span> a) <span class="kw">where</span>
+  foldMap _ _  <span class="fu">=</span> mempty
+
+<span class="kw">instance</span> <span class="dt">Traversable</span> (<span class="dt">Constant</span> a) <span class="kw">where</span>
+  traverse f (<span class="dt">Constant</span> a) <span class="fu">=</span> pure <span class="fu">$</span> <span class="dt">Constant</span> a
+
+<span class="kw">instance</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Constant</span> a b) <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> <span class="dt">Constant</span> <span class="fu">&lt;$&gt;</span> arbitrary
+
+<span class="kw">instance</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> <span class="dt">EqProp</span> (<span class="dt">Constant</span> a b) <span class="kw">where</span>
+  (<span class="fu">=-=</span>) <span class="fu">=</span> eq
+
+<span class="co">-- Maybe</span>
+
+<span class="kw">data</span> <span class="dt">Optional</span> a <span class="fu">=</span> <span class="dt">Nada</span> <span class="fu">|</span> <span class="dt">Yep</span> a <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Ord</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">Optional</span> <span class="kw">where</span>
+  fmap f <span class="dt">Nada</span> <span class="fu">=</span> <span class="dt">Nada</span>
+  fmap f (<span class="dt">Yep</span> a) <span class="fu">=</span> <span class="dt">Yep</span> (f a)
+
+<span class="kw">instance</span> <span class="dt">Foldable</span> <span class="dt">Optional</span> <span class="kw">where</span>
+  foldMap f <span class="dt">Nada</span> <span class="fu">=</span> mempty
+  foldMap f (<span class="dt">Yep</span> a) <span class="fu">=</span> (f a)
+
+<span class="kw">instance</span> <span class="dt">Traversable</span> <span class="dt">Optional</span> <span class="kw">where</span>
+  traverse f <span class="dt">Nada</span> <span class="fu">=</span> pure <span class="dt">Nada</span>
+  traverse f (<span class="dt">Yep</span> a) <span class="fu">=</span> fmap <span class="dt">Yep</span> (f a)
+
+<span class="kw">instance</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Optional</span> a) <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> oneof [<span class="dt">Yep</span> <span class="fu">&lt;$&gt;</span> arbitrary, return <span class="dt">Nada</span>]
+
+<span class="kw">instance</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> <span class="dt">EqProp</span> (<span class="dt">Optional</span> a) <span class="kw">where</span>
+  (<span class="fu">=-=</span>) <span class="fu">=</span> eq
+
+<span class="co">-- List</span>
+
+<span class="kw">data</span> <span class="dt">List</span> a <span class="fu">=</span> <span class="dt">Nil</span> <span class="fu">|</span> <span class="dt">Cons</span> a (<span class="dt">List</span> a) <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>, <span class="dt">Ord</span>)
+
+<span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">List</span> <span class="kw">where</span>
+  fmap f <span class="dt">Nil</span> <span class="fu">=</span> <span class="dt">Nil</span>
+  fmap f (<span class="dt">Cons</span> x xs) <span class="fu">=</span> <span class="dt">Cons</span> (f x) <span class="fu">$</span> fmap f xs
+
+<span class="kw">instance</span> <span class="dt">Foldable</span> <span class="dt">List</span> <span class="kw">where</span>
+  foldMap f <span class="dt">Nil</span> <span class="fu">=</span> mempty
+  foldMap f (<span class="dt">Cons</span> x xs) <span class="fu">=</span> (f x) <span class="fu">&lt;&gt;</span> (foldMap f xs)
+
+<span class="kw">instance</span> <span class="dt">Traversable</span> <span class="dt">List</span> <span class="kw">where</span>
+  traverse f <span class="dt">Nil</span> <span class="fu">=</span> pure <span class="dt">Nil</span>
+  traverse f (<span class="dt">Cons</span> x xs) <span class="fu">=</span> <span class="dt">Cons</span> <span class="fu">&lt;$&gt;</span> (f x) <span class="fu">&lt;*&gt;</span> (traverse f xs)
+
+<span class="kw">instance</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">List</span> a) <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> <span class="kw">do</span>
+   x <span class="ot">&lt;-</span> arbitrary
+   xs <span class="ot">&lt;-</span> arbitrary
+   oneof [return <span class="dt">Nil</span>, return (<span class="dt">Cons</span> x xs)]
+
+<span class="kw">instance</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> <span class="dt">EqProp</span> (<span class="dt">List</span> a) <span class="kw">where</span>
+  (<span class="fu">=-=</span>) <span class="fu">=</span> eq
+
+<span class="kw">data</span> <span class="dt">Three</span> a b c <span class="fu">=</span> <span class="dt">Three</span> a b c <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>, <span class="dt">Ord</span>)
+
+<span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Three</span> a b) <span class="kw">where</span>
+ fmap f (<span class="dt">Three</span> a b c) <span class="fu">=</span> <span class="dt">Three</span> a b (f c)
+
+<span class="kw">instance</span> <span class="dt">Foldable</span> (<span class="dt">Three</span> a b) <span class="kw">where</span>
+  foldMap f (<span class="dt">Three</span> a b c) <span class="fu">=</span> (f c)
+
+<span class="kw">instance</span> <span class="dt">Traversable</span> (<span class="dt">Three</span> a b) <span class="kw">where</span>
+  traverse f (<span class="dt">Three</span> a b c) <span class="fu">=</span> fmap (<span class="dt">Three</span> a b) (f c)  
+
+<span class="kw">instance</span> (<span class="dt">Arbitrary</span> a, <span class="dt">Arbitrary</span> b, <span class="dt">Arbitrary</span> c) <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Three</span> a b c) <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> <span class="dt">Three</span> <span class="fu">&lt;$&gt;</span> arbitrary <span class="fu">&lt;*&gt;</span> arbitrary <span class="fu">&lt;*&gt;</span> arbitrary
+
+<span class="kw">instance</span> (<span class="dt">Eq</span> a, <span class="dt">Eq</span> b, <span class="dt">Eq</span> c) <span class="ot">=&gt;</span> <span class="dt">EqProp</span> (<span class="dt">Three</span> a b c) <span class="kw">where</span>
+  (<span class="fu">=-=</span>) <span class="fu">=</span> eq
+
+<span class="co">-- Pair</span>
+
+<span class="kw">data</span> <span class="dt">Pair</span> a b <span class="fu">=</span> <span class="dt">Pair</span> a b <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>, <span class="dt">Ord</span>)
+
+<span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Pair</span> a) <span class="kw">where</span>
+  fmap f (<span class="dt">Pair</span> a b) <span class="fu">=</span> <span class="dt">Pair</span> a (f b)
+
+<span class="kw">instance</span> <span class="dt">Foldable</span> (<span class="dt">Pair</span> a) <span class="kw">where</span>
+  foldMap f (<span class="dt">Pair</span> a b) <span class="fu">=</span> (f b)
+
+<span class="kw">instance</span> <span class="dt">Traversable</span> (<span class="dt">Pair</span> a) <span class="kw">where</span>
+  traverse f (<span class="dt">Pair</span> a b) <span class="fu">=</span> fmap (<span class="dt">Pair</span> a) (f b)
+
+<span class="kw">instance</span> (<span class="dt">Arbitrary</span> a, <span class="dt">Arbitrary</span> b) <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Pair</span> a b) <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> <span class="dt">Pair</span> <span class="fu">&lt;$&gt;</span> arbitrary <span class="fu">&lt;*&gt;</span> arbitrary
+
+<span class="kw">instance</span> (<span class="dt">Eq</span> a, <span class="dt">Eq</span> b) <span class="ot">=&gt;</span> <span class="dt">EqProp</span> (<span class="dt">Pair</span> a b) <span class="kw">where</span>
+  (<span class="fu">=-=</span>) <span class="fu">=</span> eq
+
+<span class="co">-- Big</span>
+<span class="kw">data</span> <span class="dt">Big</span> a b <span class="fu">=</span> <span class="dt">Big</span> a b b <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>, <span class="dt">Ord</span>)
+
+<span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Big</span> a) <span class="kw">where</span>
+  fmap f (<span class="dt">Big</span> a b c) <span class="fu">=</span> <span class="dt">Big</span> a (f b) (f c)
+
+<span class="kw">instance</span> <span class="dt">Foldable</span> (<span class="dt">Big</span> a) <span class="kw">where</span>
+  foldMap f (<span class="dt">Big</span> a b c) <span class="fu">=</span> (f b) <span class="fu">&lt;&gt;</span> (f c)
+
+<span class="kw">instance</span> <span class="dt">Traversable</span> (<span class="dt">Big</span> a) <span class="kw">where</span>
+  traverse f (<span class="dt">Big</span> a b c) <span class="fu">=</span> (<span class="dt">Big</span> a) <span class="fu">&lt;$&gt;</span> (f b) <span class="fu">&lt;*&gt;</span> (f c)
+
+<span class="kw">instance</span> (<span class="dt">Arbitrary</span> a, <span class="dt">Arbitrary</span> b) <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Big</span> a b) <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> <span class="dt">Big</span> <span class="fu">&lt;$&gt;</span> arbitrary <span class="fu">&lt;*&gt;</span> arbitrary <span class="fu">&lt;*&gt;</span> arbitrary
+
+<span class="kw">instance</span> (<span class="dt">Eq</span> a, <span class="dt">Eq</span> b) <span class="ot">=&gt;</span> <span class="dt">EqProp</span> (<span class="dt">Big</span> a b) <span class="kw">where</span>
+  (<span class="fu">=-=</span>) <span class="fu">=</span> eq
+
+<span class="co">-- Bigger</span>
+<span class="kw">data</span> <span class="dt">Bigger</span> a b <span class="fu">=</span> <span class="dt">Bigger</span> a b b b <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>, <span class="dt">Ord</span>)
+
+<span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Bigger</span> a) <span class="kw">where</span>
+  fmap f (<span class="dt">Bigger</span> a b c d) <span class="fu">=</span> <span class="dt">Bigger</span> a (f b) (f c) (f d)
+
+<span class="kw">instance</span> <span class="dt">Foldable</span> (<span class="dt">Bigger</span> a) <span class="kw">where</span>
+  foldMap f (<span class="dt">Bigger</span> a b c d) <span class="fu">=</span> (f b) <span class="fu">&lt;&gt;</span> (f c) <span class="fu">&lt;&gt;</span> (f d)
+
+<span class="kw">instance</span> <span class="dt">Traversable</span> (<span class="dt">Bigger</span> a) <span class="kw">where</span>
+  traverse f (<span class="dt">Bigger</span> a b c d) <span class="fu">=</span> (<span class="dt">Bigger</span> a) <span class="fu">&lt;$&gt;</span> (f b) <span class="fu">&lt;*&gt;</span> (f c) <span class="fu">&lt;*&gt;</span> (f d)
+
+<span class="kw">instance</span> (<span class="dt">Arbitrary</span> a, <span class="dt">Arbitrary</span> b) <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Bigger</span> a b) <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> <span class="dt">Bigger</span> <span class="fu">&lt;$&gt;</span> arbitrary <span class="fu">&lt;*&gt;</span> arbitrary <span class="fu">&lt;*&gt;</span> arbitrary <span class="fu">&lt;*&gt;</span> arbitrary
+
+<span class="kw">instance</span> (<span class="dt">Eq</span> a, <span class="dt">Eq</span> b) <span class="ot">=&gt;</span> <span class="dt">EqProp</span> (<span class="dt">Bigger</span> a b) <span class="kw">where</span>
+  (<span class="fu">=-=</span>) <span class="fu">=</span> eq
+
+<span class="co">-- Testing</span>
+<span class="kw">type</span> <span class="dt">IIL</span> <span class="fu">=</span> (<span class="dt">Int</span>, <span class="dt">Int</span>, [<span class="dt">Int</span>])
+
+main <span class="fu">=</span> <span class="kw">do</span> 
+  quickBatch (traversable (undefined<span class="ot"> ::</span> <span class="dt">Identity</span> <span class="dt">IIL</span>))
+  quickBatch (traversable (undefined<span class="ot"> ::</span> <span class="dt">Constant</span> <span class="dt">IIL</span> <span class="dt">IIL</span>))
+  quickBatch (traversable (undefined<span class="ot"> ::</span> <span class="dt">Optional</span> <span class="dt">IIL</span>))
+  quickBatch (traversable (undefined<span class="ot"> ::</span> <span class="dt">List</span> <span class="dt">IIL</span>))
+  quickBatch (traversable (undefined<span class="ot"> ::</span> <span class="dt">Three</span> <span class="dt">IIL</span> <span class="dt">IIL</span> <span class="dt">IIL</span>))
+  quickBatch (traversable (undefined<span class="ot"> ::</span> <span class="dt">Pair</span> <span class="dt">IIL</span> <span class="dt">IIL</span>))
+  quickBatch (traversable (undefined<span class="ot"> ::</span> <span class="dt">Big</span> <span class="dt">IIL</span> <span class="dt">IIL</span>))
+  quickBatch (traversable (undefined<span class="ot"> ::</span> <span class="dt">Bigger</span> <span class="dt">IIL</span> <span class="dt">IIL</span>))</code></pre></div>
+<h2 id="follow-up-resources-15">21.13 Follow-up resources</h2>
+<ol style="list-style-type: decimal">
+<li>Foldable and Traversable; Jakub Arnold. 2.The Essence of the Iterator Pattern; Jeremy Gibbons and Bruno Oliveira. 3.Applicative Programming with Effects; Conor McBride and Ross Paterson.</li>
+</ol>
+<hr />
+<h2 id="reader">22 Reader</h2>
+<h2 id="a-new-beginning">22.2 A new beginning</h2>
+<h3 id="short-exercise-warming-up">Short Exercise: Warming Up</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--22/WarmingUp.hs</span>
+<span class="kw">module</span> <span class="dt">WarmingUp</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Data.Char</span>
+
+<span class="ot">cap ::</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> [<span class="dt">Char</span>]
+cap xs <span class="fu">=</span> map toUpper xs
+
+<span class="ot">rev ::</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> [<span class="dt">Char</span>]
+rev xs <span class="fu">=</span> reverse xs
+
+<span class="ot">composed ::</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> [<span class="dt">Char</span>]
+composed <span class="fu">=</span> cap <span class="fu">.</span> rev
+
+<span class="ot">fmapped ::</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> [<span class="dt">Char</span>]
+fmapped <span class="fu">=</span> fmap cap rev
+
+<span class="ot">tupled ::</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> ([<span class="dt">Char</span>], [<span class="dt">Char</span>])
+tupled <span class="fu">=</span> (,) <span class="fu">&lt;$&gt;</span> cap <span class="fu">&lt;*&gt;</span> rev
+
+<span class="ot">tupled' ::</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> ([<span class="dt">Char</span>], [<span class="dt">Char</span>])
+tupled' <span class="fu">=</span> <span class="kw">do</span>
+  c <span class="ot">&lt;-</span> cap
+  r <span class="ot">&lt;-</span> rev
+  return (c, r)
+
+<span class="ot">tupledBind ::</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> ([<span class="dt">Char</span>], [<span class="dt">Char</span>])
+tupledBind str <span class="fu">=</span> cap <span class="fu">&lt;$&gt;</span> rev <span class="fu">&gt;&gt;=</span> (,) <span class="fu">$</span> str
+
+<span class="ot">tupledBind' ::</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> ([<span class="dt">Char</span>], [<span class="dt">Char</span>])
+tupledBind' <span class="fu">=</span> rev <span class="fu">&gt;&gt;=</span> (\x <span class="ot">-&gt;</span> cap <span class="fu">&gt;&gt;=</span> \y <span class="ot">-&gt;</span> return (x, y))
+
+<span class="co">{- </span>
+<span class="co">instance Monad (-&gt; r) where</span>
+<span class="co">  return = const</span>
+<span class="co">  (&gt;&gt;=) x f = \r -&gt; f (x r) r</span>
+
+<span class="co">    (rev &gt;&gt;= (\x -&gt; cap &gt;&gt;= \y -&gt; return (x, y))) str</span>
+<span class="co"> -&gt; (\x -&gt; cap &gt;&gt;= \y -&gt; return (x, y)) (rev str) str</span>
+<span class="co"> -&gt; (cap &gt;&gt;= \y -&gt; return (rev str, y)) str</span>
+<span class="co"> -&gt; (\y -&gt; return (rev str, y)) (cap str) str</span>
+<span class="co"> -&gt; (return (rev str, cap str)) str</span>
+<span class="co"> -&gt; (rev str, cap str)</span>
+<span class="co">-}</span></code></pre></div>
+<h2 id="but-uh-reader">22.5 But uh, Reader?</h2>
+<h2 id="exercise-ask">Exercise: Ask</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--22/Ask.hs</span>
+<span class="kw">module</span> <span class="dt">Ask</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Control.Monad</span>
+<span class="kw">import </span><span class="dt">Control.Applicative</span>
+
+<span class="kw">newtype</span> <span class="dt">Reader</span> r a <span class="fu">=</span> <span class="dt">Reader</span> {<span class="ot"> runReader ::</span> r <span class="ot">-&gt;</span> a }
+
+<span class="ot">ask ::</span> <span class="dt">Reader</span> a a
+ask <span class="fu">=</span> <span class="dt">Reader</span> id</code></pre></div>
+<h2 id="functions-have-an-applicative-too">22.6 Functions have an Applicative too</h2>
+<h2 id="exercise-readingcomprehension">Exercise: ReadingComprehension</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--22/ReadingComprehension.hs</span>
+<span class="ot">{-# LANGUAGE InstanceSigs #-}</span>
+<span class="kw">module</span> <span class="dt">ReadingComprehension</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Control.Monad</span>
+<span class="kw">import </span><span class="dt">Control.Applicative</span>
+
+<span class="kw">newtype</span> <span class="dt">Reader</span> r a <span class="fu">=</span> <span class="dt">Reader</span> {<span class="ot"> runReader ::</span> r <span class="ot">-&gt;</span> a }
+
+<span class="co">-- 1</span>
+<span class="ot">myLiftA2 ::</span> <span class="dt">Applicative</span> f <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b <span class="ot">-&gt;</span> f c
+myLiftA2 f x y <span class="fu">=</span> f <span class="fu">&lt;$&gt;</span> x <span class="fu">&lt;*&gt;</span> y
+
+<span class="co">-- 2</span>
+<span class="ot">asks ::</span> (r <span class="ot">-&gt;</span> a) <span class="ot">-&gt;</span> <span class="dt">Reader</span> r a
+asks f <span class="fu">=</span> <span class="dt">Reader</span> f
+
+<span class="co">--3</span>
+<span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Reader</span> r) <span class="kw">where</span>
+  fmap f (<span class="dt">Reader</span> r) <span class="fu">=</span> <span class="dt">Reader</span> <span class="fu">$</span> f <span class="fu">.</span> r
+
+<span class="kw">instance</span> <span class="dt">Applicative</span> (<span class="dt">Reader</span> r) <span class="kw">where</span>
+<span class="ot">  pure ::</span> a <span class="ot">-&gt;</span> <span class="dt">Reader</span> r a
+  pure a <span class="fu">=</span> <span class="dt">Reader</span> <span class="fu">$</span> const a
+<span class="ot">  (&lt;*&gt;) ::</span> <span class="dt">Reader</span> r (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">Reader</span> r a <span class="ot">-&gt;</span> <span class="dt">Reader</span> r b
+  (<span class="fu">&lt;*&gt;</span>) (<span class="dt">Reader</span> rab) (<span class="dt">Reader</span> ra) <span class="fu">=</span> <span class="dt">Reader</span> <span class="fu">$</span> \r <span class="ot">-&gt;</span> rab r (ra r)
+
+<span class="co">-- Reader Monad</span>
+<span class="co">-- 1</span>
+<span class="kw">instance</span> <span class="dt">Monad</span> (<span class="dt">Reader</span> r) <span class="kw">where</span>
+  return <span class="fu">=</span> pure
+<span class="ot">  (&gt;&gt;=) ::</span> <span class="dt">Reader</span> r a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">Reader</span> r b) <span class="ot">-&gt;</span> <span class="dt">Reader</span> r b
+  (<span class="fu">&gt;&gt;=</span>) (<span class="dt">Reader</span> ra) aRb <span class="fu">=</span> <span class="dt">Reader</span> <span class="fu">$</span> \r <span class="ot">-&gt;</span> runReader (aRb (ra r)) r</code></pre></div>
+<h2 id="the-monad-of-functions">22.7 The Monad of functions</h2>
+<h3 id="exercise-reader-monad">Exercise: Reader Monad</h3>
+<p>see <code>22/ReadingComprehension.hs</code></p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--22/Person.hs</span>
+<span class="kw">module</span> <span class="dt">Person</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Control.Monad</span>
+<span class="kw">import </span><span class="dt">Control.Applicative</span>
+
+<span class="kw">newtype</span> <span class="dt">Reader</span> r a <span class="fu">=</span> <span class="dt">Reader</span> {<span class="ot"> runReader ::</span> r <span class="ot">-&gt;</span> a }
+
+<span class="kw">newtype</span> <span class="dt">HumanName</span> <span class="fu">=</span> <span class="dt">HumanName</span> <span class="dt">String</span> <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">newtype</span> <span class="dt">DogName</span> <span class="fu">=</span> <span class="dt">DogName</span> <span class="dt">String</span> <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">newtype</span> <span class="dt">Address</span> <span class="fu">=</span> <span class="dt">Address</span> <span class="dt">String</span> <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">data</span> <span class="dt">Person</span> <span class="fu">=</span> <span class="dt">Person</span> {<span class="ot"> humanName ::</span> <span class="dt">HumanName</span>
+                     ,<span class="ot"> dogName ::</span> <span class="dt">DogName</span>
+                     ,<span class="ot"> address ::</span> <span class="dt">Address</span> 
+                     } <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">data</span> <span class="dt">Dog</span> <span class="fu">=</span> <span class="dt">Dog</span> {<span class="ot"> dogsName ::</span> <span class="dt">DogName</span>
+               ,<span class="ot"> dogsAddress ::</span> <span class="dt">Address</span>
+               } <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="ot">pers ::</span> <span class="dt">Person</span>
+pers <span class="fu">=</span> <span class="dt">Person</span> (<span class="dt">HumanName</span> <span class="st">&quot;Big Bird&quot;</span>) 
+              (<span class="dt">DogName</span> <span class="st">&quot;Barkley&quot;</span>) 
+              (<span class="dt">Address</span> <span class="st">&quot;Sesame Street&quot;</span>)
+
+<span class="ot">chris ::</span> <span class="dt">Person</span>
+chris <span class="fu">=</span> <span class="dt">Person</span> (<span class="dt">HumanName</span> <span class="st">&quot;Chris Allen&quot;</span>)
+               (<span class="dt">DogName</span> <span class="st">&quot;Papu&quot;</span>)
+               (<span class="dt">Address</span> <span class="st">&quot;Austin&quot;</span>)
+
+<span class="ot">getDog ::</span> <span class="dt">Person</span> <span class="ot">-&gt;</span> <span class="dt">Dog</span>
+getDog p <span class="fu">=</span> <span class="dt">Dog</span> (dogName p) (address p)
+
+<span class="ot">getDogR ::</span> <span class="dt">Person</span> <span class="ot">-&gt;</span> <span class="dt">Dog</span>
+getDogR <span class="fu">=</span> <span class="dt">Dog</span> <span class="fu">&lt;$&gt;</span> dogName <span class="fu">&lt;*&gt;</span> address
+
+<span class="ot">getDogRM' ::</span> <span class="dt">Reader</span> <span class="dt">Person</span> <span class="dt">Dog</span>
+getDogRM' <span class="fu">=</span>  <span class="dt">Reader</span> <span class="fu">$</span> <span class="dt">Dog</span> <span class="fu">&lt;$&gt;</span> dogName <span class="fu">&lt;*&gt;</span> address</code></pre></div>
+<h2 id="chapter-exercises-19">22.11 Chapter Exercises</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--22/ReaderPractice.hs</span>
+<span class="kw">module</span> <span class="dt">ReaderPractice</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Control.Applicative</span>
+<span class="kw">import </span><span class="dt">Data.Maybe</span>
+
+x <span class="fu">=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]
+y <span class="fu">=</span> [<span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>]
+z <span class="fu">=</span> [<span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">9</span>]
+
+<span class="ot">xs ::</span> <span class="dt">Maybe</span> <span class="dt">Integer</span>
+xs <span class="fu">=</span> lookup <span class="dv">3</span> <span class="fu">$</span> zip x y
+
+<span class="ot">ys ::</span> <span class="dt">Maybe</span> <span class="dt">Integer</span>
+ys <span class="fu">=</span> lookup <span class="dv">6</span> <span class="fu">$</span> zip y z
+
+<span class="ot">zs ::</span> <span class="dt">Maybe</span> <span class="dt">Integer</span>
+zs <span class="fu">=</span> lookup <span class="dv">4</span> <span class="fu">$</span> zip x y
+
+<span class="ot">z' ::</span> <span class="dt">Integer</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Integer</span>
+z' n <span class="fu">=</span> lookup n <span class="fu">$</span> zip x z
+
+<span class="ot">x1 ::</span> <span class="dt">Maybe</span> (<span class="dt">Integer</span>, <span class="dt">Integer</span>)
+x1 <span class="fu">=</span> (,) <span class="fu">&lt;$&gt;</span> xs <span class="fu">&lt;*&gt;</span> ys 
+
+<span class="ot">x2 ::</span> <span class="dt">Maybe</span> (<span class="dt">Integer</span>, <span class="dt">Integer</span>)
+x2 <span class="fu">=</span> (,) <span class="fu">&lt;$&gt;</span> ys <span class="fu">&lt;*&gt;</span> zs
+
+<span class="ot">x3 ::</span> <span class="dt">Integer</span> <span class="ot">-&gt;</span> (<span class="dt">Maybe</span> <span class="dt">Integer</span>, <span class="dt">Maybe</span> <span class="dt">Integer</span>)
+x3 n <span class="fu">=</span> (,) zn zn <span class="kw">where</span> zn <span class="fu">=</span> z' n 
+
+<span class="ot">summed ::</span> <span class="dt">Num</span> c <span class="ot">=&gt;</span> (c, c) <span class="ot">-&gt;</span> c
+summed (x, y) <span class="fu">=</span> x <span class="fu">+</span> y
+
+<span class="ot">bolt ::</span> <span class="dt">Integer</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+bolt <span class="fu">=</span> (<span class="fu">&amp;&amp;</span>) <span class="fu">&lt;$&gt;</span> (<span class="fu">&gt;</span><span class="dv">3</span>) <span class="fu">&lt;*&gt;</span> (<span class="fu">&lt;</span><span class="dv">8</span>)
+
+<span class="ot">sequA ::</span> <span class="dt">Integral</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> [<span class="dt">Bool</span>]
+sequA m <span class="fu">=</span> sequenceA [(<span class="fu">&gt;</span><span class="dv">3</span>), (<span class="fu">&lt;</span><span class="dv">8</span>), even] m
+
+<span class="ot">s' ::</span> <span class="dt">Maybe</span> <span class="dt">Integer</span>
+s' <span class="fu">=</span> summed <span class="fu">&lt;$&gt;</span> ((,) <span class="fu">&lt;$&gt;</span> xs <span class="fu">&lt;*&gt;</span> ys)
+
+<span class="ot">main ::</span> <span class="dt">IO</span> ()
+main <span class="fu">=</span> <span class="kw">do</span>
+  print <span class="fu">$</span>
+    sequenceA [<span class="dt">Just</span> <span class="dv">3</span>, <span class="dt">Just</span> <span class="dv">2</span>, <span class="dt">Just</span> <span class="dv">1</span>]
+  print <span class="fu">$</span> sequenceA [x, y]
+  print <span class="fu">$</span> sequenceA [xs, ys]
+  print <span class="fu">$</span> summed <span class="fu">&lt;$&gt;</span> ((,) <span class="fu">&lt;$&gt;</span> xs <span class="fu">&lt;*&gt;</span> ys)
+  print <span class="fu">$</span> fmap summed ((,) <span class="fu">&lt;$&gt;</span> xs <span class="fu">&lt;*&gt;</span> zs)
+  print <span class="fu">$</span> bolt <span class="dv">7</span>
+  print <span class="fu">$</span> fmap bolt z
+  print <span class="fu">$</span> sequenceA [(<span class="fu">&gt;</span><span class="dv">3</span>), (<span class="fu">&lt;</span><span class="dv">8</span>), even] <span class="dv">7</span>
+<span class="co">-- 1</span>
+  print <span class="fu">$</span> foldr (<span class="fu">&amp;&amp;</span>) <span class="dt">True</span> <span class="fu">$</span> sequA <span class="dv">7</span>
+<span class="co">-- 2</span>
+  print <span class="fu">$</span> fromMaybe [] <span class="fu">$</span> sequA <span class="fu">&lt;$&gt;</span> s'
+<span class="co">-- 3  </span>
+  print <span class="fu">$</span> fromMaybe <span class="dt">False</span> <span class="fu">$</span> bolt <span class="fu">&lt;$&gt;</span> ys</code></pre></div>
+<p>Rewriting Shawty: I’m gonna come back to this. I’m not the biggest fan of the url shortener exercise. It’s in this weird midpoint between too complicated to totally understand without prior background and not complicated enough to actually be fun to play with.</p>
+<h2 id="follow-up-resources-16">22.13 Follow-up resources</h2>
+<ol style="list-style-type: decimal">
+<li>Reader Monad; All About Monads https://wiki.haskell.org/All_About_Monads 2.Reader Monad; Programming with Monads; Real World Haskell</li>
+</ol>
+<hr />
+<h2 id="state">23 State</h2>
 
         </div>
         <div id="footer">
