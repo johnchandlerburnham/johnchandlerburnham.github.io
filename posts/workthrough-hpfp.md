@@ -5390,7 +5390,7 @@ Pattern
 
 4. [Ross Paterson; Constructing Applicative Functors](http://staff.city.ac.uk/~ross/papers/Constructors.html)
 
-5.Sam Lindley; Philip Wadler; Jeremy Yallop; Idioms are oblivi-
+5. Sam Lindley; Philip Wadler; Jeremy Yallop; Idioms are oblivi-
 ous, arrows are meticulous, monads are promiscuous.
 Note:Idiom means applicative functor and is a useful search
 term for published work on applicative functors.
@@ -5398,5 +5398,811 @@ term for published work on applicative functors.
 ---
 
 # 18 Monad
+
+## 18.2 Sorry - a monad is not a burrito
+
+### The answer is the exercise
+```haskell
+module Bind where
+
+import Control.Monad (join)
+
+bind :: Monad m => (a -> m b) -> m a -> m b
+bind f m = join $ fmap f m
+```
+
+## 18.4 Examples of Monad use
+
+### Short Exercise: Either Monad
+```haskell
+--18/EitherMonad.hs
+module EitherMonad where
+
+data Sum a b = First a | Second b deriving (Eq, Show)
+
+instance Functor (Sum a) where
+  fmap f (Second b) = Second (f b)
+  fmap _ (First a) = First a
+
+instance Applicative (Sum a) where
+  pure b = Second b
+  (<*>) _           (First e) = First e
+  (<*>) (First e) _           = First e
+  (<*>) (Second f) (Second b) = Second (f b)
+
+instance Monad (Sum a) where
+  return = pure 
+  (>>=) (Second b) f = (f b)
+```
+
+## Chapter Exercises
+monadexercises/src/ChapterExercises.hs
+```haskell
+--18/monadexercises/src/ChapterExercises.hs
+module ChapterExercises where
+
+import Control.Monad
+import Test.QuickCheck
+import Test.QuickCheck.Checkers
+import Test.QuickCheck.Classes
+
+--1
+data Nope a = NopeDotJpg deriving (Eq, Show)
+
+instance Functor Nope where
+  fmap f NopeDotJpg = NopeDotJpg
+
+instance Applicative Nope where
+  pure _ = NopeDotJpg
+  (<*>) _ _ = NopeDotJpg
+
+instance Monad Nope where
+  return _ = NopeDotJpg
+  (>>=) _ _ = NopeDotJpg
+
+instance Arbitrary a => Arbitrary (Nope a) where
+  arbitrary = return NopeDotJpg
+
+instance Eq a => EqProp (Nope a) where 
+  (=-=) = eq
+
+-- 2 
+data PhEither b a = Right' b | Left' a deriving (Eq, Show)
+
+instance Functor (PhEither b) where
+  fmap f (Left' a) = Left' (f a)
+  fmap f (Right' b) = Right' b
+
+instance Applicative (PhEither b) where
+  pure a = Left' a
+  (<*>) (Right' b) _ = Right' b
+  (<*>) _ (Right' b) = Right' b
+  (<*>) (Left' f) (Left' a) = Left' (f a)
+
+instance Monad (PhEither b) where
+  return = pure
+  (>>=) (Left' a) f  = (f a)
+  (>>=) (Right' b) f  = Right' b
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (PhEither b a)  where
+  arbitrary = do
+    b' <- arbitrary
+    a' <- arbitrary  
+    oneof [return (Left' b'), return (Right' a')]
+
+instance (Eq b, Eq a) => EqProp (PhEither b a) where 
+  (=-=) = eq
+
+-- 3
+data Identity a = Identity a deriving (Eq, Ord, Show)
+
+instance Functor Identity where
+  fmap f (Identity a) = Identity (f a)
+
+instance Applicative Identity where
+  pure a = Identity a
+  (<*>) (Identity f) (Identity a) = Identity (f a)
+
+instance Monad Identity where
+  return = pure
+  (>>=) (Identity a) f  = (f a)
+
+instance Arbitrary a => Arbitrary (Identity a)  where
+  arbitrary = do
+    a <- arbitrary
+    return (Identity a)
+
+instance Eq a => EqProp (Identity a) where 
+  (=-=) = eq
+
+-- 4
+data List a = Nil | Cons a (List a) deriving (Eq, Show)
+
+instance Functor List where
+  fmap f Nil = Nil 
+  fmap f (Cons a as) = Cons (f a) (fmap f as)
+
+instance Applicative List where
+  pure a = Cons a Nil
+  -- (<*>) fs as = toList $ [f a | f <- (fromList fs), a <- (fromList as)]
+  (<*>) fs as = fold append Nil $ fmap (\f -> fmap f as) fs 
+
+instance Monad List where
+  return = pure
+  -- (<*>) fs as = fold append Nil $ fmap (\f -> fmap f as) fs 
+  --(>>=) as f = toList $ [b | a <- (fromList as), b <- (fromList $ f a)]
+  (>>=) as f = fold append Nil $ fmap f as 
+
+append :: List a -> List a -> List a
+append Nil ys = ys
+append (Cons x xs) ys = Cons x (append xs ys)
+
+fold :: (a -> b -> b) -> b -> List a -> b
+fold _ b Nil = b
+fold f b (Cons h t) = f h (fold f b t)
+
+fromList :: List a -> [a]
+fromList Nil = [] 
+fromList (Cons a as) = a:(fromList as)
+
+toList :: [a] -> List a
+toList [] = Nil 
+toList (x:xs) = Cons x (toList xs)
+
+
+instance Arbitrary a => Arbitrary (List a) where
+  arbitrary = do
+    as <- arbitrary 
+    return (toList as)
+
+instance Eq a => EqProp (List a) where
+  (=-=) = eq
+
+-- Write functions
+
+-- 1
+j :: Monad m => m (m a) -> m a
+j x = x >>= id
+
+-- 2
+l1 :: Monad m => (a -> b) -> m a -> m b
+l1 = fmap
+
+-- 3
+l2 :: Monad m => (a -> b -> c) -> m a -> m b -> m c
+l2 f ma mb = f <$> ma <*> mb
+
+-- 4
+a :: Monad m => m a -> m (a -> b) -> m b 
+a = flip (<*>) 
+
+-- 5
+meh :: Monad m => [a] -> (a -> m b) -> m [b]
+meh [] f = return [] 
+meh (a:as) f = liftM2 (:) (f a) (meh as f)
+
+-- 6
+flipType :: (Monad m) => [m a] -> m [a]
+flipType xs = meh xs id
+
+
+-- Testing
+
+-- type SSS = (String, String, String)
+type III = (Int, Int, Int)
+
+main = do
+  quickBatch $ functor (NopeDotJpg :: Nope III)
+  quickBatch $ applicative (NopeDotJpg :: Nope III)
+  quickBatch $ monad (NopeDotJpg :: Nope III)
+  quickBatch $ functor (undefined :: PhEither III III)
+  quickBatch $ applicative (undefined :: PhEither III III)
+  quickBatch $ monad (undefined :: PhEither III III)
+  quickBatch $ functor (undefined :: Identity III)
+  quickBatch $ applicative (undefined :: Identity III)
+  quickBatch $ monad (undefined :: Identity III)
+  quickBatch $ functor (undefined :: List III)
+  quickBatch $ applicative (undefined :: List III)
+  quickBatch $ monad (undefined :: List III)
+```
+## 18.9 Follow-up resources
+
+1. [What a Monad is not](https://wiki.haskell.org/What_a_Monad_is_not)
+
+2. Gabriel Gonzalez; How to desugar Haskell code
+
+3. [Stephen Diehl; What I wish I knew when Learning Haskell](http://dev.stephendiehl.com/hask/#monads)
+
+4. [Stephen Diehl; Monads Made Difficult](http://www.stephendiehl.com/posts/monads.html)
+
+5. [Brent Yorgey; Typeclassopedia](https://wiki.haskell.org/Typeclassopedia)
+
+# 19 Applying structure
+
+skipping notes on this chapter for now. Code is [here](https://github.com/johnchandlerburnham/haskellbook/blob/master/19/applyingstructure/app/Main.hs)
+
+## 19.8 Follow-up resources
+
+1. The case of the mysterious explosion in space; Bryan O’Sullivan;
+Explains how GHC handles string literals.
+
+---
+
+# 20 Foldable
+
+## 20.5 Some basic derived operations
+
+```haskell
+--20/LibraryFunctions.hs
+module LibraryFunctions where
+
+import Prelude hiding 
+  (sum, product, elem, minimum, maximum, null, length)
+import Data.Foldable hiding 
+  (sum, product, elem, minimum, maximum, null, length, toList, fold)
+import Data.Monoid 
+
+-- 1
+sum' :: (Foldable t, Num a) => t a -> a
+sum' xs = foldr (+) 0 xs
+
+sum :: (Foldable t, Num a) => t a -> a
+sum xs = getSum $ foldMap Sum xs 
+
+-- 2
+product' :: (Foldable t, Num a) => t a -> a
+product' xs = foldr (*) 1 xs 
+
+product2 :: (Foldable t, Num a) => t a -> a
+product2 xs = getSum $ foldMap Sum xs 
+
+-- 3
+elem :: (Foldable t, Eq a) => a -> t a -> Bool
+elem x xs = foldr ((||) . (== x)) False xs
+
+elem2 :: (Foldable t, Eq a) => a -> t a -> Bool
+elem2 x xs = getAny $ foldMap (Any . (== x)) xs
+
+-- 4
+newtype Least a = Least { getLeast :: Maybe a } deriving (Eq, Ord, Show)
+
+instance Ord a => Monoid (Least a) where
+  mempty = Least Nothing
+  mappend (Least Nothing) a = a
+  mappend a (Least Nothing) = a
+  mappend (Least (Just a)) (Least (Just b)) = Least (Just (min a b))
+   
+
+minimum :: (Foldable t, Ord a) => t a -> Maybe a
+minimum xs = getLeast $ foldMap (Least . Just) xs
+ 
+-- 5 
+newtype Most a = Most { getMost :: Maybe a } deriving (Eq, Ord, Show)
+
+instance Ord a => Monoid (Most a) where
+  mempty = Most Nothing
+  mappend (Most Nothing) a = a
+  mappend a (Most Nothing) = a
+  mappend (Most (Just a)) (Most (Just b)) = Most (Just (max a b))
+   
+maximum :: (Foldable t, Ord a) => t a -> Maybe a
+maximum xs = getMost $ foldMap (Most . Just) xs
+
+-- 6
+newtype Null a = Null {getNull :: Bool} deriving (Eq, Show)
+
+instance Monoid (Null a) where
+  mempty = Null True
+  mappend (Null True) (Null True) = Null True
+  mappend _ _ = Null False
+
+null :: (Foldable t) => t a -> Bool
+null xs = getNull $ foldMap (Null . (const False)) xs
+
+-- 7
+newtype Long a = Long {getLong :: Int} deriving (Eq, Show)
+
+instance Monoid (Long a) where
+  mempty = Long 0
+  mappend (Long a) (Long b) = Long (a + b)
+
+length :: (Foldable t) => t a -> Int
+length xs = getLong $ foldMap (Long . (const 1)) xs
+
+-- 8 
+toList :: (Foldable t) => t a -> [a]
+toList xs = foldMap (:[]) xs
+
+-- 9
+fold :: (Foldable t, Monoid m) => t m -> m
+fold xs = foldMap id xs
+
+-- 10
+foldMap' :: (Foldable t, Monoid m) => (a -> m) -> t a -> m
+foldMap' f xs = foldr ((<>) . f mempty xs  
+```
+
+## 20.6 Chapter Exercises
+
+```haskell
+--20/ChapterExercises.hs
+module ChapterExercises where
+
+import Data.Foldable
+import Data.Monoid
+
+-- 1
+data Constant a b = Constant b deriving Show
+
+instance Foldable (Constant a) where
+  foldMap _ _ = mempty
+
+-- 2
+data Two a b = Two a b
+
+instance Foldable (Two a) where
+  foldMap f (Two a b) = f b
+
+-- 3
+data Three a b c = Three a b c 
+
+instance Foldable (Three a b) where
+  foldMap f (Three a b c) = f c
+
+-- 4  
+data Three' a b = Three' a b b
+
+instance Foldable (Three' a) where
+  foldMap f (Three' a b c) = (f b) <> (f c) 
+
+-- 5
+data Four' a b = Four' a b b b
+
+instance Foldable (Four' a) where
+  foldMap f (Four' a b c d) = (f b) <> (f c) <> (f d)
+
+
+--- filterF
+filterF :: (Applicative f, Foldable t, Monoid (f a)) 
+           => (a -> Bool) -> t a -> f a
+filterF f xs = foldMap (g f) xs where
+  g f a = if f a then pure a else mempty 
+```
+
+## 20.7 Follow-up resources
+
+1. Jakub Arnold; Foldable and Traversable.
+
+---
+
+# 21 Traversable
+
+## 21.12 Chapter Exercises
+
+```haskell
+--21/traversable/src/TraversableInstances.hs
+module TraversableInstances where
+
+import Test.QuickCheck
+import Test.QuickCheck.Classes
+import Test.QuickCheck.Checkers
+import Data.Monoid
+
+-- Identity
+newtype Identity a = Identity a deriving (Eq, Ord, Show)
+
+instance Functor Identity where
+ fmap f (Identity a) = Identity (f a)
+
+instance Foldable Identity where
+  foldMap f (Identity a) = (f a)
+
+instance Traversable Identity where
+  traverse f (Identity a) = fmap Identity (f a)  
+
+instance Arbitrary a => Arbitrary (Identity a) where
+  arbitrary = Identity <$> arbitrary
+
+instance Eq a => EqProp (Identity a) where
+  (=-=) = eq
+
+-- Constant
+newtype Constant a b = Constant { getConstant :: a } deriving (Eq, Ord, Show)
+
+instance Functor (Constant a) where
+  fmap _ (Constant a) = Constant a
+
+instance Foldable (Constant a) where
+  foldMap _ _  = mempty
+
+instance Traversable (Constant a) where
+  traverse f (Constant a) = pure $ Constant a
+
+instance Arbitrary a => Arbitrary (Constant a b) where
+  arbitrary = Constant <$> arbitrary
+
+instance Eq a => EqProp (Constant a b) where
+  (=-=) = eq
+
+-- Maybe
+
+data Optional a = Nada | Yep a deriving (Eq, Ord, Show)
+
+instance Functor Optional where
+  fmap f Nada = Nada
+  fmap f (Yep a) = Yep (f a)
+
+instance Foldable Optional where
+  foldMap f Nada = mempty
+  foldMap f (Yep a) = (f a)
+
+instance Traversable Optional where
+  traverse f Nada = pure Nada
+  traverse f (Yep a) = fmap Yep (f a)
+
+instance Arbitrary a => Arbitrary (Optional a) where
+  arbitrary = oneof [Yep <$> arbitrary, return Nada]
+
+instance Eq a => EqProp (Optional a) where
+  (=-=) = eq
+
+-- List
+
+data List a = Nil | Cons a (List a) deriving (Eq, Show, Ord)
+
+instance Functor List where
+  fmap f Nil = Nil
+  fmap f (Cons x xs) = Cons (f x) $ fmap f xs
+
+instance Foldable List where
+  foldMap f Nil = mempty
+  foldMap f (Cons x xs) = (f x) <> (foldMap f xs)
+
+instance Traversable List where
+  traverse f Nil = pure Nil
+  traverse f (Cons x xs) = Cons <$> (f x) <*> (traverse f xs)
+
+instance Arbitrary a => Arbitrary (List a) where
+  arbitrary = do
+   x <- arbitrary
+   xs <- arbitrary
+   oneof [return Nil, return (Cons x xs)]
+
+instance Eq a => EqProp (List a) where
+  (=-=) = eq
+
+data Three a b c = Three a b c deriving (Eq, Show, Ord)
+
+instance Functor (Three a b) where
+ fmap f (Three a b c) = Three a b (f c)
+
+instance Foldable (Three a b) where
+  foldMap f (Three a b c) = (f c)
+
+instance Traversable (Three a b) where
+  traverse f (Three a b c) = fmap (Three a b) (f c)  
+
+instance (Arbitrary a, Arbitrary b, Arbitrary c) => Arbitrary (Three a b c) where
+  arbitrary = Three <$> arbitrary <*> arbitrary <*> arbitrary
+
+instance (Eq a, Eq b, Eq c) => EqProp (Three a b c) where
+  (=-=) = eq
+
+-- Pair
+
+data Pair a b = Pair a b deriving (Eq, Show, Ord)
+
+instance Functor (Pair a) where
+  fmap f (Pair a b) = Pair a (f b)
+
+instance Foldable (Pair a) where
+  foldMap f (Pair a b) = (f b)
+
+instance Traversable (Pair a) where
+  traverse f (Pair a b) = fmap (Pair a) (f b)
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Pair a b) where
+  arbitrary = Pair <$> arbitrary <*> arbitrary
+
+instance (Eq a, Eq b) => EqProp (Pair a b) where
+  (=-=) = eq
+
+-- Big
+data Big a b = Big a b b deriving (Eq, Show, Ord)
+
+instance Functor (Big a) where
+  fmap f (Big a b c) = Big a (f b) (f c)
+
+instance Foldable (Big a) where
+  foldMap f (Big a b c) = (f b) <> (f c)
+
+instance Traversable (Big a) where
+  traverse f (Big a b c) = (Big a) <$> (f b) <*> (f c)
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Big a b) where
+  arbitrary = Big <$> arbitrary <*> arbitrary <*> arbitrary
+
+instance (Eq a, Eq b) => EqProp (Big a b) where
+  (=-=) = eq
+
+-- Bigger
+data Bigger a b = Bigger a b b b deriving (Eq, Show, Ord)
+
+instance Functor (Bigger a) where
+  fmap f (Bigger a b c d) = Bigger a (f b) (f c) (f d)
+
+instance Foldable (Bigger a) where
+  foldMap f (Bigger a b c d) = (f b) <> (f c) <> (f d)
+
+instance Traversable (Bigger a) where
+  traverse f (Bigger a b c d) = (Bigger a) <$> (f b) <*> (f c) <*> (f d)
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Bigger a b) where
+  arbitrary = Bigger <$> arbitrary <*> arbitrary <*> arbitrary <*> arbitrary
+
+instance (Eq a, Eq b) => EqProp (Bigger a b) where
+  (=-=) = eq
+
+-- Testing
+type IIL = (Int, Int, [Int])
+
+main = do 
+  quickBatch (traversable (undefined :: Identity IIL))
+  quickBatch (traversable (undefined :: Constant IIL IIL))
+  quickBatch (traversable (undefined :: Optional IIL))
+  quickBatch (traversable (undefined :: List IIL))
+  quickBatch (traversable (undefined :: Three IIL IIL IIL))
+  quickBatch (traversable (undefined :: Pair IIL IIL))
+  quickBatch (traversable (undefined :: Big IIL IIL))
+  quickBatch (traversable (undefined :: Bigger IIL IIL))
+```
+
+## 21.13 Follow-up resources
+
+1. Foldable and Traversable; Jakub Arnold.
+2.The Essence of the Iterator Pattern; Jeremy Gibbons and Bruno
+Oliveira.
+3.Applicative Programming with Effects; Conor McBride and
+Ross Paterson.
+
+---
+
+## 22 Reader
+
+## 22.2 A new beginning
+
+### Short Exercise: Warming Up
+
+```haskell
+--22/WarmingUp.hs
+module WarmingUp where
+
+import Data.Char
+
+cap :: [Char] -> [Char]
+cap xs = map toUpper xs
+
+rev :: [Char] -> [Char]
+rev xs = reverse xs
+
+composed :: [Char] -> [Char]
+composed = cap . rev
+
+fmapped :: [Char] -> [Char]
+fmapped = fmap cap rev
+
+tupled :: [Char] -> ([Char], [Char])
+tupled = (,) <$> cap <*> rev
+
+tupled' :: [Char] -> ([Char], [Char])
+tupled' = do
+  c <- cap
+  r <- rev
+  return (c, r)
+
+tupledBind :: [Char] -> ([Char], [Char])
+tupledBind str = cap <$> rev >>= (,) $ str
+
+tupledBind' :: [Char] -> ([Char], [Char])
+tupledBind' = rev >>= (\x -> cap >>= \y -> return (x, y))
+
+{- 
+instance Monad (-> r) where
+  return = const
+  (>>=) x f = \r -> f (x r) r
+
+    (rev >>= (\x -> cap >>= \y -> return (x, y))) str
+ -> (\x -> cap >>= \y -> return (x, y)) (rev str) str
+ -> (cap >>= \y -> return (rev str, y)) str
+ -> (\y -> return (rev str, y)) (cap str) str
+ -> (return (rev str, cap str)) str
+ -> (rev str, cap str)
+-}
+```
+
+## 22.5 But uh, Reader?
+
+## Exercise: Ask
+```haskell
+--22/Ask.hs
+module Ask where
+
+import Control.Monad
+import Control.Applicative
+
+newtype Reader r a = Reader { runReader :: r -> a }
+
+ask :: Reader a a
+ask = Reader id
+```
+
+## 22.6 Functions have an Applicative too
+
+## Exercise: ReadingComprehension
+
+```haskell
+--22/ReadingComprehension.hs
+{-# LANGUAGE InstanceSigs #-}
+module ReadingComprehension where
+
+import Control.Monad
+import Control.Applicative
+
+newtype Reader r a = Reader { runReader :: r -> a }
+
+-- 1
+myLiftA2 :: Applicative f => (a -> b -> c) -> f a -> f b -> f c
+myLiftA2 f x y = f <$> x <*> y
+
+-- 2
+asks :: (r -> a) -> Reader r a
+asks f = Reader f
+
+--3
+instance Functor (Reader r) where
+  fmap f (Reader r) = Reader $ f . r
+
+instance Applicative (Reader r) where
+  pure :: a -> Reader r a
+  pure a = Reader $ const a
+  (<*>) :: Reader r (a -> b) -> Reader r a -> Reader r b
+  (<*>) (Reader rab) (Reader ra) = Reader $ \r -> rab r (ra r)
+
+-- Reader Monad
+-- 1
+instance Monad (Reader r) where
+  return = pure
+  (>>=) :: Reader r a -> (a -> Reader r b) -> Reader r b
+  (>>=) (Reader ra) aRb = Reader $ \r -> runReader (aRb (ra r)) r
+```
+
+## 22.7 The Monad of functions
+### Exercise: Reader Monad
+
+see `22/ReadingComprehension.hs`
+
+```haskell
+--22/Person.hs
+module Person where
+
+import Control.Monad
+import Control.Applicative
+
+newtype Reader r a = Reader { runReader :: r -> a }
+
+newtype HumanName = HumanName String deriving (Eq, Show)
+
+newtype DogName = DogName String deriving (Eq, Show)
+
+newtype Address = Address String deriving (Eq, Show)
+
+data Person = Person { humanName :: HumanName
+                     , dogName :: DogName
+                     , address :: Address 
+                     } deriving (Eq, Show)
+
+data Dog = Dog { dogsName :: DogName
+               , dogsAddress :: Address
+               } deriving (Eq, Show)
+
+pers :: Person
+pers = Person (HumanName "Big Bird") 
+              (DogName "Barkley") 
+              (Address "Sesame Street")
+
+chris :: Person
+chris = Person (HumanName "Chris Allen")
+               (DogName "Papu")
+               (Address "Austin")
+
+getDog :: Person -> Dog
+getDog p = Dog (dogName p) (address p)
+
+getDogR :: Person -> Dog
+getDogR = Dog <$> dogName <*> address
+
+getDogRM' :: Reader Person Dog
+getDogRM' =  Reader $ Dog <$> dogName <*> address
+```
+
+## 22.11 Chapter Exercises
+
+```haskell
+--22/ReaderPractice.hs
+module ReaderPractice where
+
+import Control.Applicative
+import Data.Maybe
+
+x = [1, 2, 3]
+y = [4, 5, 6]
+z = [7, 8, 9]
+
+xs :: Maybe Integer
+xs = lookup 3 $ zip x y
+
+ys :: Maybe Integer
+ys = lookup 6 $ zip y z
+
+zs :: Maybe Integer
+zs = lookup 4 $ zip x y
+
+z' :: Integer -> Maybe Integer
+z' n = lookup n $ zip x z
+
+x1 :: Maybe (Integer, Integer)
+x1 = (,) <$> xs <*> ys 
+
+x2 :: Maybe (Integer, Integer)
+x2 = (,) <$> ys <*> zs
+
+x3 :: Integer -> (Maybe Integer, Maybe Integer)
+x3 n = (,) zn zn where zn = z' n 
+
+summed :: Num c => (c, c) -> c
+summed (x, y) = x + y
+
+bolt :: Integer -> Bool
+bolt = (&&) <$> (>3) <*> (<8)
+
+sequA :: Integral a => a -> [Bool]
+sequA m = sequenceA [(>3), (<8), even] m
+
+s' :: Maybe Integer
+s' = summed <$> ((,) <$> xs <*> ys)
+
+main :: IO ()
+main = do
+  print $
+    sequenceA [Just 3, Just 2, Just 1]
+  print $ sequenceA [x, y]
+  print $ sequenceA [xs, ys]
+  print $ summed <$> ((,) <$> xs <*> ys)
+  print $ fmap summed ((,) <$> xs <*> zs)
+  print $ bolt 7
+  print $ fmap bolt z
+  print $ sequenceA [(>3), (<8), even] 7
+-- 1
+  print $ foldr (&&) True $ sequA 7
+-- 2
+  print $ fromMaybe [] $ sequA <$> s'
+-- 3  
+  print $ fromMaybe False $ bolt <$> ys
+```
+
+Rewriting Shawty: I'm gonna come back to this. I'm not the biggest
+fan of the url shortener exercise. It's in this weird midpoint between
+too complicated to totally understand without prior background
+and not complicated enough to actually be fun to play with. 
+
+## 22.13 Follow-up resources
+
+1. Reader Monad; All About Monads
+https://wiki.haskell.org/All_About_Monads
+2.Reader Monad; Programming with Monads; Real World Haskell
+
+---
+
+## 23 State
 
 
