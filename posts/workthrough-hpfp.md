@@ -6203,6 +6203,1047 @@ https://wiki.haskell.org/All_About_Monads
 
 ---
 
-## 23 State
+# 23 State
+
+## 23.5 Throw down
+
+### Exercises: Roll Your Own
+```haskell
+--23/RandomExample.hs
+module RandomExample where
+
+import System.Random
+import Control.Applicative (liftA3)
+import Control.Monad (replicateM)
+import Control.Monad.Trans.State
+
+data Die = DieOne | DieTwo | DieThree | DieFour | DieFive | DieSix 
+           deriving (Eq, Show)
+
+{-
+intToDie :: Int -> Die
+intToDie n =
+  case n of
+  1 -> DieOne
+  2 -> DieTwo
+  3 -> DieThree
+  4 -> DieFour
+  5 -> DieFive
+  6 -> DieSix
+-- Use 'error'
+-- _extremely_ sparingly.
+  x -> error $ "intToDie got non 1-6 integer: " ++ show x
+-}
+-- partial functions are baaaad
+
+intToDie :: Int -> Die
+intToDie n = 
+  case ((n `mod` 6)) of
+    1 -> DieOne
+    2 -> DieTwo
+    3 -> DieThree
+    4 -> DieFour
+    5 -> DieFive
+    0 -> DieSix
+
+rollDieThreeTimes :: (Die, Die, Die)
+rollDieThreeTimes = do
+  let s = mkStdGen 0
+      (d1, s1) = randomR (1, 6) s
+      (d2, s2) = randomR (1, 6) s1
+      (d3, _) = randomR (1, 6) s2
+  (intToDie d1, intToDie d2, intToDie d3)
+
+rollDie :: State StdGen Die
+rollDie = state $ do
+  (n, s) <- randomR (1, 6)
+  return (intToDie n, s)
+
+rollDie' :: State StdGen Die
+rollDie' = intToDie <$> state (randomR (1, 6))
+
+rollDieThreeTimes' :: State StdGen (Die, Die, Die)
+rollDieThreeTimes' = liftA3 (,,) rollDie rollDie rollDie
+
+nDie :: Int -> State StdGen [Die]
+nDie n = replicateM n rollDie
+
+rollsToGetTwenty :: StdGen -> Int 
+rollsToGetTwenty g = go 0 0 g
+  where 
+    go :: Int -> Int -> StdGen -> Int
+    go sum count gen
+      | sum >= 20 = count
+      | otherwise = 
+        let (die, nextGen) = randomR (1, 6) gen
+        in go (sum + die) (count + 1) nextGen
+
+-- 1
+rollsToGetN :: Int -> StdGen -> Int
+rollsToGetN n g= go 0 0 n g 
+  where 
+    go :: Int -> Int -> Int -> StdGen -> Int
+    go sum count max gen
+      | sum >= max = count
+      | otherwise = 
+        let (die, nextGen) = randomR (1, 6) gen
+        in go (sum + die) (count + 1) max nextGen
+
+-- 2
+rollsCountLogged :: Int -> StdGen -> (Int, [Die])
+rollsCountLogged n g = go 0 0 [] n g 
+  where 
+    go :: Int -> Int -> [Die] -> Int -> StdGen -> (Int, [Die])
+    go sum count log max gen
+      | sum >= max = (count, log)
+      | otherwise = 
+        let (die, nextGen) = randomR (1, 6) gen
+        in go (sum + die) (count + 1) ((intToDie die):log) max nextGen
+```
+
+## 23.6 Write State for yourself
+
+```haskell
+--23/LEtat.hs
+{-# LANGUAGE InstanceSigs #-}
+module LEtat where
+
+newtype Moi s a = Moi { runMoi :: s -> (a, s) }
+
+instance Functor (Moi s) where
+  fmap :: (a -> b) -> Moi s a -> Moi s b
+  -- fmap f (Moi g) =  Moi $ (\(x, y) -> (f x, y)) . g
+  fmap f (Moi g) =  Moi $ \s0 -> let (a, s1) = (g s0) in (f a, s1)
+
+instance Applicative (Moi s) where
+  pure :: a -> Moi s a 
+  pure a = Moi (\s0 -> (a, s0))
+  (<*>) :: Moi s (a -> b) -> Moi s a -> Moi s b
+  (<*>) (Moi f) (Moi g) = 
+    Moi $ \s0 -> let (a, s1) = (g s0); (f', s2) = (f s1) in (f' a, s2)
+
+instance Monad (Moi s) where
+  return = pure
+  (>>=) :: Moi s a -> (a -> Moi s b) -> Moi s b
+  (>>=) (Moi f) g = 
+    -- Moi $ \s0 -> let (a, s1) = (f s0); (Moi gg) = (g a) in (gg s1)
+    Moi $ \s0 -> let (a, s1) = (f s0) in (runMoi (g a)) s1
+```
+
+## 23.7 Get a coding job with one weird trick 
+
+```haskell
+--23/FizzBuzz.hs
+module FizzBuzz where
+
+import Control.Monad
+import Control.Monad.Trans.State
+import qualified Data.DList as DL
+
+fizzBuzz :: Integer -> String
+fizzBuzz n | n `mod` 15 == 0 = "FizzBuzz"
+           | n `mod`  5 == 0 = "Buzz"
+           | n `mod`  3 == 0 = "Fizz"
+           | otherwise       = show n
+
+main0 :: IO ()
+main0 = mapM_ (putStrLn . fizzBuzz) [1..100]
+
+fizzbuzzList :: [Integer] -> [String]
+fizzbuzzList list = execState (mapM_ addResult list) []
+
+addResult :: Integer -> State [String] ()
+addResult n = do
+  xs <- get
+  put ((fizzBuzz n) : xs)
+
+main1 :: IO ()
+main1 = mapM_ putStrLn $ reverse $ fizzbuzzList [1..100]
+
+fizzbuzzList' :: [Integer] -> DL.DList String
+fizzbuzzList' list = execState (mapM_ addResult' list) DL.empty
+
+addResult' :: Integer -> State (DL.DList String) ()
+addResult' n = do
+  xs <- get
+  put (DL.snoc xs (fizzBuzz n)) 
+
+main :: IO ()
+main = mapM_ putStrLn $ fizzbuzzList' [1..100]
+
+fizzbuzzFromTo :: Integer -> Integer -> [String]
+fizzbuzzFromTo a b = fizzbuzzList [b,(b - 1)..a]
+
+main' :: IO ()
+main' = mapM_ putStrLn $ fizzbuzzFromTo 1 100
+```
+
+## 23.8 Chapter Exercises
+
+```haskell
+--23/ChapterExercises.hs
+module ChapterExercises where
+
+newtype State s a = State { runState :: s -> (a, s)}
+
+instance Functor (State s) where
+  fmap f (State g) =  State $ \s0 -> let (a, s1) = (g s0) in (f a, s1)
+
+instance Applicative (State s) where
+  pure a = State (\s0 -> (a, s0))
+  (<*>) (State f) (State g) = 
+    State $ \s0 -> let (a, s1) = (g s0); (f', s2) = (f s1) in (f' a, s2)
+
+instance Monad (State s) where
+  return = pure
+  (>>=) (State f) g = 
+    State $ \s0 -> let (a, s1) = (f s0) in (runState (g a)) s1
+
+get :: State s s
+get = State $ \s -> (s, s)
+
+put :: s -> State s ()
+put s = State $ \s' -> ((), s)
+
+exec :: State s a -> s -> s
+exec (State sa) s0 = let (a, s1) = (sa s0) in s1
+
+eval :: State s a -> s -> a
+eval (State sa) s0 = let (a, s1) = sa s0 in a 
+
+modify :: (s -> s) -> State s ()
+modify f = State $ \s -> ((), (f s))
+```
+
+## 23.9 Follow-up resources
+
+1. State Monad; All About Monads; Haskell Wiki
+https://wiki.haskell.org/All_About_Monads
+2. State Monad; Haskell Wiki
+https://wiki.haskell.org/State_Monad
+3. Understanding Monads; Haskell Wikibook
+
+# 24 Parser Combinators
+
+## 24.3 Understanding the parsing process
+
+### Exercises: Parsing Practice
+
+```haskell
+--24/parsercombinators/src/LearnParser.hs
+module LearnParsers where
+
+import Text.Trifecta
+import Text.Parser.Char
+import Text.Parser.Combinators
+import Control.Monad
+
+stop :: Parser a
+stop = unexpected "stop"
+
+one :: Parser Char
+one = char '1'
+
+one' :: Parser Char
+one' = one >> stop
+
+oneTwo :: Parser Char
+oneTwo = char '1' >> char '2'
+
+oneTwo' :: Parser Char
+oneTwo' = oneTwo >> stop
+
+testParse :: Parser Char -> IO ()
+testParse p = print $ parseString p mempty "123"
+
+testParseStr :: Parser String -> String -> IO ()
+testParseStr p str = print $ parseString p mempty str
+
+pNL s = putStrLn ('\n' : s)
+
+main = do
+  pNL "stop:"
+  testParse stop
+  pNL "one:"
+  testParse one
+  pNL "one':"
+  testParse one'
+  pNL "oneTwo:"
+  testParse oneTwo
+  pNL "oneTwo':"
+  testParse oneTwo'
+
+-- 1
+oneFail :: Parser Char
+oneFail = one >> eof >> stop
+
+oneTwoFail :: Parser Char
+oneTwoFail = oneTwo >> eof >> stop
+
+-- 2
+oneTwoThree :: Parser String
+oneTwoThree = some $ oneOf "123"
+
+oneTwoThree' :: Parser String
+oneTwoThree' =  choice [string "123", string "12", string "1"]
+
+oneTwoThree'' :: Parser String
+oneTwoThree'' = 
+  char '1' >>= \x -> (char '2') >>= \x2 -> (char '3') >>= \x3 -> return [x,x2,x3]
+
+
+oneTwoThreeDo :: Parser String
+oneTwoThreeDo = do
+  x1 <- (char '1')
+  x2 <- (char '2')
+  x3 <- (char '3')
+  return [x1,x2,x3]
+
+-- 3
+string' :: String -> Parser String
+string' "" = return ""
+string' (x:xs) = do
+  char x
+  string' xs
+  return (x:xs)
+
+string'' :: String -> Parser String
+string'' "" = return ""
+string'' (x:xs) = do
+  a <- char x
+  b <- string'' xs
+  return (a:b)
+```
+
+## 24.4 Parsing fractions
+
+### Exercise: Unit of Success
+
+```haskell
+--24/parsercombinators/src/TextFractions.hs
+{-# LANGUAGE OverloadedStrings #-}
+module TextFractions where
+
+import Control.Applicative
+import Data.Ratio ((%))
+import Text.Trifecta
+
+badFraction = "1/0"
+alsoBad = "10"
+shouldWork = "1/2"
+shouldAlsoWork = "2/1"
+
+parseFraction :: Parser Rational
+parseFraction = do
+  numerator <- decimal
+  char '/'
+  denominator <- decimal
+  return (numerator % denominator)
+
+virtuousFraction :: Parser Rational
+virtuousFraction = do
+  numerator <- decimal
+  char '/'
+  denominator <- decimal
+  case denominator of
+    0 -> fail "Denominator cannot be zero"
+    _ -> return (numerator % denominator)
+
+main :: IO ()
+main = do
+  let parseFraction' = parseString parseFraction mempty
+  print $ parseFraction' shouldWork
+  print $ parseFraction' shouldAlsoWork
+  print $ parseFraction' alsoBad
+  print $ parseFraction' badFraction
+
+testVirtuous :: IO ()
+testVirtuous = do
+  let parseFraction' = parseString virtuousFraction mempty
+  print $ parseFraction' shouldWork
+  print $ parseFraction' shouldAlsoWork
+  print $ parseFraction' alsoBad
+  print $ parseFraction' badFraction
+
+-- Exercise: Unit of Success
+unitSuccess :: String -> Parser String
+unitSuccess str = do
+  a <- string str
+  eof
+  return a
+
+-- Try Try
+
+parseDecimal :: Parser Rational
+parseDecimal = do
+  whole <- decimal
+  char '.'
+  part <- decimal
+  case part of
+    0 -> return (toRational whole)
+    _ -> return (makeDecimal whole part)
+
+makeDecimal :: Integer -> Integer -> Rational
+makeDecimal whole part = (toRational whole) + (toRational frac) where
+  sigDigits = (floor $ logBase 10 $ fromIntegral part) + 1
+  frac = (fromIntegral part) / (10 ^ sigDigits) 
+
+parseFracOrDec :: Parser Rational
+parseFracOrDec = try virtuousFraction <|> try parseDecimal
+```
+
+## 24.6 Alternative
+
+### Exercise: Try Try
+see `parsingcombinators/src/TextFractions.hs`
+
+## 24.11 Chapter Exercises
+
+1.  ```haskell
+    module SemVer where
+
+    import Text.Trifecta
+    import Text.Parser.Char
+    import Text.Parser.Combinators
+    import Control.Monad
+    import Control.Applicative
+
+    data NumberOrString = NOSS String | NOSI Integer deriving (Eq, Show)
+
+    type Major = Integer
+    type Minor = Integer
+    type Patch = Integer
+    type Release = [NumberOrString]
+    type Metadata = [NumberOrString]
+
+    data SemVer = SemVer Major Minor Patch Release Metadata deriving (Eq, Show)
+
+    parseSemVer :: Parser SemVer
+    parseSemVer = do
+      major <- integer
+      char '.'
+      minor <- integer 
+      char '.'
+      patch <- integer 
+      release <- parseAnnotation '-' 
+      metadata <- parseAnnotation '+' 
+      return $ SemVer major minor patch release metadata
+
+    parseAnnotation :: Char -> Parser [NumberOrString]
+    parseAnnotation head = try ((char head) >> sepBy parseNOS dot) <|> return []
+
+    parseNOS :: Parser NumberOrString
+    parseNOS = (NOSI <$> integer) <|> (NOSS <$> (many alphaNum))
+    ```
+
+2.  ```haskell
+    --24/parsercombinators/src/ParseInteger.hs
+    module ParseInteger where
+
+    import Text.Trifecta
+    import Text.Parser.Char
+    import Data.Char
+    import Text.Parser.Combinators
+    import Control.Monad
+    import Control.Applicative
+
+    parseDigit :: Parser Char
+    parseDigit = satisfy isDigit
+
+    base10Integer :: Parser Integer
+    base10Integer = go 0 where
+      go a = do
+        d <- parseDigit
+        let a' = (10 * a + (digitToInt d))
+        try (go a') <|> return (toInteger a')
+       
+    --3 
+
+    base10Integer' :: Parser Integer
+    base10Integer' = try (char '-' >> go 0) <|> base10Integer where
+      go a = do
+        d <- parseDigit
+        let a' = (10 * a + (digitToInt d))
+        try (go a') <|> return (negate $ toInteger a')
+    ```
+
+3. see `24/parsercombinator/src/ParseInteger.hs` 
+
+4.  ```haskell
+    --24/parsercombinators/src/PhoneNumber.hs
+    module PhoneNumber where
+
+    import Text.Trifecta
+    import Text.Parser.Char
+    import Data.Char
+    import Text.Parser.Combinators
+    import Control.Applicative
+
+    type NumberingPlanArea = Int
+    type Exchange = Int
+    type LineNumber = Int
+
+    parseNumberingPlanArea :: Parser NumberingPlanArea
+    parseNumberingPlanArea = read <$> count 3 digit
+
+    parseExchange :: Parser Exchange 
+    parseExchange = read <$> count 3 digit
+
+    parseLineNumber :: Parser LineNumber 
+    parseLineNumber = read <$> count 4 digit
+
+    data PhoneNumber = PhoneNumber NumberingPlanArea Exchange LineNumber
+      deriving (Eq, Show)
+
+    parsePhone :: Parser PhoneNumber
+    parsePhone = do
+      let notDigit = satisfy (not . isDigit)
+      skipOptional $ try (char '1' >> notDigit)
+      many $ notDigit
+      npa <- parseNumberingPlanArea 
+      many $ notDigit 
+      exc <- parseExchange
+      many $ notDigit 
+      lnn <- parseLineNumber 
+      many $ notDigit 
+      return $ PhoneNumber npa exc lnn 
+    ``` 
+
+5.  ```haskell
+    --24/parselog/src/ParseLog.hs
+    module ParseLog where
+
+    import Data.Char (isSpace)
+    import Data.Maybe (isJust, fromJust, mapMaybe)
+    import Data.Scientific (toRealFloat)
+    import Data.Fixed (showFixed, Fixed( MkFixed ), Pico)
+    import Data.List (intersperse, sortBy)
+    import Text.Trifecta
+    import Text.Parser.Char
+    import Text.Parser.Combinators
+    import Text.Parser.LookAhead (lookAhead)
+    import Control.Applicative
+    import qualified Data.Map.Strict as M
+    import qualified Data.Time as T
+
+    data Log = Log [Entry] deriving Eq
+
+    data Entry = Entry Date [Line] deriving Eq
+    type Date = Either InvalidDate T.Day
+    type InvalidDate = String
+
+    data Line = Line Time Activity deriving Eq
+    type Time = Either InvalidTime T.TimeOfDay
+    type InvalidTime = String
+    newtype Activity = Activity String deriving (Eq, Ord)
+
+    instance Show Log where show (Log es) = concat $ intersperse "\n" $ show <$> es
+
+    instance Show Entry where
+      show (Entry (Left error) lines) = 
+        "# " ++ error ++ " -- InvalidDate\n" ++ concatMap show lines
+      show (Entry (Right date) lines) = 
+        "# " ++ show date ++ "\n" ++ concatMap show lines
+
+    instance Show Line where
+      show (Line (Left error) act) = error ++ " " ++ show act ++ " -- InvalidTime\n"
+      show (Line (Right time) act) = show time ++ " " ++ show act ++ "\n"
+
+    instance Show Activity where show (Activity a) = a
+
+    isNewline :: Char -> Bool
+    isNewline = (==) '\n'
+
+    inlineSpace :: Parser () 
+    inlineSpace = skipMany $ satisfy (\x -> (isSpace x) && (not $ isNewline x))
+
+    parseComment :: Parser String
+    parseComment = string "--" >> (many $ satisfy (not . isNewline))
+
+    endLine :: Parser Char
+    endLine = inlineSpace >> (skipOptional parseComment) >> newline
+
+    parseTimeOfDay :: Parser Time
+    parseTimeOfDay = do 
+      hour <- fromIntegral <$> decimal
+      minute <- option 0 $ colon >> fromIntegral <$> decimal
+      second <- option 0 $ colon >> parseSecond
+      let time = T.makeTimeOfDayValid hour minute second 
+      let raw = (show hour) ++ ":" ++ (show minute) ++ ":" ++ (show second)
+      if (isJust time) then return (Right $ fromJust $ time) else return (Left raw)
+
+    parseSecond :: Parser Pico
+    parseSecond = do
+      a <- some $ digit
+      try $ skipOptional dot
+      b <- option "0" $ some $ digit
+      return (read $ a ++ "." ++ b)
+
+    parseAct :: Parser Activity
+    parseAct = Activity <$> manyTill anyChar (try $ endLine)
+
+    parseLine :: Parser Line
+    parseLine = do
+        time <- parseTimeOfDay 
+        inlineSpace
+        activity <- parseAct
+        return $ Line time activity
+
+    parseDay :: Parser Date
+    parseDay = do
+      year <- integer
+      month <- char '-' >> fromIntegral <$> decimal
+      day <- char '-' >> fromIntegral <$> decimal
+      let date = T.fromGregorianValid year month day  
+      let raw = (show year) ++ "-" ++ (show month) ++ "-" ++ (show day)
+      if (isJust date) then return (Right $ fromJust $ date) else return (Left raw)
+
+    parseEntry :: Parser Entry
+    parseEntry = do
+      char '#'
+      inlineSpace
+      date  <- parseDay
+      endLine
+      lines <- some $ parseLine
+      return $ Entry date lines
+     
+    parseLog :: Parser Log
+    parseLog = do
+      many $ space <|> endLine 
+      log <- sepEndBy parseEntry (some $ space <|> endLine)
+      eof
+      return $ Log log
+
+    logBimorphism :: Log -> Bool
+    logBimorphism log = case (parseString parseLog mempty (show log)) of
+      (Success log') -> log' == log
+      (Failure e) -> False
+
+
+    data UTCLog = UTCLog [(T.UTCTime, Activity)] deriving Show
+
+    lineToUTC :: T.Day -> Line -> Maybe (T.UTCTime, Activity)
+    lineToUTC _ (Line (Left _) act) = Nothing 
+    lineToUTC day (Line (Right time) act) = 
+      Just (T.UTCTime day $ T.timeOfDayToTime time, act)
+
+    entryToUTC :: Entry -> Maybe [(T.UTCTime, Activity)]
+    entryToUTC (Entry (Left _) _) = Nothing
+    entryToUTC (Entry (Right date) lines) = Just $ mapMaybe (lineToUTC date) lines
+
+    logToUTC :: Log -> UTCLog
+    logToUTC (Log log) = UTCLog $ concat $ mapMaybe entryToUTC log
+
+    sortUTCLog :: UTCLog -> UTCLog
+    sortUTCLog (UTCLog log) = UTCLog $ sortBy (\(a, b) (c, d) -> compare a c) log
+
+    activityTotals :: UTCLog -> M.Map Activity (T.NominalDiffTime, Int)
+    activityTotals (UTCLog log) = go M.empty log' where
+      log' = sortBy (\(a,b)(c,d)-> compare a c) log
+      go map [x] = map 
+      go map ((t,a):x'@(t',a'):xs) = go map' (x':xs) where
+        diff = T.diffUTCTime t' t
+        f (time, count) = (time + diff, count + 1)
+        map' = if M.member a map then M.adjust f a map else M.insert a (diff, 1) map
+
+    avgActivityPerDay :: M.Map Activity (T.NominalDiffTime, Int) -> 
+                         M.Map Activity T.NominalDiffTime
+    avgActivityPerDay m = M.map (\(t, c) -> t / (fromIntegral c)) m 
+      
+      
+    main' :: String -> IO ()
+    main' str = do
+      file <- readFile str
+      let log = parseString parseLog mempty file
+      print $ logBimorphism <$> log
+      print log
+      print $ sortUTCLog <$> logToUTC <$> log
+      print $ activityTotals <$> logToUTC <$> log
+      print $ avgActivityPerDay <$> activityTotals <$> logToUTC <$> log
+```
+
+6.  ```haskell
+    --24/parsercombinators/src/ParseIPAddress.hs
+    module ParseIPAddress where
+
+    import Numeric
+    import Data.Word
+    import Data.Bits
+    import Data.Maybe (isJust, fromJust)
+    import Data.List
+    import Text.Trifecta
+    import Text.Parser.Char
+    import Text.Parser.Combinators 
+
+    data IPAddress = IPAddress Word32 deriving (Eq, Ord)
+
+    instance Show IPAddress where
+      show (IPAddress ip) = a ++ "." ++ b ++ "." ++ c ++ "." ++ d where
+        a = show $ (.&.) (rotateR ip 24) 255 
+        b = show $ (.&.) (rotateR ip 16) 255 
+        c = show $ (.&.) (rotateR ip 8) 255 
+        d = show $ (.&.) ip 255
+        
+
+    parseIP :: Parser IPAddress
+    parseIP = do
+      a <- fromIntegral <$> natural
+      b <- fromIntegral <$> (dot >> natural)
+      c <- fromIntegral <$> (dot >> natural)
+      d <- fromIntegral <$> (dot >> natural)
+      let ip = makeIP a b c d
+      if isJust ip 
+      then return $ fromJust ip
+      else unexpected "parse failed" 
+
+    makeIP :: Word32 -> Word32 -> Word32 -> Word32 -> Maybe IPAddress
+    makeIP a b c d = 
+      if all (\x -> x >= 0 && x < 256) [a,b,c,d] 
+      then Just $ IPAddress $ shift a 24 + shift b 16 + shift c 8 + d
+      else Nothing
+
+    data IPAddress6 = IPAddress6 Word64 Word64 deriving (Eq, Ord)
+
+    instance Show IPAddress6 where
+      show (IPAddress6 x y) = 
+        a ++ ":" ++ b ++ ":" ++ c ++ ":" ++ d ++ ":" ++ 
+        e ++ ":" ++ f ++ ":" ++ g ++ ":" ++ h 
+        where
+          show' x = showHex x ""
+          a = show' $ (.&.) (rotateR x 48) (2^16 - 1)
+          b = show' $ (.&.) (rotateR x 32) (2^16 - 1)
+          c = show' $ (.&.) (rotateR x 16) (2^16 - 1)
+          d = show' $ (.&.) x              (2^16 - 1)
+          e = show' $ (.&.) (rotateR y 48) (2^16 - 1)
+          f = show' $ (.&.) (rotateR y 32) (2^16 - 1)
+          g = show' $ (.&.) (rotateR y 16) (2^16 - 1)
+          h = show' $ (.&.) y              (2^16 - 1)
+
+    parseIP6 :: Parser IPAddress6
+    parseIP6 = do
+       blocks <- abbrev <$> ip6Blocks
+       let ip = (fmap . fmap) (read . ("0x"++)) blocks >>= makeIP6
+       if isJust ip 
+       then return $ fromJust ip
+       else unexpected "parse failed" 
+
+    ip6Blocks :: Parser [String]
+    ip6Blocks = (try $ skipOptional colon) >> sepBy (many hexDigit) colon
+
+    abbrev :: [String] -> Maybe [String]
+    abbrev xs = let abbrevs = elemIndices "" xs in
+      case (length abbrevs) of
+        0 -> Just xs
+        1 -> Just $ take n xs ++ zs ++ drop (n + 1) xs where
+          n = head abbrevs
+          zs = replicate (8 - (length xs - 1)) "0"
+        _ -> Nothing
+      
+
+    makeIP6 :: [Word64] -> Maybe IPAddress6
+    makeIP6 xs@[a,b,c,d,e,f,g,h] = 
+      if any (\x -> x < 0 && x > 65535) xs then Nothing
+      else Just $ IPAddress6 (shift a 48 + shift b 32 + shift c 16 + d)
+                             (shift e 48 + shift f 32 + shift g 16 + h)
+    makeIP6 _ = Nothing
+
+    makeIP6' :: Word64 -> Word64 -> Word64 -> Word64 -> 
+               Word64 -> Word64 -> Word64 -> Word64 -> Maybe IPAddress6
+    makeIP6' a b c d e f g h = 
+      if all (\x -> x >= 0 && x < 65536) [a,b,c,d,e,f,g,h] 
+      then Just $ IPAddress6 (shift a 48 + shift b 32 + shift c 16 + d)
+                             (shift e 48 + shift f 32 + shift g 16 + h)
+      else Nothing
+
+    ip4to6 :: IPAddress -> IPAddress6
+    ip4to6 (IPAddress ip) = 
+      IPAddress6 0 $ (.|.) (shift (2^16 - 1) 32) (fromIntegral ip)
+    ```
+
+7. see `24/parsercombinators/src/ParseIPAddress.hs`
+8. see `24/parsercombinators/src/ParseIPAddress.hs`
+9. see `24/parsercombinators/src/ParseIPAddress.hs`
+10. skipping
+
+## 24.13 Follow-up resources
+
+1. Parsec try a-or-b considered harmful; Edward Z. Yang
+2.Code case study: parsing a binary data format; Real World
+Haskell
+3. The Parsec parsing library; Real World Haskell
+4. [An introduction to parsing text in Haskell with Parsec; James
+Wilson;](http://unbui.lt/#!/post/haskell-parsec-basics)
+5. Parsing CSS with Parsec; Jakub Arnold
+6. [Parsec: A practical parser library; Daan Leijen, Erik Meijer;](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.24.5200)
+7. [How to Replace Failure by a List of Successes; Philip Wadler;](http://dl.acm.org/citation.cfm?id=5288)
+8. How to Replace Failure by a Heap of Successes; Edward Kmett
+9. [Two kinds of backtracking; Samuel Gélineau (gelisam);](http://gelisam.blogspot.ca/2015/09/two-kinds-of-backtracking.html)
+10. [LL and LR in Context: Why Parsing Tools Are Hard; Josh Haber-
+man](http://blog.reverberate.org/2013/09/ll-and-lr-in-context-why-parsing-to.html)
+11. Parsing Techniques, a practical guide; second edition; Grune &
+Jacobs
+12. Parsing JSON with Aeson; School of Haskell
+13. aeson; 24 days of Hackage; Oliver Charles
+
+---
+
+# 25 Composing types
+
+## 25.4 Twinplicative 
+
+```haskell
+--25/Twinplicative.hs
+{-# LANGUAGE InstanceSigs #-}
+module Twinplicative where
+
+import Control.Applicative (liftA2)
+
+newtype Identity a = Identity { runIdentity :: a }
+
+instance Functor Identity where
+  fmap f (Identity a) = Identity (f a)
+
+newtype Compose f g a = Compose { getCompose :: f (g a) } deriving (Eq, Show)
+
+instance (Functor f, Functor g) => Functor (Compose f g) where
+  fmap f (Compose fga) = Compose $ (fmap . fmap) f fga
+
+instance (Applicative f, Applicative g) => Applicative (Compose f g) where
+  pure :: a -> Compose f g a
+  pure a = Compose $ pure (pure a)
+  (<*>) :: Compose f g (a -> b) -> Compose f g a -> Compose f g b
+  (<*>) (Compose f) (Compose a) = Compose $ liftA2 (<*>) f a
+  -- (<*>) (Compose f) (Compose a) = Compose $ (fmap (<*>) f) <*> a
+
+instance (Foldable f, Foldable g) => Foldable (Compose f g) where
+  foldMap h (Compose fga) = foldMap (foldMap h) fga
+
+instance (Traversable f, Traversable g) => Traversable (Compose f g) where
+  traverse h (Compose fga)= Compose <$> traverse (traverse h) fga
+```
+
+## 25.6 Exercises: Compose Instances
+see `25/Twinplicative.hs`
+
+```haskell
+--25/BifunctorInstances.hs
+module BifunctorInstances where
+
+class Bifunctor p where
+  bimap :: (a -> b) -> (c -> d) -> p a c -> p b d
+  bimap f g = first f . second g
+
+  first :: (a -> b) -> p a c -> p b c
+  first f = bimap f id
+
+  second :: (b -> c) -> p a b -> p a c
+  second = bimap id
+
+data Deux a b = Deux a b
+
+instance Bifunctor Deux where
+  bimap f g (Deux a b) = Deux (f a) (g b)
+
+data Const a b = Const a
+
+instance Bifunctor Const where
+  bimap f g (Const a) = Const (f a)
+
+data Drei a b c = Drei a b c
+
+instance Bifunctor (Drei a) where
+  bimap f g (Drei a b c) = Drei a (f b) (g c)
+
+data SuperDrei a b c = SuperDrei a b
+
+instance Bifunctor (SuperDrei a) where
+  bimap f g (SuperDrei a b) = SuperDrei a (f b)
+
+data SemiDrei a b c = SemiDrei a
+
+instance Bifunctor (SemiDrei a) where
+  bimap f g (SemiDrei a) = SemiDrei a
+
+data Quadriceps a b c d = Quadzzz a b c d
+
+instance Bifunctor (Quadriceps a b) where
+  bimap f g (Quadzzz a b c d) = Quadzzz a b (f c) (g d)
+
+data Either' a b = Left' a | Right' b
+
+instance Bifunctor Either' where
+  bimap f g (Left' a) = Left' (f a)
+  bimap f g (Right' b) = Right' (g b)
+```
+
+## 25.8 IdentityT
+
+```haskell
+--25/IdentityT.hs
+{-# LANGUAGE InstanceSigs #-}
+module IdentityT where
+
+import Control.Monad (join)
+
+newtype Identity a = Identity { runIdentity :: a } deriving (Eq, Show)
+
+newtype IdentityT f a = IdentityT { runIdentityT :: f a } deriving (Eq, Show)
+
+instance Functor Identity where
+  fmap f (Identity a) = Identity (f a)
+
+instance (Functor m) => Functor (IdentityT m) where
+  fmap f (IdentityT fa) = IdentityT (fmap f fa)
+
+instance Applicative Identity where
+  pure = Identity
+  (<*>) (Identity f) (Identity a) = Identity (f a)
+
+instance (Applicative m) => Applicative (IdentityT m) where
+  pure x = IdentityT (pure x)
+  (<*>) (IdentityT fab) (IdentityT fa) = IdentityT (fab <*> fa)
+
+instance Monad Identity where
+  return = pure
+  (>>=) (Identity a) f = f a
+
+instance (Monad m) => Monad (IdentityT m) where
+  return = pure
+  (>>=) :: IdentityT m a -> (a -> IdentityT m b) -> IdentityT m b
+  (>>=) (IdentityT ma) f = IdentityT $ (>>=) ma (runIdentityT . f)
+```
+
+---
+
+# 26 Monad transformers
+
+
+## 26.3 EitherT
+
+```haskell
+--26/EitherT.hs
+module EitherT where
+
+import Control.Monad.Trans
+
+newtype EitherT e m a = EitherT { runEitherT :: m (Either e a) }
+
+instance (Functor m) => Functor (EitherT e m) where
+  -- fmap f et  = EitherT $ (fmap . fmap) f (runEitherT et)
+  fmap f (EitherT mea)  = EitherT $ (fmap . fmap) f mea
+
+instance Applicative m => Applicative (EitherT e m) where
+  pure x = EitherT $ pure $ pure x
+  (<*>) (EitherT mefab) (EitherT mea) = EitherT $ (fmap (<*>)) mefab <*> mea
+
+instance Monad m => Monad (EitherT e m) where
+  return = pure
+  (>>=) (EitherT ema) f = EitherT $ do
+    v <- ema
+    case v of
+      Left e -> return (Left e)
+      Right a -> runEitherT (f a)
+
+instance MonadTrans (EitherT e) where
+  lift = EitherT . fmap Right
+
+instance (MonadIO m) => MonadIO (EitherT e m) where
+  liftIO = lift . liftIO
+
+swapEither :: Either e a -> Either a e
+swapEither (Left e) = (Right e)
+swapEither (Right a) = (Left a)
+
+swapEitherT :: (Functor m) => EitherT e m a -> EitherT a m e
+swapEitherT (EitherT ema) = EitherT $ swapEither <$> ema
+
+eitherT :: Monad m => (a -> m c) -> (b -> m c) -> EitherT a m b -> m c
+eitherT fac fbc (EitherT mab) = mab >>= (either fac fbc)
+```
+
+## 26.5 StateT
+
+```haskell
+--26/StateT.hs
+module StateT where
+
+import Control.Monad.Trans
+
+newtype StateT s m a = StateT { runStateT :: s -> m (a, s) }
+
+instance (Functor m) => Functor (StateT s m) where
+  fmap f (StateT sma) = StateT $ \s0 -> fstMap f <$> (sma s0)
+    where fstMap f (x, y) = (f x, y)
+
+instance (Monad m) => Applicative (StateT s m) where
+  pure x = StateT $ \s0 -> pure (x, s0)
+  (<*>) (StateT smf) (StateT sma) = StateT $ \s0 -> do
+    (a, s1) <- sma s0
+    (f, s2) <- smf s1
+    return (f a, s2)
+
+instance (Monad m) => Monad (StateT s m) where
+  return = pure
+  (>>=) (StateT sma) f = StateT $ \s0 -> do
+    (a, s1) <- sma s0
+    runStateT (f a) s1
+
+instance MonadTrans (StateT e) where
+  lift m = StateT $ \s -> m >>= \a -> return (a, s)
+
+instance (MonadIO m) => MonadIO (StateT s m) where
+  liftIO = lift . liftIO
+```
+
+## 26.8 Lexically inner is structurally outer
+
+```haskell
+--26/OuterInner.hs
+module OuterInner where
+
+import Control.Monad.Trans.Except
+import Control.Monad.Trans.Maybe
+import Control.Monad.Trans.Reader
+
+embedded :: MaybeT (ExceptT String (ReaderT () IO)) Int
+embedded = return 1
+
+maybeUnwrap :: ExceptT String (ReaderT () IO) (Maybe Int)
+maybeUnwrap = runMaybeT embedded
+
+eitherUnwrap :: ReaderT () IO (Either String (Maybe Int))
+eitherUnwrap = runExceptT maybeUnwrap
+
+readerUnwrap :: () -> IO (Either String (Maybe Int))
+readerUnwrap = runReaderT eitherUnwrap
+
+
+embedded' :: MaybeT (ExceptT String (ReaderT () IO)) Int
+embedded' = MaybeT $ ExceptT $ ReaderT $ pure <$> (const (Right (Just 1)))
+```
+
+## 26.9 MonadTrans
+
+### Exercises: Lift More
+
+see `26/StateT.hs` and `26/EitherT.hs`
+
+I've put instances in the appropriate files
+
+## 26.10 MonadIO aka zoom-zoom
+
+### Exercises: Some Instances
+
+Again, instances for MaybeT, ReaderT and StateT are in their own
+files
+
+## 26.12 Monads do not commute
+
+### Hypothetical Exercise
+
+
+---
+
+## 27 Nonstrictness
 
 

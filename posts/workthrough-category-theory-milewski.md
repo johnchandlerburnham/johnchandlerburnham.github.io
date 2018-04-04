@@ -1030,3 +1030,97 @@ the collection of objects that have arrows from both `X1` and `X2`.
     g (False, a) = Right a
     ```
 
+---
+
+# 7 Functors
+
+
+## 7.4 Challenges
+
+1.  The functor laws are
+
+    ```
+    h = g . f => F h = F g . F f
+    F id_a = id_Fa
+    ```
+
+    Suppose we want to make a functor instance of the Maybe type constructor
+    with the following `fmap`
+
+    ```
+    fmap :: (a -> b) -> Maybe a -> Maybe b
+    fmap _ _ = Nothing
+    ```
+
+    This violates the functor laws, since 
+
+    ```
+    (fmap id) /= id
+    ```
+
+    Actually, `(fmap id) :: Maybe a -> Maybe b` is the same as 
+    `(const Nothing :: Maybe b)`.
+
+2.  ```
+    h = g . f => F h = F g . F f
+    F id_a = id_Fa
+    ```
+
+    h :: (a -> c)  
+    g :: (b -> c) 
+    f :: (a -> b)
+    h = g . f 
+
+    F h :: (F a -> F c)
+    F g :: (F b -> F c)
+    F f :: (F a -> F b)
+
+    F g . F f ::  (F a -> F c)
+
+    fmap id = (.) id 
+    ```
+
+3.  skipping
+
+4.  So fmap for lists looks like:
+    ```
+    instance Functor (List a) where
+    fmap f (Cons a r) = Cons (f a) (fmap f r)
+    fmap f Nil = Nil
+    ```
+    
+    For `fmap id l`, either `l` is `Nil`, or a `Cons`, if `Nil` then
+    `fmap id` is equivalent to `id`. If `l` is a `Cons`:
+
+    ```
+    fmap id (Cons a l') = Cons (id a) (fmap id l') = Cons a (fmap f l')
+    ```
+
+    Rearranging,
+
+    ```
+    fmap id l' = id l' => fmap id (Cons a l') = id (Cons a l')
+    ```
+
+    Therefore, by induction, `fmap id l = id l`
+
+
+# 8 Functoriality
+
+1.  ```
+    class Bifunctor f where
+      bimap :: (a -> c) -> (b -> d) -> f a b -> f c d
+      bimap g h = first g . second h
+      first :: (a -> c) -> f a b -> f c b
+      first g = bimap g id
+      second :: (b -> d) -> f a b -> f a d
+      second h = bimap id h
+
+    data Pair a b = Pair a b
+
+    instance Bifunctor Pair where
+    bimap g h (Pair a b) = Pair (g a) (h b)
+    ```
+
+2. 
+

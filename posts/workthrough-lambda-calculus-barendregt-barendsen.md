@@ -904,10 +904,121 @@ isZero 0 = (\x . x true) I = true
 isZero 1 = (\x . x true) (\ p. p false n_) = true false n_ = false
 ```
 
+## 3.5 Definition of lambda definability
 
-## 3.5 Definition
+**numeric function**: A function that maps numbers to numbers. If the
+numeric function takes `p` arguments (which are numbers) it is calle `p`-ary
+
+**lambda definable**: If there is a lambda expression that implements
+a numeric function for all possible inputs, the function is said to
+be lambda definable.
+
+## 3.6 Definition of initial functions
+
+- `U_i^n` is a projection function, given `n` arguments, it returns the `i`th
+- `S` is successor.
+- `Z` is the constant zero function.
+
+If `P(n)` is a numeric relation, them `Mm[P(m)]` is the smallest (minimum)
+number such that `P(m)` holds. If there is no such number `P(m)` is undefined.
+
+## 3.7 Definition of closure
+
+
+*Closure under composition*:
+
+So `n` here is a vector: `[n_0, n_1, ..., n_k]`, where all `n_i` are numbers.
+
+`psi_i` are functions on the same vector `n`, but I think this is equivalent
+to having distinct vectors for each `psi` because we can use the projection 
+function to select whatever elements of `n` we want.
+
+So really, this is just that if a class is closed
+function of numeric functions in that class is also a numeric function in
+that class.
+
+*Closure under primitive recursion:*
+
+So if we have some series of functions where the base function and
+the "next" function (which returns the next funciton in the
+series) are both in a closed class, then all the functions in the series
+are in the class.
+
+*Closure under minimalization*:
+
+
+
+
+## 3.17 Multiple Fixedpoint Theorem
+
+Suppose we have two functions `F_1` and `F_2` and we want to find
+
+```
+X_1 = F_1 X_1 X_2
+X_2 = F_2 X_1 X_2
+```
+
+Let `G` be `\ x. [ F_1 (x true) (x false), F_2 (x true) (x false)]`
+
+Then by the fixed point combinator:
+
+```
+YG = G
+YG = G(YG)
+```
+
+Substitituting,
+
+```
+YG = [ F_1 ((YG) true) ((YG) false), F_2 ((YG) true) ((YG) false)]
+```
+
+Let `X = YG`
+
+```
+X = [ F_1 (X true) (X false), F_2 (X true) (X false)]
+```
+
+Let `X_1 = (X true), X_2 = (X false)`
+
+```
+X = [ F_1 (X_1) (X_2), F_2 (X_1) (X_2)]
+X true = F_1 (X_1) (X_2)
+X false = F_2 (X_1) (X_2)]
+
+X_1 = F_1 (X_1) (X_2)
+X_2 = F_2 (X_1) (X_2)]
+```
+
+Notice that since `X_1 = X true` and `X_2 = X false`, `X` is equvalent
+to `[X_1, X_2]`.
+
+More usefully, for `F1, F2` we want a combinator `Y2` such that
+
+```
+Y2 F1 F2 = [X1, X2]
+```
+
+We can modify our `G` function from above:
+
+```
+G = \ x. [ F_1 (x true) (x false), F_2 (x true) (x false)]`
+
+Y2 = \ f1 f2 . Y (\ x. [ f2 (x true) (x false), f2 (x true) (x false)])`
+```
+
+```
+Y3 = \ f1 f2 f3. Y (\ x. [ f1 (x fst3) (x snd3) (x trd3)
+                         , f2 (x fst3) (x snd3) (x trd3)
+                         , f3 (x fst3) (x snd3) (x trd3)
+                         ]
+                   )
+```
+
 
 # 4 Reduction
+
+
 
 
 
