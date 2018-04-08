@@ -74,12 +74,9 @@ div#header {
     background: var(--base03);
 }
 
-div#header #navigation {
+div#header #navigation a{
     text-align: left;
     font-size: 16px;
-}
-
-div#header #navigation a {
     color: var(--base0);
     font-family: 'Helvetica', sans-serif;
     margin-left: 22px;
@@ -90,9 +87,6 @@ span#post--date {
   font-size: 12px;
 }
 
-div#title {
-
-}
 
 div#content {
   text-align:left;
@@ -157,15 +151,13 @@ div#content a{
 }
 
 div#footer {
+    width: 100%;
     color: var(-base0);
     font-size: 12px;
     text-align: left;
-    padding-left: 20px;
     background-color: var(--base03);
     position: absolute;
     bottom: 0;
-    width: 100%;
-    overflow: hidden;
     font-family: 'Helvetica', sans-serif;
 }
 
@@ -180,6 +172,7 @@ div.info {
     font-size: 14px;
     font-style: italic;
 }
+
 
 hr {
     display: block;

@@ -1,9 +1,6 @@
 ---
 title: John Chandler Burnham
 ---
-
-Welcome to my website!
-
 -----
 <p align="center">
 <img src="/images/profilepic.jpg"
@@ -12,7 +9,9 @@ width = 250px>
 </p>
 -----
 
-This is a work in progress right now, and I plan on
+Welcome to my website!
+
+This site is a work in progress right now. I plan on
 gradually adding some content, mainly focused on programming, math, philosophy
 and other interests of mine.
 

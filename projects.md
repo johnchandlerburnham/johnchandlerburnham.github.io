@@ -1,8 +1,7 @@
 ---
 title: Projects
 ---
-
----
+<hr>
 # Textbook Notes
 
 - [Haskell Programming from First Principles by Chris Allen & Julie Moronuki](/notes/hpfp/00.html)
