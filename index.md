@@ -5,7 +5,7 @@ title: John Chandler Burnham
 <p align="center">
 <img src="/images/profilepic.jpg"
 alt="John Chandler Burnham"
-width = 250px>
+width = 371px>
 </p>
 -----
 
