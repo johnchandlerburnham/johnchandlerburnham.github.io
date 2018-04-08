@@ -161,6 +161,10 @@ div#footer {
     font-family: 'Helvetica', sans-serif;
 }
 
+div#footer p {
+    margin-left: 22px;
+}
+
 div#footer a {
   color: #93a1a1;
   font-weight: bold;
@@ -172,7 +176,6 @@ div.info {
     font-size: 14px;
     font-style: italic;
 }
-
 
 hr {
     display: block;
