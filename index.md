@@ -17,7 +17,7 @@ and other interests of mine.
 
 # About Me
 
-  - Software Engineer in Boston, MA
+  - Software Engineer in Boston, MA, working for [Serokell OU](serokell.io)
 
   - Went to [Dartmouth College](http://www.dartmouth.edu), studied Math and CS, currently
     on a leave of absence.
