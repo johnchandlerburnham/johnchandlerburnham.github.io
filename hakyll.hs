@@ -1,8 +1,8 @@
 --------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
-import           Data.Monoid (mappend)
+import           Data.Monoid         (mappend)
+import qualified Data.Set            as S
 import           Hakyll
-import qualified Data.Set as S
 import           Text.Pandoc.Options
 
 --------------------------------------------------------------------------------
@@ -14,6 +14,7 @@ config = defaultConfiguration {
 
 main :: IO ()
 main = hakyllWith config $ do
+  let postPattern = ("posts/*" .||. "notes/*/*")
   match "images/*" $ do
     route   idRoute
     compile copyFileCompiler
@@ -28,8 +29,8 @@ main = hakyllWith config $ do
       >>= loadAndApplyTemplate "templates/default.html" defaultContext
       >>= relativizeUrls
 
-  tags <- buildTags "posts/*" (fromCapture "tags/*.html")
-  
+  tags <- buildTags postPattern (fromCapture "tags/*.html")
+
   tagsRules tags $ \tag pattern -> do
     let title = "Posts tagged \"" ++ tag ++ "\""
     route idRoute
@@ -43,7 +44,7 @@ main = hakyllWith config $ do
         >>= loadAndApplyTemplate "templates/default.html" ctx
         >>= relativizeUrls
 
-  match "posts/*" $ do
+  match postPattern $ do
     route $ setExtension "html"
     compile $ pandocMathCompiler
       >>= loadAndApplyTemplate "templates/post.html"    (postCtxWithTags tags)
@@ -53,10 +54,10 @@ main = hakyllWith config $ do
   create ["posts.html"] $ do
     route idRoute
     compile $ do
-      posts <- recentFirst =<< loadAll "posts/*"
+      posts <- recentFirst =<< loadAll postPattern
       let archiveCtx =
               listField "posts" (postCtxWithTags tags) (return posts) `mappend`
-              constField "title" "Archives"            `mappend`
+              constField "title" "Posts"            `mappend`
               defaultContext
       makeItem ""
         >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
@@ -81,13 +82,9 @@ pandocMathCompiler =
                           Ext_latex_macros]
         defaultExtensions = writerExtensions defaultHakyllWriterOptions
         newExtensions = foldr S.insert defaultExtensions mathExtensions
-        writerOptions = 
-          defaultHakyllWriterOptions {
-            writerTableOfContents = True,
-            writerTOCDepth = 3,
-            writerTemplate = 
-              Just "<hr>\n<h2>Contents</h2>\n$toc$\n<hr>\n$body$",
-            writerExtensions = newExtensions,
-            writerHTMLMathMethod = MathJax ""
+        writerOptions = defaultHakyllWriterOptions
+          { writerTableOfContents = False
+          , writerExtensions = newExtensions
+          , writerHTMLMathMethod = MathJax ""
           }
     in pandocCompilerWith defaultHakyllReaderOptions writerOptions

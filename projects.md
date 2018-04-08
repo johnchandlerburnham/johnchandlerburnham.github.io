@@ -2,12 +2,10 @@
 title: Projects
 ---
 
-# Workthroughs
+---
+# Textbook Notes
 
-## Functional Programming
-
-- [Workthrough: Haskell Programming from First
-  Principles](posts/workthrough-hpfp.html)
-- [Workthrough: A Tutorial Introduction to the Lambda Calculus (Rojas)](
-  posts/workthrough-lambda-calculus-rojas.html)
-- [Workthrough: Intro to Lambda Calculus (Barendregt & Barendsen)](http://localhost:8000/posts/workthrough-lambda-calculus-barendregt-barendsen.html)
+- [Haskell Programming from First Principles by Chris Allen & Julie Moronuki](/notes/hpfp/00.html)
+- [Category Theory for Programmers by Bartosz Milewski](/notes/ctfp/00.html)
+- [A Tutorial Introduction to the Lambda Calculus by Raul Rojas](/notes/tilc/00.html)
+- [Introduction to Lambda Calculus by Henk Barendregt & Erik Barendsen](/notes/lcbb/00.html)
