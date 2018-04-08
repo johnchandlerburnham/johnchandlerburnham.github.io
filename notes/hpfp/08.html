@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (HPFP 08/31): Recursion</title>
+        <link rel="stylesheet" type="text/css" href="../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../">jcb</a>
+                <a href="../../posts.html">posts</a>
+                <a href="../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+            </div>
+        </div>
+        <div id="content">
+          <div id="title">
+            <h1>Notes (HPFP 08/31): Recursion</h1>
+          </div>
+          <div class="info">
+    Posted on November  1, 2017
+    
+        by jcb
+    
+</div>
+<div class="info">
+    
+    Tags: <a href="../../tags/hpfp.html">hpfp</a>, <a href="../../tags/notes.html">notes</a>, <a href="../../tags/haskell.html">haskell</a>
+    
+</div>
+
+<hr>
+
+<h1 id="recursion">8 Recursion</h1>
+<h2 id="factorial">8.2 Factorial</h2>
+<h2 id="intermission-exercise">Intermission: Exercise</h2>
+<pre><code>applyTimes 5 (+1) 5</code></pre>
+<p>turns into</p>
+<pre><code>((+1) . (+1) . (+1) . (+1) . (+1)) 5</code></pre>
+<h2 id="chapter-exercises">8.6 Chapter Exercises</h2>
+<h3 id="review-of-types">Review of types</h3>
+<ol style="list-style-type: decimal">
+<li>d</li>
+<li>b</li>
+<li>d</li>
+<li>b</li>
+</ol>
+<h3 id="reviewing-currying">Reviewing currying</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">flippy ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
+<span class="ot">appedCatty ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
+<span class="ot">frappe ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></code></pre></div>
+<ol style="list-style-type: decimal">
+<li><code>&quot;woops mrow woohoo&quot;</code></li>
+<li><code>&quot;1 mrow haha&quot;</code></li>
+<li><code>&quot;woops mrow 2 mrow haha&quot;</code></li>
+<li><code>&quot;woops mrow blue mrow haha&quot;</code></li>
+<li><code>&quot;pink mrow haha mrow green mrow woops mrow blue&quot;</code></li>
+<li><code>&quot;are mrow Pugs mrow awesome&quot;</code></li>
+</ol>
+<h3 id="recursion-1">Recursion</h3>
+<ol style="list-style-type: decimal">
+<li><pre><code>dividedBy 15 2 -&gt;
+go 15 2 0 -&gt;
+go 13 2 1 -&gt;
+go 11 2 2 -&gt;
+go 9 2 3 -&gt;
+go 7 2 4 -&gt;
+go 5 2 5 -&gt;
+go 3 2 6 -&gt;
+go 1 2 7 -&gt;
+(7, 1)</code></pre></li>
+<li><div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- 08/rsum.hs</span>
+<span class="ot">rsum ::</span> (<span class="dt">Eq</span> a, <span class="dt">Num</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a
+rsum n <span class="fu">=</span> go n <span class="dv">0</span>
+  <span class="kw">where</span>
+    go n c
+     <span class="fu">|</span> n <span class="fu">==</span> <span class="dv">0</span> <span class="fu">=</span> c
+     <span class="fu">|</span> otherwise <span class="fu">=</span> go (n <span class="fu">-</span> <span class="dv">1</span>) (c <span class="fu">+</span> n)</code></pre></div></li>
+<li><div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- 08/rmult.hs</span>
+<span class="ot">rmult ::</span> (<span class="dt">Integral</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a
+rmult a b <span class="fu">=</span> go a b <span class="dv">0</span>
+  <span class="kw">where</span>
+    go a b c
+     <span class="fu">|</span> b <span class="fu">==</span> <span class="dv">0</span> <span class="fu">=</span> c
+     <span class="fu">|</span> otherwise <span class="fu">=</span> go a (b <span class="fu">-</span> <span class="dv">1</span>) (c <span class="fu">+</span> a)</code></pre></div></li>
+</ol>
+<h3 id="fixing-dividedby">Fixing dividedBy:</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- 08/DividedBy.hs</span>
+<span class="kw">module</span> <span class="dt">DividedBy</span> <span class="kw">where</span>
+
+<span class="ot">unsafeDividedBy ::</span> <span class="dt">Integral</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> (a, a)
+unsafeDividedBy num denom <span class="fu">=</span> go num denom <span class="dv">0</span>
+  <span class="kw">where</span>
+    go n d count
+      <span class="fu">|</span> n <span class="fu">&lt;</span> d <span class="fu">=</span> (count, n)
+      <span class="fu">|</span> otherwise <span class="fu">=</span> go (n <span class="fu">-</span> d) d (count <span class="fu">+</span> <span class="dv">1</span>)
+
+<span class="co">-- div throws an exception on zero</span>
+<span class="ot">partialDividedBy ::</span> <span class="dt">Integral</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> (a, a)
+partialDividedBy num denom <span class="fu">=</span> go num denom <span class="dv">0</span>
+  <span class="kw">where</span>
+    go n d count
+      <span class="fu">|</span> n <span class="fu">&lt;</span> d <span class="fu">=</span> (count, n)
+      <span class="fu">|</span> d <span class="fu">&lt;</span> <span class="dv">0</span> <span class="fu">=</span> go n (negate d) count
+      <span class="fu">|</span> d <span class="fu">==</span> <span class="dv">0</span> <span class="fu">=</span> error <span class="fu">$</span> <span class="st">&quot;can't div by zero&quot;</span>
+      <span class="fu">|</span> otherwise <span class="fu">=</span> go (n <span class="fu">-</span> d) d (count <span class="fu">+</span> <span class="dv">1</span>)
+
+
+<span class="kw">data</span> <span class="dt">DividedResult</span> <span class="fu">=</span> <span class="dt">Result</span> <span class="dt">Integer</span> <span class="fu">|</span> <span class="dt">DividedByZero</span> <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+<span class="co">-- equivalent to Maybe Integer</span>
+
+<span class="ot">dividedBy ::</span> <span class="dt">Integral</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a<span class="ot">-&gt;</span> <span class="dt">DividedResult</span>
+dividedBy num denom <span class="fu">=</span> go num denom <span class="dv">0</span>
+  <span class="kw">where</span>
+    resNeg (<span class="dt">Result</span> x) <span class="fu">=</span> <span class="dt">Result</span> (negate x)
+    go n d count
+      <span class="fu">|</span> d <span class="fu">==</span> <span class="dv">0</span> <span class="fu">=</span> <span class="dt">DividedByZero</span>
+      <span class="fu">|</span> d <span class="fu">&lt;</span> <span class="dv">0</span> <span class="fu">=</span> resNeg <span class="fu">$</span> go n (negate d) count
+      <span class="fu">|</span> n <span class="fu">&lt;</span> <span class="dv">0</span> <span class="fu">=</span> resNeg <span class="fu">$</span> go (negate n) d count
+      <span class="fu">|</span> n <span class="fu">&lt;</span> d <span class="fu">=</span> <span class="dt">Result</span> count
+      <span class="fu">|</span> otherwise <span class="fu">=</span> go (n <span class="fu">-</span> d) d (count <span class="fu">+</span> <span class="dv">1</span>)</code></pre></div>
+<h3 id="mccarthy-91-function">McCarthy 91 function:</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- 08/mccarthy91.hs</span>
+<span class="ot">mc91 ::</span> <span class="dt">Integral</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a
+mc91 n
+  <span class="fu">|</span> n <span class="fu">&gt;</span> <span class="dv">100</span> <span class="fu">=</span> n <span class="fu">-</span> <span class="dv">10</span>
+  <span class="fu">|</span> otherwise <span class="fu">=</span> (mc91 <span class="fu">.</span> mc91) (n <span class="fu">+</span> <span class="dv">11</span>)</code></pre></div>
+<h3 id="numbers-into-words">Numbers into Words:</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- 08/WordNumber.hs</span>
+<span class="kw">module</span> <span class="dt">WordNumber</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Data.List</span> (intersperse)
+
+<span class="ot">digitToWord ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
+digitToWord x <span class="fu">=</span>
+  <span class="kw">case</span> x <span class="kw">of</span>
+    <span class="dv">1</span> <span class="ot">-&gt;</span> <span class="st">&quot;one&quot;</span>
+    <span class="dv">2</span> <span class="ot">-&gt;</span> <span class="st">&quot;two&quot;</span>
+    <span class="dv">3</span> <span class="ot">-&gt;</span> <span class="st">&quot;three&quot;</span>
+    <span class="dv">4</span> <span class="ot">-&gt;</span> <span class="st">&quot;four&quot;</span>
+    <span class="dv">5</span> <span class="ot">-&gt;</span> <span class="st">&quot;five&quot;</span>
+    <span class="dv">6</span> <span class="ot">-&gt;</span> <span class="st">&quot;six&quot;</span>
+    <span class="dv">7</span> <span class="ot">-&gt;</span> <span class="st">&quot;seven&quot;</span>
+    <span class="dv">8</span> <span class="ot">-&gt;</span> <span class="st">&quot;eight&quot;</span>
+    <span class="dv">9</span> <span class="ot">-&gt;</span> <span class="st">&quot;nine&quot;</span>
+    <span class="dv">0</span> <span class="ot">-&gt;</span> <span class="st">&quot;zero&quot;</span>
+    _ <span class="ot">-&gt;</span> <span class="st">&quot;NaD&quot;</span>
+
+<span class="ot">digits ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> [<span class="dt">Int</span>]
+digits n <span class="fu">=</span> go n []
+  <span class="kw">where</span> go n d
+          <span class="fu">|</span> n <span class="fu">&lt;</span> <span class="dv">10</span> <span class="fu">=</span> n<span class="fu">:</span>d
+          <span class="fu">|</span> n <span class="fu">&gt;=</span> <span class="dv">10</span> <span class="fu">=</span> go (n <span class="ot">`div`</span> <span class="dv">10</span>) <span class="fu">$</span> (n <span class="ot">`mod`</span> <span class="dv">10</span>)<span class="fu">:</span>d
+
+<span class="ot">wordNumber ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
+wordNumber n <span class="fu">=</span> concat <span class="fu">$</span> intersperse <span class="st">&quot;-&quot;</span> <span class="fu">$</span> map digitToWord <span class="fu">$</span> digits n</code></pre></div>
+<hr />
+
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (HPFP 20/31): Foldable</title>
+        <link rel="stylesheet" type="text/css" href="../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../">jcb</a>
+                <a href="../../posts.html">posts</a>
+                <a href="../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+            </div>
+        </div>
+        <div id="content">
+          <div id="title">
+            <h1>Notes (HPFP 20/31): Foldable</h1>
+          </div>
+          <div class="info">
+    Posted on November  1, 2017
+    
+        by jcb
+    
+</div>
+<div class="info">
+    
+    Tags: <a href="../../tags/notes.html">notes</a>, <a href="../../tags/haskell.html">haskell</a>, <a href="../../tags/hpfp.html">hpfp</a>
+    
+</div>
+
+<hr>
+
+<h1 id="foldable">20 Foldable</h1>
+<h2 id="some-basic-derived-operations">20.5 Some basic derived operations</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--20/LibraryFunctions.hs</span>
+<span class="kw">module</span> <span class="dt">LibraryFunctions</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Prelude</span> <span class="kw">hiding</span>
+  (sum, product, elem, minimum, maximum, null, length)
+<span class="kw">import </span><span class="dt">Data.Foldable</span> <span class="kw">hiding</span>
+  (sum, product, elem, minimum, maximum, null, length, toList, fold)
+<span class="kw">import </span><span class="dt">Data.Monoid</span>
+
+<span class="co">-- 1</span>
+<span class="ot">sum' ::</span> (<span class="dt">Foldable</span> t, <span class="dt">Num</span> a) <span class="ot">=&gt;</span> t a <span class="ot">-&gt;</span> a
+sum' xs <span class="fu">=</span> foldr (<span class="fu">+</span>) <span class="dv">0</span> xs
+
+sum<span class="ot"> ::</span> (<span class="dt">Foldable</span> t, <span class="dt">Num</span> a) <span class="ot">=&gt;</span> t a <span class="ot">-&gt;</span> a
+sum xs <span class="fu">=</span> getSum <span class="fu">$</span> foldMap <span class="dt">Sum</span> xs
+
+<span class="co">-- 2</span>
+<span class="ot">product' ::</span> (<span class="dt">Foldable</span> t, <span class="dt">Num</span> a) <span class="ot">=&gt;</span> t a <span class="ot">-&gt;</span> a
+product' xs <span class="fu">=</span> foldr (<span class="fu">*</span>) <span class="dv">1</span> xs
+
+<span class="ot">product2 ::</span> (<span class="dt">Foldable</span> t, <span class="dt">Num</span> a) <span class="ot">=&gt;</span> t a <span class="ot">-&gt;</span> a
+product2 xs <span class="fu">=</span> getSum <span class="fu">$</span> foldMap <span class="dt">Sum</span> xs
+
+<span class="co">-- 3</span>
+elem<span class="ot"> ::</span> (<span class="dt">Foldable</span> t, <span class="dt">Eq</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+elem x xs <span class="fu">=</span> foldr ((<span class="fu">||</span>) <span class="fu">.</span> (<span class="fu">==</span> x)) <span class="dt">False</span> xs
+
+<span class="ot">elem2 ::</span> (<span class="dt">Foldable</span> t, <span class="dt">Eq</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+elem2 x xs <span class="fu">=</span> getAny <span class="fu">$</span> foldMap (<span class="dt">Any</span> <span class="fu">.</span> (<span class="fu">==</span> x)) xs
+
+<span class="co">-- 4</span>
+<span class="kw">newtype</span> <span class="dt">Least</span> a <span class="fu">=</span> <span class="dt">Least</span> {<span class="ot"> getLeast ::</span> <span class="dt">Maybe</span> a } <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Ord</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> <span class="dt">Ord</span> a <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Least</span> a) <span class="kw">where</span>
+  mempty <span class="fu">=</span> <span class="dt">Least</span> <span class="dt">Nothing</span>
+  mappend (<span class="dt">Least</span> <span class="dt">Nothing</span>) a <span class="fu">=</span> a
+  mappend a (<span class="dt">Least</span> <span class="dt">Nothing</span>) <span class="fu">=</span> a
+  mappend (<span class="dt">Least</span> (<span class="dt">Just</span> a)) (<span class="dt">Least</span> (<span class="dt">Just</span> b)) <span class="fu">=</span> <span class="dt">Least</span> (<span class="dt">Just</span> (min a b))
+
+
+minimum<span class="ot"> ::</span> (<span class="dt">Foldable</span> t, <span class="dt">Ord</span> a) <span class="ot">=&gt;</span> t a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a
+minimum xs <span class="fu">=</span> getLeast <span class="fu">$</span> foldMap (<span class="dt">Least</span> <span class="fu">.</span> <span class="dt">Just</span>) xs
+
+<span class="co">-- 5</span>
+<span class="kw">newtype</span> <span class="dt">Most</span> a <span class="fu">=</span> <span class="dt">Most</span> {<span class="ot"> getMost ::</span> <span class="dt">Maybe</span> a } <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Ord</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> <span class="dt">Ord</span> a <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Most</span> a) <span class="kw">where</span>
+  mempty <span class="fu">=</span> <span class="dt">Most</span> <span class="dt">Nothing</span>
+  mappend (<span class="dt">Most</span> <span class="dt">Nothing</span>) a <span class="fu">=</span> a
+  mappend a (<span class="dt">Most</span> <span class="dt">Nothing</span>) <span class="fu">=</span> a
+  mappend (<span class="dt">Most</span> (<span class="dt">Just</span> a)) (<span class="dt">Most</span> (<span class="dt">Just</span> b)) <span class="fu">=</span> <span class="dt">Most</span> (<span class="dt">Just</span> (max a b))
+
+maximum<span class="ot"> ::</span> (<span class="dt">Foldable</span> t, <span class="dt">Ord</span> a) <span class="ot">=&gt;</span> t a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a
+maximum xs <span class="fu">=</span> getMost <span class="fu">$</span> foldMap (<span class="dt">Most</span> <span class="fu">.</span> <span class="dt">Just</span>) xs
+
+<span class="co">-- 6</span>
+<span class="kw">newtype</span> <span class="dt">Null</span> a <span class="fu">=</span> <span class="dt">Null</span> {<span class="ot">getNull ::</span> <span class="dt">Bool</span>} <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> <span class="dt">Monoid</span> (<span class="dt">Null</span> a) <span class="kw">where</span>
+  mempty <span class="fu">=</span> <span class="dt">Null</span> <span class="dt">True</span>
+  mappend (<span class="dt">Null</span> <span class="dt">True</span>) (<span class="dt">Null</span> <span class="dt">True</span>) <span class="fu">=</span> <span class="dt">Null</span> <span class="dt">True</span>
+  mappend _ _ <span class="fu">=</span> <span class="dt">Null</span> <span class="dt">False</span>
+
+null<span class="ot"> ::</span> (<span class="dt">Foldable</span> t) <span class="ot">=&gt;</span> t a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+null xs <span class="fu">=</span> getNull <span class="fu">$</span> foldMap (<span class="dt">Null</span> <span class="fu">.</span> (const <span class="dt">False</span>)) xs
+
+<span class="co">-- 7</span>
+<span class="kw">newtype</span> <span class="dt">Long</span> a <span class="fu">=</span> <span class="dt">Long</span> {<span class="ot">getLong ::</span> <span class="dt">Int</span>} <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> <span class="dt">Monoid</span> (<span class="dt">Long</span> a) <span class="kw">where</span>
+  mempty <span class="fu">=</span> <span class="dt">Long</span> <span class="dv">0</span>
+  mappend (<span class="dt">Long</span> a) (<span class="dt">Long</span> b) <span class="fu">=</span> <span class="dt">Long</span> (a <span class="fu">+</span> b)
+
+length<span class="ot"> ::</span> (<span class="dt">Foldable</span> t) <span class="ot">=&gt;</span> t a <span class="ot">-&gt;</span> <span class="dt">Int</span>
+length xs <span class="fu">=</span> getLong <span class="fu">$</span> foldMap (<span class="dt">Long</span> <span class="fu">.</span> (const <span class="dv">1</span>)) xs
+
+<span class="co">-- 8</span>
+<span class="ot">toList ::</span> (<span class="dt">Foldable</span> t) <span class="ot">=&gt;</span> t a <span class="ot">-&gt;</span> [a]
+toList xs <span class="fu">=</span> foldMap (<span class="fu">:</span>[]) xs
+
+<span class="co">-- 9</span>
+<span class="ot">fold ::</span> (<span class="dt">Foldable</span> t, <span class="dt">Monoid</span> m) <span class="ot">=&gt;</span> t m <span class="ot">-&gt;</span> m
+fold xs <span class="fu">=</span> foldMap id xs
+
+<span class="co">-- 10</span>
+<span class="ot">foldMap' ::</span> (<span class="dt">Foldable</span> t, <span class="dt">Monoid</span> m) <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> m) <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> m
+foldMap' f xs <span class="fu">=</span> foldr ((<span class="fu">&lt;&gt;</span>) <span class="fu">.</span> f mempty xs</code></pre></div>
+<h2 id="chapter-exercises">20.6 Chapter Exercises</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--20/ChapterExercises.hs</span>
+<span class="kw">module</span> <span class="dt">ChapterExercises</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Data.Foldable</span>
+<span class="kw">import </span><span class="dt">Data.Monoid</span>
+
+<span class="co">-- 1</span>
+<span class="kw">data</span> <span class="dt">Constant</span> a b <span class="fu">=</span> <span class="dt">Constant</span> b <span class="kw">deriving</span> <span class="dt">Show</span>
+
+<span class="kw">instance</span> <span class="dt">Foldable</span> (<span class="dt">Constant</span> a) <span class="kw">where</span>
+  foldMap _ _ <span class="fu">=</span> mempty
+
+<span class="co">-- 2</span>
+<span class="kw">data</span> <span class="dt">Two</span> a b <span class="fu">=</span> <span class="dt">Two</span> a b
+
+<span class="kw">instance</span> <span class="dt">Foldable</span> (<span class="dt">Two</span> a) <span class="kw">where</span>
+  foldMap f (<span class="dt">Two</span> a b) <span class="fu">=</span> f b
+
+<span class="co">-- 3</span>
+<span class="kw">data</span> <span class="dt">Three</span> a b c <span class="fu">=</span> <span class="dt">Three</span> a b c
+
+<span class="kw">instance</span> <span class="dt">Foldable</span> (<span class="dt">Three</span> a b) <span class="kw">where</span>
+  foldMap f (<span class="dt">Three</span> a b c) <span class="fu">=</span> f c
+
+<span class="co">-- 4</span>
+<span class="kw">data</span> <span class="dt">Three'</span> a b <span class="fu">=</span> <span class="dt">Three'</span> a b b
+
+<span class="kw">instance</span> <span class="dt">Foldable</span> (<span class="dt">Three'</span> a) <span class="kw">where</span>
+  foldMap f (<span class="dt">Three'</span> a b c) <span class="fu">=</span> (f b) <span class="fu">&lt;&gt;</span> (f c)
+
+<span class="co">-- 5</span>
+<span class="kw">data</span> <span class="dt">Four'</span> a b <span class="fu">=</span> <span class="dt">Four'</span> a b b b
+
+<span class="kw">instance</span> <span class="dt">Foldable</span> (<span class="dt">Four'</span> a) <span class="kw">where</span>
+  foldMap f (<span class="dt">Four'</span> a b c d) <span class="fu">=</span> (f b) <span class="fu">&lt;&gt;</span> (f c) <span class="fu">&lt;&gt;</span> (f d)
+
+
+<span class="co">--- filterF</span>
+<span class="ot">filterF ::</span> (<span class="dt">Applicative</span> f, <span class="dt">Foldable</span> t, <span class="dt">Monoid</span> (f a))
+           <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> f a
+filterF f xs <span class="fu">=</span> foldMap (g f) xs <span class="kw">where</span>
+  g f a <span class="fu">=</span> <span class="kw">if</span> f a <span class="kw">then</span> pure a <span class="kw">else</span> mempty</code></pre></div>
+<h2 id="follow-up-resources">20.7 Follow-up resources</h2>
+<ol style="list-style-type: decimal">
+<li>Jakub Arnold; Foldable and Traversable.</li>
+</ol>
+<hr />
+
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>

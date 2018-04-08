@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes: Haskell Programming from First Principles by Chris Allen & Julie Moronuki</title>
+        <link rel="stylesheet" type="text/css" href="../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../">jcb</a>
+                <a href="../../posts.html">posts</a>
+                <a href="../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+            </div>
+        </div>
+        <div id="content">
+          <div id="title">
+            <h1>Notes: Haskell Programming from First Principles by Chris Allen & Julie Moronuki</h1>
+          </div>
+          <div class="info">
+    Posted on November  1, 2017
+    
+        by jcb
+    
+</div>
+<div class="info">
+    
+    Tags: <a href="../../tags/hpfp.html">hpfp</a>, <a href="../../tags/notes.html">notes</a>, <a href="../../tags/haskell.html">haskell</a>
+    
+</div>
+
+<hr>
+
+<h1 id="contents">Contents</h1>
+<ul>
+<li><a href="../../notes/hpfp/01.html">Chapter 01: All You Need is Lambda</a></li>
+<li><a href="../../notes/hpfp/02.html">Chapter 02: Hello, Haskell!</a></li>
+<li><a href="../../notes/hpfp/03.html">Chapter 03: Strings</a></li>
+<li><a href="../../notes/hpfp/04.html">Chapter 04: Basic Datatypes</a></li>
+<li><a href="../../notes/hpfp/05.html">Chapter 05: Types</a></li>
+<li><a href="../../notes/hpfp/06.html">Chapter 06: Typeclasses</a></li>
+<li><a href="../../notes/hpfp/07.html">Chapter 07: More functional patterns</a></li>
+<li><a href="../../notes/hpfp/01.html">Chapter 08: Recursion</a></li>
+<li><a href="../../notes/hpfp/09.html">Chapter 09: Lists</a></li>
+<li><a href="../../notes/hpfp/10.html">Chapter 10: Folding lists</a></li>
+<li><a href="../../notes/hpfp/11.html">Chapter 11: Algebraic datatypes</a></li>
+<li><a href="../../notes/hpfp/12.html">Chapter 12: Signaling adversity</a></li>
+<li><a href="../../notes/hpfp/13.html">Chapter 13: Building Projects</a></li>
+<li><a href="../../notes/hpfp/14.html">Chapter 14: Testing</a></li>
+<li><a href="../../notes/hpfp/15.html">Chapter 15: Monoid, Semigroup</a></li>
+<li><a href="../../notes/hpfp/16.html">Chapter 16: Functor</a></li>
+<li><a href="../../notes/hpfp/17.html">Chapter 17: Applicative</a></li>
+<li><a href="../../notes/hpfp/18.html">Chapter 18: Monad</a></li>
+<li><a href="../../notes/hpfp/19.html">Chapter 19: Applying Structure</a></li>
+<li><a href="../../notes/hpfp/20.html">Chapter 20: Foldable</a></li>
+<li><a href="../../notes/hpfp/21.html">Chapter 21: Traversable</a></li>
+<li><a href="../../notes/hpfp/22.html">Chapter 22: Reader</a></li>
+<li>Chapter 23: State</li>
+<li>Chapter 24: Parser Combinators</li>
+<li>Chapter 25: Composing types</li>
+<li>Chapter 26: Monad transformers</li>
+<li>Chapter 27: Nonstrictness</li>
+<li>Chapter 28: Basic libraries</li>
+<li>Chapter 29: IO</li>
+<li>Chapter 30: When things go wrong</li>
+<li>Chapter 31: Final project</li>
+</ul>
+<h1 id="preliminary-remarks">Preliminary Remarks</h1>
+<p>This page contains my notes and exercise solutions for the text “Haskell Programming From First Principles” by Chris Allen and Julie Moronuki.</p>
+<p>Brief review: I love this book. I love Haskell. I worry this book has been so good at teaching me Haskell that I love other languages less by comparison. The book’s philosophy of “Let’s break complicated topics down into simple pieces, and then play with the pieces until they become obvious.” is so effective, that I’m going to just reflexively hold every other CS book to the same standard from now on. This is going to leave me very disappointed, considering that most other programming books don’t come anywhere near this fun.</p>
+<p>Okay, maybe that’s a little hyperbolic. I don’t want to give the impression that HPFP is a text without flaws. In my notes on the rest of this page, I imagine I’ll be going into those flaws at some point. But before I do I want to make it perfectly clear that this book is spectacular and any criticism of mine is made with the greatest possible love and affection.</p>
+<p>I deeply admire what Julie Moronuki and Chris Allen have accomplished here, and I encourage anyone interested in programming to buy a copy at <a href="www.haskellbook.com" class="uri">www.haskellbook.com</a>. I am also eagerly awaiting Julie’s upcoming book <a href="https://joyofhaskell.com/">The Joy of Haskell</a> and Chris’ <a href="https://lorepub.com/product/cookbook">Haskell Almanac</a>.</p>
+<p>Before we get started, a little housekeeping: This page contains notes and solutions, but it is not a Haskell tutorial in its own right. My intended reader is someone who has already bought HPFP and maybe wants to check their own work against someone else’s.</p>
+<p>Also, each chapter of HPFP has a list follow-up resources at the end. In my chapter notes, I’ll link to separate posts containing my notes on each of these resources.</p>
+<p>Lastly, my GitHub repository containing my solutions for HPFP is <a href="https://github.com/johnchandlerburnham/haskellbook">here</a>. While this page is marked <strong>Work In Progress</strong>, I make no guarantees as to whether the code there matches the code here. But I do plan on bringing them into alignment ultimately.</p>
+
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>

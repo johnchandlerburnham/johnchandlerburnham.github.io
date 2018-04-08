@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (HPFP 10/31): Folding Lists</title>
+        <link rel="stylesheet" type="text/css" href="../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../">jcb</a>
+                <a href="../../posts.html">posts</a>
+                <a href="../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+            </div>
+        </div>
+        <div id="content">
+          <div id="title">
+            <h1>Notes (HPFP 10/31): Folding Lists</h1>
+          </div>
+          <div class="info">
+    Posted on November  1, 2017
+    
+        by jcb
+    
+</div>
+<div class="info">
+    
+    Tags: <a href="../../tags/hpfp.html">hpfp</a>, <a href="../../tags/notes.html">notes</a>, <a href="../../tags/haskell.html">haskell</a>
+    
+</div>
+
+<hr>
+
+<h1 id="folding-lists">10 Folding lists</h1>
+<p>Okay, so here’s the thing about the term “catamorphism”:</p>
+<p>“Kata” in Greek means “down”. The opposite of “kata” is “ana” which means “up”.</p>
+<p>So we have “catamorphisms” and “anamorphisms”. Remember that “morph” means “form”, so a “catamorphism” is a “down-form thing” and an “anamorphism” is an “up-form thing”.</p>
+<p>But what the heck do “up” and “down” have to do with “forms”. There’s a metaphor that recurs (so to speak) again and again in functional programming between height and complexity: Things that have more structure are upwards and things that have less structure are downwards. It’s like a tall building: the more structure you have the higher you go.</p>
+<p>So an <code>Integer</code> is pretty simple, and is downwards of <code>[Integer]</code> or <code>Maybe Integer</code> or <code>Map String Integer</code>.</p>
+<p>Functions that go “upwards” in this complexity-space, like from <code>Integer -&gt; [Integer]</code> are, roughly speaking, anamorphisms. Functions that go “downwards” are catamorphisms.</p>
+<h2 id="fold-right">10.4 Fold right</h2>
+<h3 id="exercises-understanding-folds">Exercises: Understanding folds</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Folds</span> <span class="kw">where</span>
+
+<span class="co">-- 1:</span>
+one <span class="fu">=</span> (<span class="fu">==</span>) (foldr (<span class="fu">*</span>) <span class="dv">1</span> [<span class="dv">1</span><span class="fu">..</span><span class="dv">5</span>]) (foldl (<span class="fu">*</span>) <span class="dv">1</span> [<span class="dv">1</span><span class="fu">..</span><span class="dv">5</span>])
+
+<span class="co">-- 2</span>
+two <span class="fu">=</span> scanl (flip (<span class="fu">*</span>)) <span class="dv">1</span> [<span class="dv">1</span><span class="fu">..</span><span class="dv">3</span>]
+
+<span class="co">--3: c</span>
+
+<span class="co">--4: reduce structure</span>
+
+<span class="co">--5</span>
+fiveA <span class="fu">=</span> foldr (<span class="fu">++</span>) <span class="st">&quot;&quot;</span> [<span class="st">&quot;woot&quot;</span>, <span class="st">&quot;WOOT&quot;</span>, <span class="st">&quot;woot&quot;</span>]
+fiveB <span class="fu">=</span> foldr max <span class="ch">'a'</span> <span class="st">&quot;fear is the little death&quot;</span>
+fiveC <span class="fu">=</span> foldr (<span class="fu">&amp;&amp;</span>) <span class="dt">True</span> [<span class="dt">False</span>, <span class="dt">True</span>]
+fiveD <span class="fu">=</span> foldr (<span class="fu">||</span>) <span class="dt">True</span> [<span class="dt">False</span>, <span class="dt">True</span>]
+fiveE <span class="fu">=</span> foldr ((<span class="fu">++</span>) <span class="fu">.</span> show) <span class="st">&quot;&quot;</span> [<span class="dv">1</span><span class="fu">..</span><span class="dv">5</span>]
+fiveF <span class="fu">=</span> foldl const <span class="ch">'a'</span>  [<span class="dv">1</span><span class="fu">..</span><span class="dv">5</span>]
+fiveG <span class="fu">=</span> foldl const <span class="dv">0</span> <span class="st">&quot;tacos&quot;</span>
+fiveH <span class="fu">=</span> foldr (flip const) <span class="dv">0</span> <span class="st">&quot;burritos&quot;</span>
+fiveI <span class="fu">=</span> foldr (flip const) <span class="ch">'z'</span> [<span class="dv">1</span><span class="fu">..</span><span class="dv">5</span>]</code></pre></div>
+<h3 id="exercises-database-processing">Exercises: Database Processing</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">DatabaseProcessing</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Data.Time</span>
+
+<span class="kw">data</span> <span class="dt">DatabaseItem</span> <span class="fu">=</span> <span class="dt">DbString</span> <span class="dt">String</span>
+                 <span class="fu">|</span> <span class="dt">DbNumber</span> <span class="dt">Integer</span>
+                 <span class="fu">|</span> <span class="dt">DbDate</span>   <span class="dt">UTCTime</span>
+                 <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Ord</span>, <span class="dt">Show</span>)
+
+<span class="ot">theDatabase ::</span> [<span class="dt">DatabaseItem</span>]
+theDatabase <span class="fu">=</span>
+ [ <span class="dt">DbDate</span> (<span class="dt">UTCTime</span>
+           (fromGregorian <span class="dv">1911</span> <span class="dv">5</span> <span class="dv">1</span>)
+           (secondsToDiffTime <span class="dv">34123</span>))
+ , <span class="dt">DbNumber</span> <span class="dv">9001</span>
+ , <span class="dt">DbString</span> <span class="st">&quot;Hello, World!&quot;</span>
+ , <span class="dt">DbDate</span> (<span class="dt">UTCTime</span>
+           (fromGregorian <span class="dv">1921</span> <span class="dv">5</span> <span class="dv">1</span>)
+           (secondsToDiffTime <span class="dv">34123</span>))
+ ]
+
+<span class="co">-- 1</span>
+<span class="ot">filterDbDate ::</span> [<span class="dt">DatabaseItem</span>] <span class="ot">-&gt;</span> [<span class="dt">UTCTime</span>]
+filterDbDate <span class="fu">=</span> map unpack <span class="fu">.</span> filter isADbDate <span class="kw">where</span>
+ isADbDate (<span class="dt">DbDate</span> _) <span class="fu">=</span> <span class="dt">True</span>
+ isADbDate _ <span class="fu">=</span> <span class="dt">False</span>
+ unpack (<span class="dt">DbDate</span> utc) <span class="fu">=</span> utc
+
+<span class="ot">filterDbDate2 ::</span> [<span class="dt">DatabaseItem</span>] <span class="ot">-&gt;</span> [<span class="dt">UTCTime</span>]
+filterDbDate2 <span class="fu">=</span> foldr unpackDate [] <span class="kw">where</span>
+ unpackDate (<span class="dt">DbDate</span> utc) acc <span class="fu">=</span> utc <span class="fu">:</span> acc
+ unpackDate _ acc <span class="fu">=</span> acc
+
+<span class="co">-- 2</span>
+<span class="ot">filterDbNumber ::</span> [<span class="dt">DatabaseItem</span>] <span class="ot">-&gt;</span> [<span class="dt">Integer</span>]
+filterDbNumber <span class="fu">=</span> foldr unpackNum [] <span class="kw">where</span>
+ unpackNum (<span class="dt">DbNumber</span> num) acc <span class="fu">=</span> num <span class="fu">:</span> acc
+ unpackNum _ acc <span class="fu">=</span> acc
+
+<span class="co">-- 3</span>
+<span class="ot">mostRecent ::</span> [<span class="dt">DatabaseItem</span>] <span class="ot">-&gt;</span> <span class="dt">UTCTime</span>
+mostRecent db <span class="fu">=</span> foldr compareDate base db <span class="kw">where</span>
+ compareDate (<span class="dt">DbDate</span> utc) acc <span class="fu">=</span> max utc acc
+ compareDate _ acc <span class="fu">=</span> acc
+ base <span class="fu">=</span> (filterDbDate2 db) <span class="fu">!!</span> <span class="dv">0</span>
+
+<span class="co">-- 4</span>
+<span class="ot">sumDb ::</span> [<span class="dt">DatabaseItem</span>] <span class="ot">-&gt;</span> <span class="dt">Integer</span>
+sumDb <span class="fu">=</span> foldr addNum <span class="dv">0</span> <span class="kw">where</span>
+ addNum (<span class="dt">DbNumber</span> int) acc <span class="fu">=</span> int <span class="fu">+</span> acc
+ addNum _ acc <span class="fu">=</span> acc
+
+<span class="co">-- 5</span>
+<span class="ot">avgDb ::</span> [<span class="dt">DatabaseItem</span>] <span class="ot">-&gt;</span> <span class="dt">Double</span>
+avgDb db <span class="fu">=</span> (fromIntegral <span class="fu">$</span> fst tup) <span class="fu">/</span> (fromIntegral <span class="fu">$</span> snd tup) <span class="kw">where</span>
+ tup <span class="fu">=</span> foldr addNum (<span class="dv">0</span>,<span class="dv">0</span>) db
+ addNum (<span class="dt">DbNumber</span> int) (num,den) <span class="fu">=</span> (int <span class="fu">+</span> num, den <span class="fu">+</span> <span class="dv">1</span>)
+ addNum _ acc <span class="fu">=</span> acc
+
+<span class="ot">avgDb2 ::</span> [<span class="dt">DatabaseItem</span>] <span class="ot">-&gt;</span> <span class="dt">Double</span>
+avgDb2 db <span class="fu">=</span> n <span class="fu">/</span> d <span class="kw">where</span>
+ n <span class="fu">=</span> (fromIntegral <span class="fu">$</span> sumDb db)
+ d <span class="fu">=</span> (fromIntegral <span class="fu">$</span> length <span class="fu">$</span> filterDbNumber db)</code></pre></div>
+<h2 id="scans">10.9 Scans</h2>
+<h3 id="scans-exercises">Scans Exercises</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Scans</span> <span class="kw">where</span>
+
+fibs <span class="fu">=</span> <span class="dv">1</span> <span class="fu">:</span> scanl (<span class="fu">+</span>) <span class="dv">1</span> fibs
+fibsN x <span class="fu">=</span> fibs <span class="fu">!!</span> x
+
+<span class="co">--1</span>
+fibsToN n <span class="fu">=</span> take n <span class="fu">$</span> fibs
+
+<span class="co">--2</span>
+fibsLessThan n <span class="fu">=</span> takeWhile (<span class="fu">&lt;</span> n) fibs
+
+<span class="co">--3</span>
+factorials <span class="fu">=</span> <span class="dv">1</span> <span class="fu">:</span> scanl ratio <span class="dv">1</span> factorials
+ <span class="kw">where</span> ratio m n <span class="fu">=</span> (m <span class="ot">`div`</span> n <span class="fu">+</span> <span class="dv">1</span>) <span class="fu">*</span> m
+
+factorials2 <span class="fu">=</span> scanl (<span class="fu">*</span>) <span class="dv">1</span> [<span class="dv">1</span><span class="fu">..</span>]
+lazyCaterers <span class="fu">=</span> scanl (<span class="fu">+</span>) <span class="dv">1</span> [<span class="dv">1</span><span class="fu">..</span>]</code></pre></div>
+<h2 id="chapter-exercises">10.10 Chapter Exercises</h2>
+<h3 id="warm-up-and-reveiw">Warm-up and reveiw</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--10/WarmUp.hs</span>
+<span class="kw">module</span> <span class="dt">WarmUp</span> <span class="kw">where</span>
+
+<span class="co">-- 1</span>
+stops <span class="fu">=</span> <span class="st">&quot;pbtdkg&quot;</span>
+vowels <span class="fu">=</span> <span class="st">&quot;aeiou&quot;</span>
+
+<span class="co">-- 1a</span>
+stopVowelStop <span class="fu">=</span> [(a, b, c) <span class="fu">|</span> a <span class="ot">&lt;-</span> stops, b <span class="ot">&lt;-</span> vowels, c <span class="ot">&lt;-</span> stops]
+
+<span class="co">-- 1b</span>
+pVowelStop <span class="fu">=</span> [(<span class="ch">'p'</span>, b, c) <span class="fu">|</span> b <span class="ot">&lt;-</span> vowels, c <span class="ot">&lt;-</span> stops]
+
+<span class="co">-- 1c</span>
+nouns <span class="fu">=</span> [<span class="st">&quot;cat&quot;</span>, <span class="st">&quot;dog&quot;</span>, <span class="st">&quot;ball&quot;</span>, <span class="st">&quot;box&quot;</span>]
+verbs <span class="fu">=</span> [<span class="st">&quot;throws&quot;</span>, <span class="st">&quot;catches&quot;</span>, <span class="st">&quot;jumps&quot;</span>, <span class="st">&quot;fetches&quot;</span>]
+
+nounVerbNoun <span class="fu">=</span>   [(a, b, c) <span class="fu">|</span> a <span class="ot">&lt;-</span> nouns, b <span class="ot">&lt;-</span> verbs, c <span class="ot">&lt;-</span> nouns]
+
+<span class="co">-- 2</span>
+seekritFunc x <span class="fu">=</span> div (sum (map length (words x))) (length (words x))
+
+<span class="co">-- function is average word length</span>
+<span class="ot">avgWordLength ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Int</span>
+avgWordLength x <span class="fu">=</span> div totalWordLengths numberOfWords
+ <span class="kw">where</span>
+   wordList <span class="fu">=</span> words x
+   numberOfWords <span class="fu">=</span> length wordList
+   wordLengths <span class="fu">=</span> map length wordList
+   totalWordLengths <span class="fu">=</span> sum wordLengths
+
+<span class="co">-- 3</span>
+<span class="ot">preciseAvgWordLength ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Double</span>
+preciseAvgWordLength x <span class="fu">=</span> totalWordLength <span class="fu">/</span> numberOfWords
+ <span class="kw">where</span>
+   totalWordLength <span class="fu">=</span> fromIntegral <span class="fu">$</span> sum <span class="fu">$</span> map length <span class="fu">$</span> words x
+   numberOfWords   <span class="fu">=</span> fromIntegral <span class="fu">$</span> length <span class="fu">$</span> words x</code></pre></div>
+<h3 id="rewriting-functions-using-folds">Rewriting functions using folds</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--10/FunctionsUsingFolds.hs</span>
+<span class="kw">module</span> <span class="dt">FunctionsUsingFolds</span> <span class="kw">where</span>
+
+<span class="ot">myAnd ::</span> [<span class="dt">Bool</span>] <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+myAnd <span class="fu">=</span> foldr (<span class="fu">&amp;&amp;</span>) <span class="dt">True</span>
+
+<span class="co">-- 1</span>
+<span class="ot">myOr ::</span> [<span class="dt">Bool</span>] <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+myOr <span class="fu">=</span> foldr (<span class="fu">||</span>) <span class="dt">False</span>
+
+<span class="co">-- 2</span>
+<span class="ot">myAny ::</span> (a <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+myAny f x <span class="fu">=</span> foldl check <span class="dt">False</span> x <span class="kw">where</span>
+ check x y <span class="fu">=</span> x <span class="fu">||</span> f y
+
+<span class="co">-- 3</span>
+
+<span class="ot">myElem ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+myElem x xs <span class="fu">=</span> myAny ((<span class="fu">==</span>) x) xs
+
+<span class="co">-- 4</span>
+<span class="ot">myReverse ::</span> [a] <span class="ot">-&gt;</span> [a]
+myReverse <span class="fu">=</span> foldl (flip (<span class="fu">:</span>)) []
+
+<span class="co">-- 5</span>
+<span class="ot">myMap ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [b]
+myMap f xs <span class="fu">=</span> foldr ((<span class="fu">:</span>) <span class="fu">.</span> f) [] xs
+
+<span class="co">-- 6</span>
+<span class="ot">myFilter ::</span> (a <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [a]
+myFilter f xs <span class="fu">=</span>  foldr g [] xs <span class="kw">where</span>
+ g x y <span class="fu">=</span> <span class="kw">if</span> (f x) <span class="kw">then</span> (x <span class="fu">:</span> y) <span class="kw">else</span> y
+
+<span class="co">-- 7</span>
+<span class="ot">squish ::</span> [[a]] <span class="ot">-&gt;</span> [a]
+squish <span class="fu">=</span> foldr (<span class="fu">++</span>) []
+
+<span class="co">-- 8</span>
+<span class="ot">squishMap ::</span> (a <span class="ot">-&gt;</span> [b]) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [b]
+squishMap f <span class="fu">=</span> foldr ((<span class="fu">++</span>) <span class="fu">.</span> f) []
+
+<span class="co">-- 9</span>
+<span class="ot">squishAgain ::</span> [[a]] <span class="ot">-&gt;</span> [a]
+squishAgain <span class="fu">=</span> squishMap id
+
+<span class="co">-- 10</span>
+<span class="ot">myMaximumBy ::</span> (a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Ordering</span>) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> a
+myMaximumBy ord xs <span class="fu">=</span> foldr1 g xs
+ <span class="kw">where</span> g x y <span class="fu">=</span> <span class="kw">if</span> (ord x y) <span class="fu">==</span> <span class="dt">GT</span> <span class="kw">then</span> x <span class="kw">else</span> y
+
+<span class="co">-- 11</span>
+<span class="ot">myMinimumBy ::</span> (a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Ordering</span>) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> a
+myMinimumBy ord xs <span class="fu">=</span> foldr1 g xs
+ <span class="kw">where</span> g x y <span class="fu">=</span> <span class="kw">if</span> (ord x y) <span class="fu">==</span> <span class="dt">LT</span> <span class="kw">then</span> x <span class="kw">else</span> y</code></pre></div>
+<h2 id="follow-up-resources">10.12 Follow-up resources</h2>
+<ol style="list-style-type: decimal">
+<li><p><a href="https://wiki.haskell.org/Fold">Haskell Wiki. Fold.</a></p></li>
+<li><p><a href="Programming%20using%20Haskell%20(1998).">Richard Bird. Sections 4.5 and 4.6 of Introduction to Functional</a></p></li>
+<li><p>Antoni Diller. Introduction to Haskell.</p></li>
+<li><p><a href="http://www.cs.nott.ac.uk/~gmh/fold.pdf">Graham Hutton. A tutorial on the universality and expressive- ness of fold.</a></p></li>
+</ol>
+<hr />
+
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>

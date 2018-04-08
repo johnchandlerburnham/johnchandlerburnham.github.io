@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (HPFP 14/31): Testing</title>
+        <link rel="stylesheet" type="text/css" href="../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../">jcb</a>
+                <a href="../../posts.html">posts</a>
+                <a href="../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+            </div>
+        </div>
+        <div id="content">
+          <div id="title">
+            <h1>Notes (HPFP 14/31): Testing</h1>
+          </div>
+          <div class="info">
+    Posted on November  1, 2017
+    
+        by jcb
+    
+</div>
+<div class="info">
+    
+    Tags: <a href="../../tags/notes.html">notes</a>, <a href="../../tags/haskell.html">haskell</a>, <a href="../../tags/hpfp.html">hpfp</a>
+    
+</div>
+
+<hr>
+
+<h1 id="testing">14 Testing</h1>
+<h2 id="intermission-short-exercise">Intermission: Short Exercise</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- /14/addition/Addition.hs</span>
+<span class="kw">module</span> <span class="dt">Addition</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Test.Hspec</span>
+<span class="kw">import </span><span class="dt">Test.QuickCheck</span>
+
+<span class="ot">main ::</span> <span class="dt">IO</span> ()
+main <span class="fu">=</span> hspec <span class="fu">$</span> <span class="kw">do</span>
+  describe <span class="st">&quot;Addition&quot;</span> <span class="fu">$</span> <span class="kw">do</span>
+    it <span class="st">&quot;1 + 1 is greater than 1&quot;</span> <span class="fu">$</span> <span class="kw">do</span>
+      (<span class="dv">1</span> <span class="fu">+</span> <span class="dv">1</span>) <span class="fu">&gt;</span> <span class="dv">1</span> <span class="ot">`shouldBe`</span> <span class="dt">True</span>
+    it <span class="st">&quot;2 + 2 is equal to 4&quot;</span> <span class="fu">$</span> <span class="kw">do</span>
+      <span class="dv">2</span> <span class="fu">+</span> <span class="dv">2</span> <span class="ot">`shouldBe`</span> <span class="dv">4</span>
+    it <span class="st">&quot;x + 1 is always greater than x&quot;</span> <span class="fu">$</span> <span class="kw">do</span>
+      property <span class="fu">$</span> \x <span class="ot">-&gt;</span> x <span class="fu">+</span> <span class="dv">1</span> <span class="fu">&gt;</span> (<span class="ot">x ::</span> <span class="dt">Int</span>)
+  describe <span class="st">&quot;Division&quot;</span> <span class="fu">$</span> <span class="kw">do</span>
+    it <span class="st">&quot;15 divided by 3 is 5&quot;</span> <span class="fu">$</span> <span class="kw">do</span>
+      dividedBy <span class="dv">15</span> <span class="dv">3</span> <span class="ot">`shouldBe`</span> (<span class="dv">5</span>, <span class="dv">0</span>)
+    it <span class="st">&quot;22 divided by 5 is 4 remainder 2&quot;</span> <span class="fu">$</span> <span class="kw">do</span>
+      dividedBy <span class="dv">22</span> <span class="dv">5</span> <span class="ot">`shouldBe`</span> (<span class="dv">4</span>, <span class="dv">2</span>)
+  describe <span class="st">&quot;Multiplication&quot;</span> <span class="fu">$</span> <span class="kw">do</span>
+    it <span class="st">&quot;1 * 1 is 1&quot;</span> <span class="fu">$</span> <span class="kw">do</span>
+      rMult <span class="dv">1</span> <span class="dv">1</span> <span class="ot">`shouldBe`</span> <span class="dv">1</span>
+    it <span class="st">&quot;2 * 2 is 4&quot;</span> <span class="fu">$</span> <span class="kw">do</span>
+      rMult <span class="dv">2</span> <span class="dv">2</span> <span class="ot">`shouldBe`</span> <span class="dv">4</span>
+    it <span class="st">&quot;2 * 0 is 0&quot;</span> <span class="fu">$</span> <span class="kw">do</span>
+      rMult <span class="dv">2</span> <span class="dv">0</span> <span class="ot">`shouldBe`</span> <span class="dv">0</span>
+    it <span class="st">&quot;0 * 2 is 0&quot;</span> <span class="fu">$</span> <span class="kw">do</span>
+      rMult <span class="dv">0</span> <span class="dv">2</span> <span class="ot">`shouldBe`</span> <span class="dv">0</span>
+    it <span class="st">&quot;0 * 0 is 0&quot;</span> <span class="fu">$</span> <span class="kw">do</span>
+      rMult <span class="dv">0</span> <span class="dv">0</span> <span class="ot">`shouldBe`</span> <span class="dv">0</span>
+    it <span class="st">&quot;3 * 4 is 12&quot;</span> <span class="fu">$</span> <span class="kw">do</span>
+      rMult <span class="dv">3</span> <span class="dv">4</span> <span class="ot">`shouldBe`</span> <span class="dv">12</span>
+
+<span class="ot">dividedBy ::</span> <span class="dt">Integral</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> (a, a)
+dividedBy num denom <span class="fu">=</span> go num denom <span class="dv">0</span>
+  <span class="kw">where</span> go n d count
+         <span class="fu">|</span> n <span class="fu">&lt;</span> d <span class="fu">=</span> (count, n)
+         <span class="fu">|</span> otherwise <span class="fu">=</span> go (n <span class="fu">-</span> d) d (count <span class="fu">+</span> <span class="dv">1</span>)
+
+
+<span class="ot">rMult ::</span> (<span class="dt">Integral</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a
+rMult a b <span class="fu">=</span> go a b <span class="dv">0</span>
+  <span class="kw">where</span> go a b c
+          <span class="fu">|</span> b <span class="fu">==</span> <span class="dv">0</span> <span class="fu">=</span> c
+          <span class="fu">|</span> otherwise <span class="fu">=</span> go a (b <span class="fu">-</span> <span class="dv">1</span>) (c <span class="fu">+</span> a)
+
+<span class="ot">sayHello ::</span> <span class="dt">IO</span> ()
+sayHello <span class="fu">=</span> putStrLn <span class="st">&quot;hello!&quot;</span></code></pre></div>
+<h2 id="chapter-exercises">14.7 Chapter Exercises</h2>
+<h3 id="validating-numbers-into-words">Validating numbers into words</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- 14/exercises/test/Spec.hs</span>
+<span class="kw">module</span> <span class="dt">ExercisesTest</span> <span class="kw">where</span>
+
+<span class="kw">import qualified</span> <span class="dt">WordNumberTest</span> <span class="kw">as</span> <span class="dt">WN</span>
+<span class="kw">import qualified</span> <span class="dt">Exercises</span> <span class="kw">as</span> <span class="dt">EX</span>
+<span class="kw">import </span><span class="dt">Data.Char</span> (toUpper)
+<span class="kw">import </span><span class="dt">Data.List</span> (sort)
+<span class="kw">import </span><span class="dt">Test.QuickCheck</span>
+
+<span class="co">-- 1</span>
+<span class="ot">halfIdentity ::</span> <span class="dt">Fractional</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a
+halfIdentity <span class="fu">=</span> (<span class="fu">*</span><span class="dv">2</span>) <span class="fu">.</span> EX.half
+
+<span class="ot">prop_twiceHalf ::</span> (<span class="dt">Eq</span> a, <span class="dt">Fractional</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+prop_twiceHalf n <span class="fu">=</span> (halfIdentity n) <span class="fu">==</span> n
+
+<span class="co">--2</span>
+<span class="ot">listOrdered ::</span>  (<span class="dt">Ord</span> a) <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+listOrdered xs <span class="fu">=</span> snd <span class="fu">$</span> foldr go (<span class="dt">Nothing</span>, <span class="dt">True</span>) xs <span class="kw">where</span>
+  go _ status<span class="fu">@</span>(_ , <span class="dt">False</span>) <span class="fu">=</span> status
+  go y (<span class="dt">Nothing</span>, t) <span class="fu">=</span> (<span class="dt">Just</span> y, t)
+  go y (<span class="dt">Just</span> x, t) <span class="fu">=</span> (<span class="dt">Just</span> y, x <span class="fu">&gt;=</span> y)
+
+<span class="ot">prop_sort ::</span> (<span class="dt">Ord</span> a) <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+prop_sort <span class="fu">=</span> listOrdered <span class="fu">.</span> sort
+
+<span class="co">-- 3</span>
+<span class="ot">plusAssociative ::</span> (<span class="dt">Eq</span> a, <span class="dt">Num</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+plusAssociative x y z <span class="fu">=</span> x <span class="fu">+</span> (y <span class="fu">+</span> z) <span class="fu">==</span> (x <span class="fu">+</span> y) <span class="fu">+</span> z
+
+<span class="ot">plusCommutative ::</span> (<span class="dt">Eq</span> a, <span class="dt">Num</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+plusCommutative x y <span class="fu">=</span> x <span class="fu">+</span> y <span class="fu">==</span> y <span class="fu">+</span> x
+
+<span class="co">-- 4</span>
+<span class="ot">multAssociative ::</span> (<span class="dt">Eq</span> a, <span class="dt">Num</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+multAssociative x y z <span class="fu">=</span> x <span class="fu">+</span> (y <span class="fu">+</span> z) <span class="fu">==</span> (x <span class="fu">+</span> y) <span class="fu">+</span> z
+
+<span class="ot">multCommutative ::</span> (<span class="dt">Eq</span> a, <span class="dt">Num</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+multCommutative x y <span class="fu">=</span> x <span class="fu">+</span> y <span class="fu">==</span> y <span class="fu">+</span> x
+
+<span class="co">-- 5</span>
+<span class="ot">quotRemRule ::</span> <span class="dt">Integral</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+quotRemRule x y <span class="fu">=</span> (quot x y)<span class="fu">*</span>y <span class="fu">+</span> (rem x y) <span class="fu">==</span> x
+
+<span class="ot">divModRule ::</span> <span class="dt">Integral</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+divModRule x y <span class="fu">=</span> (quot x y)<span class="fu">*</span>y <span class="fu">+</span> (rem x y) <span class="fu">==</span> x
+
+<span class="co">-- 6</span>
+<span class="ot">expAssociative ::</span> (<span class="dt">Num</span> a, <span class="dt">Integral</span> a, <span class="dt">Eq</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+expAssociative x y z <span class="fu">=</span> (x <span class="fu">^</span> y) <span class="fu">^</span> z <span class="fu">==</span> x <span class="fu">^</span> (y <span class="fu">^</span> z)
+
+<span class="ot">expCommutative ::</span> (<span class="dt">Num</span> a, <span class="dt">Integral</span> a, <span class="dt">Eq</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+expCommutative x y <span class="fu">=</span> x <span class="fu">^</span> y <span class="fu">==</span> y <span class="fu">^</span> x
+
+<span class="co">-- 7</span>
+<span class="ot">listReverse ::</span> (<span class="dt">Eq</span> a) <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+listReverse list <span class="fu">=</span> (reverse <span class="fu">.</span> reverse) list <span class="fu">==</span> list
+
+<span class="co">-- 8</span>
+<span class="ot">prop_apply ::</span> (<span class="dt">Eq</span> b) <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+prop_apply f x <span class="fu">=</span> (f <span class="fu">$</span> x) <span class="fu">==</span> (f x)
+
+<span class="ot">prop_compose ::</span> (<span class="dt">Eq</span> c) <span class="ot">=&gt;</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+prop_compose f g x <span class="fu">=</span> (f <span class="fu">.</span> g) x <span class="fu">==</span> f (g x)
+
+<span class="kw">instance</span> <span class="dt">Show</span> (a <span class="ot">-&gt;</span> b) <span class="kw">where</span> show _ <span class="fu">=</span> <span class="st">&quot;Arbitrary Function&quot;</span>
+
+<span class="co">-- 9</span>
+<span class="ot">prop_compareCons ::</span> (<span class="dt">Eq</span> a) <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+prop_compareCons xs ys <span class="fu">=</span> foldr (<span class="fu">:</span>) xs ys <span class="fu">==</span> (<span class="fu">++</span>) xs ys
+
+<span class="ot">prop_compareCons' ::</span> (<span class="dt">Eq</span> a) <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+prop_compareCons' xs ys <span class="fu">=</span> foldr (<span class="fu">:</span>) xs ys <span class="fu">==</span> (flip (<span class="fu">++</span>)) xs ys
+
+<span class="ot">prop_compareConcat ::</span> (<span class="dt">Eq</span> a, <span class="dt">Foldable</span> t) <span class="ot">=&gt;</span> t [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+prop_compareConcat xs <span class="fu">=</span> foldr (<span class="fu">++</span>) [] xs <span class="fu">==</span> concat xs
+
+<span class="co">-- 10</span>
+<span class="ot">prop_take ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> [b] <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+prop_take n xs <span class="fu">=</span> length (take n xs) <span class="fu">==</span> n
+
+<span class="co">-- 11</span>
+<span class="ot">prop_read ::</span> (<span class="dt">Eq</span> a, <span class="dt">Show</span> a, <span class="dt">Read</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+prop_read x <span class="fu">=</span> (read (show x)) <span class="fu">==</span> x
+
+<span class="co">-- Idempotence</span>
+twice f <span class="fu">=</span> f <span class="fu">.</span> f
+fourTimes <span class="fu">=</span> twice <span class="fu">.</span> twice
+
+<span class="ot">idem1 ::</span>  <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+idem1 x <span class="fu">=</span> (capw x <span class="fu">==</span> twice capw x) <span class="fu">&amp;&amp;</span> (capw x <span class="fu">==</span> fourTimes capw x) <span class="kw">where</span>
+  capw (x<span class="fu">:</span>xs) <span class="fu">=</span> (toUpper x) <span class="fu">:</span> xs
+  capw [] <span class="fu">=</span> []
+
+<span class="ot">idem2 ::</span> (<span class="dt">Eq</span> a, <span class="dt">Ord</span> a) <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+idem2 x <span class="fu">=</span> (sort x <span class="fu">==</span> twice sort x) <span class="fu">&amp;&amp;</span> (sort x <span class="fu">==</span> fourTimes sort x)
+
+<span class="co">-- Make a Gen</span>
+<span class="kw">data</span> <span class="dt">Fool</span> <span class="fu">=</span> <span class="dt">Fulse</span> <span class="fu">|</span> <span class="dt">Frue</span> <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">Fool</span> <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> frequency [(<span class="dv">1</span>, return <span class="dt">Fulse</span>), (<span class="dv">1</span>, return <span class="dt">Frue</span>)]
+
+<span class="ot">foolGen ::</span> <span class="dt">Gen</span> <span class="dt">Fool</span>
+foolGen <span class="fu">=</span> arbitrary
+
+<span class="ot">fulsishFoolGen ::</span> <span class="dt">Gen</span> <span class="dt">Fool</span>
+fulsishFoolGen <span class="fu">=</span> <span class="kw">do</span>
+  a <span class="ot">&lt;-</span> arbitrary
+  frequency [(<span class="dv">2</span>, return a), (<span class="dv">1</span>, return a)]
+
+<span class="ot">main ::</span> <span class="dt">IO</span> ()
+main <span class="fu">=</span> <span class="kw">do</span>
+  WN.main
+  quickCheck (<span class="ot">prop_twiceHalf ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">prop_sort ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">plusAssociative ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">plusCommutative ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">multAssociative ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">multCommutative ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">quotRemRule ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">divModRule ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">expAssociative ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">expCommutative ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">listReverse ::</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">prop_apply ::</span> (<span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">prop_compose ::</span> (<span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> (<span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">prop_compareCons ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">prop_compareCons' ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">prop_compareConcat ::</span> [<span class="dt">String</span>] <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">prop_take ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">prop_read ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck idem1
+  quickCheck (<span class="ot">idem2 ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)</code></pre></div>
+<h3 id="using-quickcheck">Using QuickCheck</h3>
+<p>see <code>14/exercises/test/Spec.hs</code></p>
+<h3 id="failure">Failure</h3>
+<p>Irrational numbers like e.g. the sqaure root of 2 cannot be represented with infinite precision in a finite amount of memory. So an expression like (sqrt 2) is not actually equal to the square root of 2, but rather is an accurate approximation to some precision. So even though square is the inverse of square root, because sqrt cannot be infinitely accurate the square of a square root will have some error. E.g.</p>
+<pre><code>sqrt 2 = 1.4142135, (sqrt 2) ^ 2 = 1.9999999</code></pre>
+<h3 id="idempotence">Idempotence</h3>
+<p>see <code>14/exercises/test/Spec.hs</code></p>
+<h3 id="make-a-gen-random-generator-for-the-datatype">Make a Gen random generator for the datatype</h3>
+<p>see <code>14/exercises/test/Spec.hs</code></p>
+<h3 id="hangman-testing">Hangman testing</h3>
+<h3 id="validating-ciphers">Validating ciphers</h3>
+<p>skipping these, I think that this testing chapter is probably better understood after you understand what monads are. The reader here only barely has the tools to build something for which testing is important.</p>
+<h2 id="follow-up-resources">14.9 Follow-up resources</h2>
+<ol style="list-style-type: decimal">
+<li><a href="https://www.fpcomplete.com/user/pbv/an-introduction-to-quickcheck-testing">Pedro Vasconcelos; An introduction to QuickCheck testing;</a></li>
+<li>Koen Claessen and John Hughes; (2000) QuickCheck: A Lightweight Tool for Random Testing of Haskell Programs</li>
+<li><a href="http://www.dcc.fc.up.pt/dcc/Pubs/TReports/TR13/dcc-2013-06.pdf">Pedro Vasconcelos;Verifying a Simple Compiler Using Property-based Random Testing;</a></li>
+</ol>
+<hr />
+
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>

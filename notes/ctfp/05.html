@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (CTFP 05/31): Products and Coproducts</title>
+        <link rel="stylesheet" type="text/css" href="../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../">jcb</a>
+                <a href="../../posts.html">posts</a>
+                <a href="../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+            </div>
+        </div>
+        <div id="content">
+          <div id="title">
+            <h1>Notes (CTFP 05/31): Products and Coproducts</h1>
+          </div>
+          <div class="info">
+    Posted on December 15, 2017
+    
+        by jcb
+    
+</div>
+<div class="info">
+    
+    Tags: <a href="../../tags/notes.html">notes</a>, <a href="../../tags/haskell.html">haskell</a>, <a href="../../tags/math.html">math</a>, <a href="../../tags/category-theory.html">category-theory</a>, <a href="../../tags/ctfp.html">ctfp</a>
+    
+</div>
+
+<hr>
+
+<h1 id="products-and-coproducts">5 Products and Coproducts</h1>
+<h2 id="initial-object">5.1 Initial Object</h2>
+<p><strong>initial object</strong>: The initial object is the object that has one and only one morphism going to any object in the category.</p>
+<p>This is like <code>Void</code>.</p>
+<h2 id="terminal-object">5.2 Terminal Object</h2>
+<p><strong>terminal object</strong>: The terminal object is the object with one and only one morphism coming to it from any object in the category.</p>
+<p>This is like <code>()</code></p>
+<p><strong>poset</strong>: A partially ordered set.</p>
+<h2 id="duality">5.3 Duality</h2>
+<p><strong>opposite category</strong>: For any category <code>C</code>, the opposite or dual category <code>C^op</code> is <code>C</code> with all the arrows reversed. If <code>f</code> and <code>g</code> are arrows in <code>C</code>, then</p>
+<pre><code>g . f = f^(op) . g^(op)</code></pre>
+<h2 id="isomorphisms">5.4 Isomorphisms</h2>
+<p><strong>inverse</strong>: If for two objects <code>A</code> and <code>B</code> there are two arrows <code>f :: A -&gt; B</code> and <code>g :: A -&gt; B</code>, such that:</p>
+<pre><code>f . g = id_A
+g . f = id_B</code></pre>
+<p><code>f</code> and <code>g</code> are inverses, or isomorphisms, and <code>A</code> and <code>B</code> are said to be isomorphic.</p>
+<h3 id="theorem-any-category-has-at-most-one-initial-object-up-to-isomorphism">Theorem: Any category has at most one initial object (up to isomorphism)</h3>
+<p>Proof:</p>
+<p>Suppose a category <code>C</code> has two initial objects <code>I1</code> and <code>I2</code>. Then by definition it has the identity arrows:</p>
+<pre><code>id_I1 :: I1 -&gt; I1
+id_I2 :: I2 -&gt; I2</code></pre>
+<p>And because <code>I1</code> and <code>I2</code> are initial objects, there must be only one arrow from <code>I1</code> to <code>I2</code>, and only one arrow from <code>I2</code> to <code>I1</code>:</p>
+<pre><code>f :: I1 -&gt; I2
+g :: I2 -&gt; I1</code></pre>
+<p>But if <code>f</code> and <code>g</code> are arrows in <code>C</code> then so are</p>
+<pre><code>(f . g) :: I2 -&gt; I2
+(g . f) :: I1 -&gt; 11</code></pre>
+<p>And since an initial object has only one arrow to every other object in the category, including itself:</p>
+<pre><code>(f . g) = id_I2 :: I2 -&gt; I2
+(g . f) = id_I1 :: I1 -&gt; 11</code></pre>
+<p>And therefore <code>f</code> and <code>g</code> are inverses, so <code>I1</code> and <code>I2</code> are isomorphic.</p>
+<p>Furthermore, since <code>I1</code> and <code>I2</code> are initial objects, <code>f</code> and <code>g</code> are the only arrows between them, and therefore are unique isomorphism.</p>
+<h2 id="products">5.5 Products</h2>
+<p><strong>product</strong>: A product of two objects <code>X1</code> and <code>X2</code> in a category <code>C</code> is an object <code>X</code> with two arrows</p>
+<pre><code>p1 :: X -&gt; X1, p2 :: X -&gt; X2</code></pre>
+<p>with the property that for all objects <code>Y</code> in <code>C</code> with arrows</p>
+<pre><code>f1 :: Y -&gt; X1, f2 :: Y -&gt; X2</code></pre>
+<p>there is a unique morphism <code>f :: Y -&gt; X</code> such that</p>
+<pre><code>f . p1 = f1, f . p2 = f2</code></pre>
+<p>One way to think about this is whenever a product of <code>X1</code> and <code>X2</code> exists, all the objects that have arrows to <code>X1</code> and <code>X2</code> have arrows to the product object <code>X</code>. In other words, <code>X</code> is the most “downwind” or terminal-like object in the collection of objects that have morphisms to <code>X1</code> and <code>X2</code></p>
+<h2 id="coproduct">5.6 Coproduct</h2>
+<p><strong>coproduct</strong>: The dual of the product. Take the definition of the product and reverse the arrows. In other words, the coproduct <code>X</code> of <code>X1</code> and <code>X2</code> is the object that has arrows to every object that both <code>X1</code> and <code>X2</code> have arrows to. It is the most “upwind”, or initial-like object in the collection of objects that have arrows from both <code>X1</code> and <code>X2</code>.</p>
+<h2 id="challenges">5.8 Challenges</h2>
+<ol style="list-style-type: decimal">
+<li><p>See Theorem in 5.4</p></li>
+<li><p>Okay, so the arrows in a poset represent the less-than-or-equal operator <code>&lt;=</code>, so for any object in the poset <code>A</code>, all objects <code>B</code> such that <code>A &lt;= B</code> have an arrow from <code>B</code> to <code>A</code>.</p>
+<p>For the product of two objects <code>X</code> and <code>Y</code>, let’s consider all the objects <code>Z_n</code> that have arrows to both <code>X</code> and <code>Y.</code></p>
+<p>So any two objects in <code>Z_n</code>, <code>Z1, Z2</code> have arrows:</p>
+<pre><code>Z1 -&gt; X, Z1 -&gt; Y
+Z2 -&gt; X, Z2 -&gt; Y</code></pre>
+<p>Now since the poset is a partial order, we cannot assume that there are arrows between any objects in <code>Z_n</code>. (Nor can we assume there are arrows <code>X -&gt; Y</code>, or <code>Y &lt;- X</code>.) Because of this in some posetal categories, the product may be undefined for two objects, for example, in the category:</p>
+<pre><code>Objects: X, Y, Z1, Z2
+
+Arrows:
+Z1 -&gt; X, Z1 -&gt; Y, Z1 -&gt; Z1
+Z2 -&gt; X, Z2 -&gt; Y, Z2 -&gt; Z2
+X -&gt; X
+Y -&gt; Y
+
+Diagram:
+
+Z1 -&gt; X
+|     ^
+v     |
+Y &lt;- Z2</code></pre>
+<p>This satisfies the category properties of composition and identity (since arrows in the above category can only be composed with identity arrows) and the partial order properties, but there is no defined product of <code>Y</code> and <code>X</code></p>
+<p>For the product of <code>X</code> and <code>Y</code> to exist, there must be some element <code>Z</code> of <code>Z_n</code> such that all objects <code>Z_i</code> in <code>Z_n</code> have arrows <code>Z_i -&gt; Z</code>. In other words, if arrows in a posetal category represent “less-than-or-equal”, the product of <code>X</code> and <code>Y</code> is the greatest of all objects less than or equal to <code>X</code> and <code>Y</code>, or the greatest lower bound of <code>X</code> and <code>Y</code>.</p>
+<p>Interestingly, if e.g. <code>X -&gt; Y</code> then <code>X</code> is in <code>Z_n</code> because of <code>X -&gt; X</code>. And by definition is the greatest lower bound (because all <code>Z_i</code> have <code>Z_i -&gt; X</code>). So if there is an arrow between <code>X</code> and <code>Y</code>, the product is simply the minimum of the two.</p></li>
+<li><p>The coproduct of two objects <code>X</code> and <code>Y</code> in a posetal category is the least upper bound of <code>X</code> and <code>Y</code>, that is, the smalllest object that is greater than or equal to both. It’s exactly like the product, but with the arrows reversed.</p></li>
+<li>I have no favorite languages other than Haskell.</li>
+<li><p>So despite the C++ code, I think I can translate this problem into something</p>
+<p>I can do:</p>
+<pre><code>i :: Int -&gt; Int
+i x = x
+
+j :: Bool -&gt; Int
+j x = if x then 1 else 0</code></pre>
+<p><code>Either</code> in Haskell is:</p>
+<pre><code>Either a b = Left a | Right b
+
+Left :: a -&gt; Either a b
+Right :: b -&gt; Either a b</code></pre>
+<p><code>Either Int Bool</code> is a “better” coproduct of <code>Int</code> and <code>Bool</code> than <code>Int</code> if there is a unique arrow <code>unleft</code> from <code>Either Int Bool</code> to <code>Int</code> such that:</p>
+<pre><code>(unleft . Left) = id_Int</code></pre>
+<p>This function exists:</p>
+<pre><code>unleft (Left x) = x
+unleft _ = 0</code></pre>
+<p>Note that while <code>(unleft . Left) = id_x</code>, <code>(Left . unleft) \= id_Either</code>, because <code>Left (unleft (Right True) = Left 0</code>. If both composition equalled identity, then the two types would be isomorphic, but they are not. Either Int Bool is epimorphic (surjective) on Int, and Int is monomorphic (injective) on Either Int Bool.</p>
+<p>One thing that confuses me though, is that it seems like <code>unleft</code> isn’t unique, because we could replace whatever number gets produced from a <code>Right</code> with any <code>Int</code>… So I’m clearly missing something here.</p>
+<p>Oh I see! The morphism from <code>Either Int Bool -&gt; Int</code> is unique <em>given</em> two injections from <code>Int -&gt; Int</code> and <code>Bool -&gt; Int</code>. So the morphism shouldn’t be named <code>unleft</code> at all, but actually <code>embed</code>, because it embeds an Either in <code>Int</code> space.</p>
+<p>Let’s look at our category:</p>
+<pre><code>Objects:
+Int, Int, Bool, Either Int Bool
+
+Arrows:
+
+i :: Int -&gt; Int
+i n = n
+
+j :: Bool -&gt; Int
+j True = 1
+j False = 0
+
+Left :: Int -&gt; Either Int Bool
+Left n = Left n
+
+Right :: Bool -&gt; Either Int Bool
+Right b = Right b
+
+embed :: Either Int Bool -&gt; Int
+embed (Left n) = i n
+embed (Right b) = j b
+</code></pre>
+<p><code>embed</code> is unique for any <code>i</code> and <code>j</code> because it’s just applying <code>i</code> and <code>j</code> based on which side of the <code>Either</code> we’re on.</p>
+<p>And that’s how we get the <code>factorizer</code> from the text:</p>
+<pre><code>factorizer :: (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
+factorizer i j (Left a) = i a
+factorizer i j (Right b) = j b</code></pre></li>
+<li><p><code>id_Int = embed . Left</code>, but <code>id_Either \= Left . embed</code>, because <code>(Left . embed) (Right True) = Left 1</code></p>
+<p>So there is an <code>Either Int Bool -&gt; Int</code> arrow that factorizes <code>Int -&gt; Int but not an</code>Int -&gt; Either Int Bool<code>that factorizes</code>Either Int Bool -&gt; Either Int Bool`</p>
+<p>Another way to look at this is that if we try to treat <code>Int</code> as an <code>Either</code>, we don’t know if any given integer is supposed to be a <code>Left</code> or a <code>Right</code>.</p>
+<p>Like, if <code>j</code> sends <code>True, False</code> to <code>1, 0</code> and <code>i</code> sends <code>1, 0</code> to <code>1, 0</code> we don’t know if applying <code>m :: Int -&gt; Either Int Bool</code> to <code>1</code> should be a <code>Left 1</code> or a <code>Right True</code>.</p></li>
+<li><p>Our Category:</p>
+<pre><code>i :: Int -&gt; Int
+i n
+  | n &lt; 0 = n
+  | otherwise = n + 2
+
+j :: Bool -&gt; Int
+j b = if b then 1 else 0
+
+Left :: Int -&gt; Either Int Bool
+Right :: Bool -&gt; Either Int Bool</code></pre>
+<p>Suppose Int is a “better” coproduct of Int and Bool with injections <code>i</code> and <code>j</code> than <code>Either Int Bool</code>. Then there must be a unique morphism <code>m :: Int -&gt; Either Int Bool</code> such that:</p>
+<pre><code>m . i = Left
+m . j = Right</code></pre>
+<p>If on the other hand there is another morphism <code>m' :: Int -&gt; Either Int Bool</code>, <code>m /= m'</code> such that</p>
+<pre><code>m' . i = Left
+m' . j = Right</code></pre>
+<p>Then <code>m</code> would not be a unique factorizing morphism and therefore <code>Int</code> could not be a better coproduct of <code>Int</code> and <code>Bool</code> than <code>Either Int Bool</code></p>
+<p>Here’s a candidate for <code>m</code>:</p>
+<pre><code>m :: Int -&gt; Either Int Bool
+m n
+ | n == 0 = Right False
+ | n == 1 = Right True
+ | n &lt; 0 = Left n
+ | otherwise = Left (n - 2)</code></pre>
+<p>This looks pretty unique at first glance.</p>
+<p>However.</p>
+<p>We can show that there is a unique morphism <code>f = (factorize i j) :: Either Int Bool -&gt; Int</code>:</p>
+<pre><code>factorize :: (Int -&gt; Int) -&gt; (Bool -&gt; Int) -&gt; Either Int Bool -&gt; Int
+factorize i j (Left n)  = i n
+factorize i j (Right b) = j b</code></pre>
+<p>such that</p>
+<pre><code>f . Left = i
+f . Right = j</code></pre>
+<p>So if both <code>m</code> and <code>f</code> are unique morphisms, then</p>
+<pre><code>f . Left = f . (m . i) = (f . m) . i = i
+f . Right = f . (m . j) = (f . m) . j = j
+=&gt; (f . m) = id_Int
+
+m . i = m . (f . Left) = (m . f) . Left = Left
+m . j = m . (f . Right) = (m . f) . Right = Right
+=&gt; (m . f) = id_EitherIntBool</code></pre>
+<p>which implies that <code>m</code> and <code>f</code> are isomorphisms. And since <code>m</code> and <code>f</code> are unique morphisms that fit the above conditions, <code>m</code> and <code>f</code> are unique isomorphisms. Which means <code>Either Int Bool</code> and <code>Int</code> are uniquely isomorphic, and are equivalent up to unique isomorphism. In which case <code>Int</code> cannot be a <em>better</em> coproduct that <code>Either Int Bool</code>.</p>
+<p>On the other hand, if <code>m</code> is not unique, there must be another <code>m' :: Int -&gt; Either Int Bool</code>, in which case <code>Int</code> does not satisfy the universal property of coproducts.</p>
+<p>Actually, I think this is a general argument which applies to any possible candidate coproduct. If we already know that there is a coproduct in the category that satisfies the universal property, then any other other coproduct that satisfies the property must be uniquely isomorphic to the first, since their isomorphisms uniquely factorize their injections.</p>
+<p>Wow. That’s a mathy paragraph. I begin to see why math explanations sound as impenetrable as they usually do…</p></li>
+<li><p><code>()</code> is an inferior coproduct of <code>Int</code> and <code>Bool</code> than <code>Either Int Bool</code>, because there is only one unique morphism <code>unit :: Either Int Bool -&gt; ()</code>, but no morphisms from <code>() -&gt; Either Int Bool</code> that factorize injections from <code>unit :: Int -&gt; ()</code> and <code>unit :: Bool -&gt; ()</code>.</p>
+<p>But the question is asking for an inferior candidate that admits multiple morphisms between it and Either Int Bool.</p>
+<p><code>Int</code> is an inferior coproduct of Int and Bool. Suppose we have the morphisms:</p>
+<pre><code>Left :: Int -&gt; Either Int Bool
+Right :: Bool -&gt; Either Int Bool
+
+p :: Int -&gt; Int
+p = (+3)
+
+q :: Bool -&gt; Int
+q True = 1
+q False = 0</code></pre>
+<p>Is there a unique morphism</p>
+<pre><code>m :: Int -&gt; Either Int Bool</code></pre>
+<p>such that</p>
+<pre><code>m . p = Left
+m . q = Right</code></pre>
+<p>No! Because <code>p</code> and <code>q</code> don’t map any values to <code>2 :: Int</code>, we can have</p>
+<pre><code>m :: Int -&gt; Either Int Bool
+m 0 = Right False
+m 1 = Right True
+m 2 = (a :: Either Int Bool)
+m n = n - 3</code></pre>
+<p>We can return any <code>Either Int Bool</code> for <code>m 2</code> and <code>m</code> will still factorize, so we actually have infinite morphisms that satisfy the property. Therefore, Int is a very bad coproduct for Either Int Bool.</p>
+<p>On the other hand, the fact that we can use <code>Int</code> as a coproduct at all (even an inferior one) is convenient, because it lets use model coproducts (and other GADTs) on computers that only know about discrete quantites.</p></li>
+</ol>
+
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>

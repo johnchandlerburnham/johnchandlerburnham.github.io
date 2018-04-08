@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (HPFP 09/31): Lists</title>
+        <link rel="stylesheet" type="text/css" href="../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../">jcb</a>
+                <a href="../../posts.html">posts</a>
+                <a href="../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+            </div>
+        </div>
+        <div id="content">
+          <div id="title">
+            <h1>Notes (HPFP 09/31): Lists</h1>
+          </div>
+          <div class="info">
+    Posted on November  1, 2017
+    
+        by jcb
+    
+</div>
+<div class="info">
+    
+    Tags: <a href="../../tags/hpfp.html">hpfp</a>, <a href="../../tags/notes.html">notes</a>, <a href="../../tags/haskell.html">haskell</a>
+    
+</div>
+
+<hr>
+
+<h1 id="lists">9 Lists</h1>
+<h2 id="using-ranges-to-construct-lists">9.5 Using ranges to construct lists</h2>
+<h3 id="exercise-enumfromto">Exercise: EnumFromTo</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--09/EnumFromTo.hs</span>
+
+<span class="kw">module</span> <span class="dt">EnumFromTo</span> <span class="kw">where</span>
+
+<span class="co">-- the exercises for specific types</span>
+
+<span class="ot">eftBool::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> [<span class="dt">Bool</span>]
+eftBool x y <span class="fu">=</span> go x y []
+  <span class="kw">where</span>
+    go a b c
+      <span class="fu">|</span> a <span class="fu">&gt;</span> b <span class="fu">=</span> c
+      <span class="fu">|</span> a <span class="fu">==</span> b <span class="fu">=</span> reverse (a <span class="fu">:</span> c)
+      <span class="fu">|</span> otherwise <span class="fu">=</span> go (succ a) b (a <span class="fu">:</span> c)
+
+<span class="ot">eftInt::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> [<span class="dt">Int</span>]
+eftInt x y <span class="fu">=</span> go x y []
+  <span class="kw">where</span>
+    go a b c
+      <span class="fu">|</span> a <span class="fu">&gt;</span> b <span class="fu">=</span> c
+      <span class="fu">|</span> a <span class="fu">==</span> b <span class="fu">=</span> reverse (a <span class="fu">:</span> c)
+      <span class="fu">|</span> otherwise <span class="fu">=</span> go (succ a) b (a <span class="fu">:</span> c)
+
+<span class="ot">eftOrd::</span> <span class="dt">Ordering</span> <span class="ot">-&gt;</span> <span class="dt">Ordering</span> <span class="ot">-&gt;</span> [<span class="dt">Ordering</span>]
+eftOrd x y <span class="fu">=</span> go x y []
+  <span class="kw">where</span>
+    go a b c
+      <span class="fu">|</span> a <span class="fu">&gt;</span> b <span class="fu">=</span> c
+      <span class="fu">|</span> a <span class="fu">==</span> b <span class="fu">=</span> reverse (a <span class="fu">:</span> c)
+      <span class="fu">|</span> otherwise <span class="fu">=</span> go (succ a) b (a <span class="fu">:</span> c)
+
+<span class="ot">eftChar::</span> <span class="dt">Char</span> <span class="ot">-&gt;</span> <span class="dt">Char</span> <span class="ot">-&gt;</span> [<span class="dt">Char</span>]
+eftChar x y <span class="fu">=</span> go x y []
+  <span class="kw">where</span>
+    go a b c
+      <span class="fu">|</span> a <span class="fu">&gt;</span> b <span class="fu">=</span> c
+      <span class="fu">|</span> a <span class="fu">==</span> b <span class="fu">=</span> reverse (a <span class="fu">:</span> c)
+      <span class="fu">|</span> otherwise <span class="fu">=</span> go (succ a) b (a <span class="fu">:</span> c)
+
+<span class="co">-- these all look basically the same, so let's generalize:</span>
+
+<span class="ot">eft ::</span> (<span class="dt">Ord</span> a, <span class="dt">Enum</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> [a]
+eft x y <span class="fu">=</span> go x y []
+  <span class="kw">where</span>
+    go a b c
+      <span class="fu">|</span> a <span class="fu">&gt;</span> b <span class="fu">=</span> c
+      <span class="fu">|</span> a <span class="fu">==</span> b <span class="fu">=</span> reverse (a <span class="fu">:</span> c)
+      <span class="fu">|</span> otherwise <span class="fu">=</span> go (succ a) b (a <span class="fu">:</span> c)
+
+<span class="co">-- that reverse is clunky though, let's see if we can get rid of it</span>
+
+<span class="ot">eft2 ::</span> (<span class="dt">Ord</span> a, <span class="dt">Enum</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> [a]
+eft2 x y <span class="fu">=</span> go x y []
+  <span class="kw">where</span>
+    go a b c
+      <span class="fu">|</span> a <span class="fu">&gt;</span> b <span class="fu">=</span> c
+      <span class="fu">|</span> a <span class="fu">==</span> b <span class="fu">=</span> c <span class="fu">++</span> a<span class="fu">:</span>[]
+      <span class="fu">|</span> otherwise <span class="fu">=</span> go (succ a) b (c <span class="fu">++</span> a<span class="fu">:</span>[])
+
+<span class="co">-- using string concatenation is just as slow though, let's use recursion</span>
+
+<span class="ot">eft3 ::</span> (<span class="dt">Ord</span> a, <span class="dt">Enum</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> [a]
+eft3 x y
+  <span class="fu">|</span> x <span class="fu">&gt;</span> y <span class="fu">=</span> []
+  <span class="fu">|</span> x <span class="fu">==</span> y <span class="fu">=</span> [x]
+  <span class="fu">|</span> otherwise <span class="fu">=</span> x <span class="fu">:</span> eft3 (succ x) y
+
+<span class="co">-- We can get rid of the Ord constraint by leveraging the mapping between</span>
+<span class="co">-- an Enum and Int</span>
+
+<span class="ot">eft4 ::</span> <span class="dt">Enum</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> [a]
+eft4 x y
+  <span class="fu">|</span> fromEnum x <span class="fu">&gt;</span> fromEnum y <span class="fu">=</span> []
+  <span class="fu">|</span> fromEnum x <span class="fu">==</span> fromEnum y <span class="fu">=</span> [x]
+  <span class="fu">|</span> otherwise <span class="fu">=</span> x <span class="fu">:</span> eft4 (succ x) y</code></pre></div>
+<h2 id="extracting-portions-of-lists">9.6 Extracting portions of lists</h2>
+<h3 id="exercises-thy-fearful-symmetry">Exercises: Thy Fearful Symmetry</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--09/FearfulSymmetry.hs</span>
+<span class="kw">module</span> <span class="dt">FearfulSymmetry</span> <span class="kw">where</span>
+
+<span class="ot">split ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> [<span class="dt">String</span>]
+split [] <span class="fu">=</span> []
+split  x <span class="fu">=</span> word <span class="fu">:</span> split rest
+  <span class="kw">where</span>
+    word <span class="fu">=</span> takeWhile (<span class="fu">/=</span> <span class="ch">' '</span>) x
+    rest <span class="fu">=</span> (drop <span class="dv">1</span>) <span class="fu">$</span> dropWhile (<span class="fu">/=</span> <span class="ch">' '</span>) x
+
+<span class="ot">splitOn ::</span> <span class="dt">Char</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> [<span class="dt">String</span>]
+splitOn _ [] <span class="fu">=</span> []
+splitOn  c str <span class="fu">=</span> part <span class="fu">:</span> (splitOn c rest)
+  <span class="kw">where</span>
+    part <span class="fu">=</span> takeWhile (<span class="fu">/=</span> c) str
+    rest <span class="fu">=</span> (drop <span class="dv">1</span>) <span class="fu">$</span> dropWhile (<span class="fu">/=</span> c) str
+
+firstSen <span class="fu">=</span> <span class="st">&quot;Tyger Tyger, burning bright\n&quot;</span>
+secondSen <span class="fu">=</span> <span class="st">&quot;In the forests of the night\n&quot;</span>
+thirdSen <span class="fu">=</span> <span class="st">&quot;What immortal hand or eye\n&quot;</span>
+fourthSen <span class="fu">=</span> <span class="st">&quot;Could frame thy fearful symmetry?&quot;</span>
+sentences <span class="fu">=</span> firstSen <span class="fu">++</span> secondSen <span class="fu">++</span> thirdSen <span class="fu">++</span> fourthSen
+
+<span class="ot">myLines ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> [<span class="dt">String</span>]
+myLines x <span class="fu">=</span> splitOn <span class="ch">'\n'</span> x
+
+shouldEqual <span class="fu">=</span>
+  [ <span class="st">&quot;Tyger Tyger, burning bright&quot;</span>
+  , <span class="st">&quot;In the forests of the night&quot;</span>
+  , <span class="st">&quot;What immortal hand or eye&quot;</span>
+  , <span class="st">&quot;Could frame thy fearful symmetry?&quot;</span>
+  ]
+
+<span class="ot">main ::</span> <span class="dt">IO</span> ()
+main <span class="fu">=</span> print <span class="fu">$</span> <span class="st">&quot;Are they equal? &quot;</span> <span class="fu">++</span> show (myLines sentences <span class="fu">==</span> shouldEqual)</code></pre></div>
+<h2 id="list-comprehensions">9.7 List Comprehensions</h2>
+<h3 id="exercises-comprehend-thy-lists">Exercises: Comprehend Thy Lists</h3>
+<ol style="list-style-type: decimal">
+<li><code>[4, 16]</code></li>
+<li><code>[]</code></li>
+<li><code>[]</code>, unless <code>mySqr</code> is from <code>[1..10]</code></li>
+</ol>
+<h3 id="exercises-square-cube">Exercises: Square Cube</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--09/SquareCube.hs</span>
+<span class="kw">module</span> <span class="dt">SquareCube</span> <span class="kw">where</span>
+
+mySqr <span class="fu">=</span> [x<span class="fu">^</span><span class="dv">2</span> <span class="fu">|</span> x <span class="ot">&lt;-</span> [<span class="dv">1</span><span class="fu">..</span><span class="dv">5</span>]]
+myCube <span class="fu">=</span> [x<span class="fu">^</span><span class="dv">3</span> <span class="fu">|</span> x <span class="ot">&lt;-</span> [<span class="dv">1</span><span class="fu">..</span><span class="dv">5</span>]]
+
+exercise1 <span class="fu">=</span> [(x, y) <span class="fu">|</span> x <span class="ot">&lt;-</span> mySqr, y <span class="ot">&lt;-</span> myCube]
+exercise2 <span class="fu">=</span> [(x, y) <span class="fu">|</span> x <span class="ot">&lt;-</span> mySqr, y <span class="ot">&lt;-</span> myCube, x <span class="fu">&lt;</span> <span class="dv">50</span>, y <span class="fu">&lt;</span> <span class="dv">50</span>]
+exercise3 <span class="fu">=</span> length exercise2</code></pre></div>
+<h2 id="spines-and-nonstrict-evaluation">9.8 Spines and nonstrict evaluation</h2>
+<h3 id="exercises-bottom-madness">Exercises: Bottom Madness</h3>
+<ol style="list-style-type: decimal">
+<li>no</li>
+<li>yes</li>
+<li>no</li>
+<li>yes</li>
+<li>no</li>
+<li>yes</li>
+<li>no</li>
+<li>yes</li>
+<li>yes</li>
+<li>no</li>
+</ol>
+<h3 id="intermission-is-it-in-normal-form">Intermission: Is it in normal form?</h3>
+<ol style="list-style-type: decimal">
+<li>WHNF &amp; NF</li>
+<li>WHNF</li>
+<li>neither</li>
+<li>neither</li>
+<li>neither</li>
+<li>neither</li>
+<li>WHNF</li>
+</ol>
+<h2 id="transforming-lists">9.9 Transforming lists</h2>
+<h3 id="exercises-more-bottoms">Exercises: More Bottoms</h3>
+<ol style="list-style-type: decimal">
+<li>bottom</li>
+<li>yes</li>
+<li>bottom</li>
+<li>Is this character a vowel? <code>itIsMystery :: Char -&gt; Bool</code></li>
+<li><ol style="list-style-type: lower-alpha">
+<li>the first 10 square numbers</li>
+<li><code>[1, 10, 20]</code></li>
+<li><code>[15, 15, 15]</code></li>
+</ol></li>
+<li><div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--09/foldbool.hs</span>
+foldBool <span class="fu">=</span> map (\x <span class="ot">-&gt;</span> (Data.Bool.bool x (<span class="fu">-</span>x) (x <span class="fu">==</span> <span class="dv">3</span>)))</code></pre></div></li>
+</ol>
+<h2 id="filtering-lists-of-values">9.10 Filtering lists of values</h2>
+<h3 id="exercises-filtering">Exercises: Filtering</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- 09/Filtering.hs</span>
+<span class="kw">module</span> <span class="dt">Filtering</span> <span class="kw">where</span>
+
+<span class="ot">filterThreeMult ::</span> [<span class="dt">Integer</span>] <span class="ot">-&gt;</span> [<span class="dt">Integer</span>]
+filterThreeMult <span class="fu">=</span> filter (\x <span class="ot">-&gt;</span> x <span class="ot">`mod`</span> <span class="dv">3</span> <span class="fu">/=</span> <span class="dv">0</span>)
+
+<span class="ot">howManyThreeMults ::</span> [<span class="dt">Integer</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span>
+howManyThreeMults x <span class="fu">=</span> length x <span class="fu">-</span> (length <span class="fu">.</span> filterThreeMult) x
+
+<span class="ot">howManyThreeMults' ::</span> [<span class="dt">Integer</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span>
+howManyThreeMults' <span class="fu">=</span> length <span class="fu">.</span> filter (\x <span class="ot">-&gt;</span> x <span class="ot">`mod`</span> <span class="dv">3</span> <span class="fu">==</span> <span class="dv">0</span>)
+
+<span class="ot">removeArticle ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> [<span class="dt">String</span>]
+removeArticle <span class="fu">=</span> filter (not <span class="fu">.</span> isArticle) <span class="fu">.</span> words
+  <span class="kw">where</span> isArticle x <span class="fu">=</span> elem x [<span class="st">&quot;a&quot;</span>, <span class="st">&quot;an&quot;</span>, <span class="st">&quot;the&quot;</span>]</code></pre></div>
+<h3 id="zipping-exercises">Zipping exercises</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- 09/ZippingExercises.hs</span>
+<span class="kw">module</span> <span class="dt">ZippingExercises</span> <span class="kw">where</span>
+
+<span class="ot">myZip ::</span> [a] <span class="ot">-&gt;</span> [b] <span class="ot">-&gt;</span> [(a, b)]
+myZip (x<span class="fu">:</span>xs) (y<span class="fu">:</span>ys) <span class="fu">=</span> (x, y) <span class="fu">:</span> myZip xs ys
+myZip _ _ <span class="fu">=</span> []
+
+<span class="ot">myZipWith ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [b] <span class="ot">-&gt;</span> [c]
+myZipWith f (x<span class="fu">:</span>xs) (y<span class="fu">:</span>ys) <span class="fu">=</span> (f x y) <span class="fu">:</span> (myZipWith f xs ys)
+myZipWith _ _ _ <span class="fu">=</span> []</code></pre></div>
+<h2 id="chapter-exercises">9.12 Chapter Exercises</h2>
+<h3 id="data.char">Data.Char</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--09/CharExercises.hs</span>
+<span class="kw">module</span> <span class="dt">CharExercises</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Data.Char</span>
+
+<span class="co">--1</span>
+<span class="co">-- isUpper :: Char -&gt; Bool</span>
+<span class="co">-- toUpper :: Char -&gt; Char</span>
+
+<span class="co">-- 2</span>
+filterUpper <span class="fu">=</span> filter isUpper
+
+<span class="co">-- 3</span>
+<span class="ot">capFirst ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
+capFirst (x<span class="fu">:</span>xs) <span class="fu">=</span> (toUpper x)<span class="fu">:</span>xs
+capFirst _ <span class="fu">=</span> <span class="st">&quot;&quot;</span>
+
+<span class="co">-- 4</span>
+<span class="ot">strToUpper ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
+strToUpper (x<span class="fu">:</span>xs) <span class="fu">=</span> (toUpper x)<span class="fu">:</span>(strToUpper xs)
+strToUpper _ <span class="fu">=</span> <span class="st">&quot;&quot;</span>
+
+<span class="co">-- 5</span>
+<span class="ot">headToUpper ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Char</span>
+headToUpper <span class="fu">=</span> toUpper <span class="fu">.</span> head
+
+<span class="co">-- 6, wrote it pointfree the first time...</span></code></pre></div>
+<h3 id="ciphers">Ciphers</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--09/Cipher.hs</span>
+<span class="kw">module</span> <span class="dt">Cipher</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Data.Char</span>
+
+<span class="ot">caesar ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
+caesar key string <span class="fu">=</span> go key <span class="fu">$</span> (map toLower <span class="fu">.</span> filter isAlpha) string
+  <span class="kw">where</span> go _ <span class="st">&quot;&quot;</span> <span class="fu">=</span> <span class="st">&quot;&quot;</span>
+        go n (c<span class="fu">:</span>cs) <span class="fu">=</span> chr ((ord c <span class="fu">+</span> n <span class="fu">-</span> ord <span class="ch">'a'</span>) <span class="ot">`mod`</span> <span class="dv">26</span> <span class="fu">+</span> ord <span class="ch">'a'</span>) <span class="fu">:</span> go n cs
+
+<span class="ot">unCaesar ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
+unCaesar key string <span class="fu">=</span> caesar (negate key) string
+
+<span class="ot">test ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+test n s <span class="fu">=</span> (map toLower <span class="fu">.</span> filter isAlpha) s <span class="fu">==</span> (unCaesar n <span class="fu">.</span> caesar n) s</code></pre></div>
+<h3 id="writing-your-own-standard-functions">Writing your own standard functions</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--09/StdFunc.hs</span>
+<span class="kw">module</span> <span class="dt">StdFunc</span> <span class="kw">where</span>
+
+<span class="co">-- 1</span>
+<span class="ot">myOr ::</span> [<span class="dt">Bool</span>] <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+myOr [] <span class="fu">=</span> <span class="dt">False</span>
+myOr (x<span class="fu">:</span>xs) <span class="fu">=</span> <span class="kw">if</span> x <span class="fu">==</span> <span class="dt">True</span> <span class="kw">then</span> <span class="dt">True</span> <span class="kw">else</span> myOr xs
+
+<span class="co">-- 2</span>
+<span class="ot">myAny ::</span> (a <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+myAny f xs <span class="fu">=</span> (myOr <span class="fu">.</span> map f) xs
+
+<span class="co">-- 3</span>
+<span class="ot">myElem ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+myElem x xs <span class="fu">=</span> myAny ((<span class="fu">==</span>) x) xs
+
+<span class="co">-- 4</span>
+<span class="ot">myReverse ::</span> [a] <span class="ot">-&gt;</span> [a]
+myReverse xs <span class="fu">=</span> go xs []
+  <span class="kw">where</span> go [] n <span class="fu">=</span> n
+        go (n<span class="fu">:</span>ns) a <span class="fu">=</span> go ns (n<span class="fu">:</span>a)
+
+<span class="co">-- 5</span>
+<span class="ot">squish ::</span> [[a]] <span class="ot">-&gt;</span> [a]
+squish [] <span class="fu">=</span> []
+squish ((n<span class="fu">:</span>[])<span class="fu">:</span>nss) <span class="fu">=</span> n <span class="fu">:</span> squish (nss)
+squish ((n<span class="fu">:</span>ns)<span class="fu">:</span>nss) <span class="fu">=</span> n <span class="fu">:</span> squish (ns<span class="fu">:</span>nss)
+
+<span class="co">-- 6</span>
+<span class="ot">squishMap ::</span> (a <span class="ot">-&gt;</span> [b]) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [b]
+squishMap f xs <span class="fu">=</span> go f xs []
+  <span class="kw">where</span> go _ [] [] <span class="fu">=</span> []
+        go f (x<span class="fu">:</span>xs) [] <span class="fu">=</span> go f xs (f x)
+        go f xs (a<span class="fu">:</span>as) <span class="fu">=</span> a <span class="fu">:</span> (go f xs as)
+
+<span class="co">-- 7</span>
+<span class="ot">squishAgain ::</span> [[a]] <span class="ot">-&gt;</span> [a]
+squishAgain <span class="fu">=</span> squishMap id
+
+<span class="co">-- 8</span>
+<span class="ot">myMaximumBy ::</span> (a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Ordering</span>) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> a
+myMaximumBy cmp (x<span class="fu">:</span>xs) <span class="fu">=</span> go cmp xs x
+  <span class="kw">where</span> go _ [] a <span class="fu">=</span> a
+        go cmp (x<span class="fu">:</span>xs) a <span class="fu">=</span> go cmp xs (<span class="kw">if</span> (cmp x a) <span class="fu">==</span> <span class="dt">GT</span> <span class="kw">then</span> x <span class="kw">else</span> a)
+
+<span class="co">-- 9</span>
+<span class="ot">myMinimumBy ::</span> (a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Ordering</span>) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> a
+myMinimumBy cmp (x<span class="fu">:</span>xs) <span class="fu">=</span> go cmp xs x
+  <span class="kw">where</span> go _ [] a <span class="fu">=</span> a
+        go cmp (x<span class="fu">:</span>xs) a <span class="fu">=</span> go cmp xs (<span class="kw">if</span> (cmp x a) <span class="fu">==</span> <span class="dt">LT</span> <span class="kw">then</span> x <span class="kw">else</span> a)
+
+
+<span class="ot">myMaximum ::</span> (<span class="dt">Ord</span> a) <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> a
+myMaximum <span class="fu">=</span> myMaximumBy compare
+
+<span class="ot">myMinimum ::</span> (<span class="dt">Ord</span> a) <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> a
+myMinimum <span class="fu">=</span> myMinimumBy compare</code></pre></div>
+<h2 id="follow-up-resources">9.14 Follow-up resources</h2>
+<ol style="list-style-type: decimal">
+<li><p><a href="http://hackage.haskell.org/package/base/docs/Data-List.html">Data.List documentation for the base library.</a></p></li>
+<li><p><a href="https://wiki.haskell.org/H-99:_Ninety-Nine_Haskell_Problems">Ninety-nine Haskell problems.</a></p></li>
+</ol>
+<hr />
+
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>

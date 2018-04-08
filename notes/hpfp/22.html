@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (HPFP 22/31): Reader</title>
+        <link rel="stylesheet" type="text/css" href="../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../">jcb</a>
+                <a href="../../posts.html">posts</a>
+                <a href="../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+            </div>
+        </div>
+        <div id="content">
+          <div id="title">
+            <h1>Notes (HPFP 22/31): Reader</h1>
+          </div>
+          <div class="info">
+    Posted on November  1, 2017
+    
+        by jcb
+    
+</div>
+<div class="info">
+    
+    Tags: <a href="../../tags/notes.html">notes</a>, <a href="../../tags/haskell.html">haskell</a>, <a href="../../tags/hpfp.html">hpfp</a>
+    
+</div>
+
+<hr>
+
+<h2 id="reader">22 Reader</h2>
+<h2 id="a-new-beginning">22.2 A new beginning</h2>
+<h3 id="short-exercise-warming-up">Short Exercise: Warming Up</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--22/WarmingUp.hs</span>
+<span class="kw">module</span> <span class="dt">WarmingUp</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Data.Char</span>
+
+<span class="ot">cap ::</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> [<span class="dt">Char</span>]
+cap xs <span class="fu">=</span> map toUpper xs
+
+<span class="ot">rev ::</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> [<span class="dt">Char</span>]
+rev xs <span class="fu">=</span> reverse xs
+
+<span class="ot">composed ::</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> [<span class="dt">Char</span>]
+composed <span class="fu">=</span> cap <span class="fu">.</span> rev
+
+<span class="ot">fmapped ::</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> [<span class="dt">Char</span>]
+fmapped <span class="fu">=</span> fmap cap rev
+
+<span class="ot">tupled ::</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> ([<span class="dt">Char</span>], [<span class="dt">Char</span>])
+tupled <span class="fu">=</span> (,) <span class="fu">&lt;$&gt;</span> cap <span class="fu">&lt;*&gt;</span> rev
+
+<span class="ot">tupled' ::</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> ([<span class="dt">Char</span>], [<span class="dt">Char</span>])
+tupled' <span class="fu">=</span> <span class="kw">do</span>
+  c <span class="ot">&lt;-</span> cap
+  r <span class="ot">&lt;-</span> rev
+  return (c, r)
+
+<span class="ot">tupledBind ::</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> ([<span class="dt">Char</span>], [<span class="dt">Char</span>])
+tupledBind str <span class="fu">=</span> cap <span class="fu">&lt;$&gt;</span> rev <span class="fu">&gt;&gt;=</span> (,) <span class="fu">$</span> str
+
+<span class="ot">tupledBind' ::</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> ([<span class="dt">Char</span>], [<span class="dt">Char</span>])
+tupledBind' <span class="fu">=</span> rev <span class="fu">&gt;&gt;=</span> (\x <span class="ot">-&gt;</span> cap <span class="fu">&gt;&gt;=</span> \y <span class="ot">-&gt;</span> return (x, y))
+
+<span class="co">{-</span>
+<span class="co">instance Monad (-&gt; r) where</span>
+<span class="co">  return = const</span>
+<span class="co">  (&gt;&gt;=) x f = \r -&gt; f (x r) r</span>
+
+<span class="co">    (rev &gt;&gt;= (\x -&gt; cap &gt;&gt;= \y -&gt; return (x, y))) str</span>
+<span class="co"> -&gt; (\x -&gt; cap &gt;&gt;= \y -&gt; return (x, y)) (rev str) str</span>
+<span class="co"> -&gt; (cap &gt;&gt;= \y -&gt; return (rev str, y)) str</span>
+<span class="co"> -&gt; (\y -&gt; return (rev str, y)) (cap str) str</span>
+<span class="co"> -&gt; (return (rev str, cap str)) str</span>
+<span class="co"> -&gt; (rev str, cap str)</span>
+<span class="co">-}</span></code></pre></div>
+<h2 id="but-uh-reader">22.5 But uh, Reader?</h2>
+<h2 id="exercise-ask">Exercise: Ask</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--22/Ask.hs</span>
+<span class="kw">module</span> <span class="dt">Ask</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Control.Monad</span>
+<span class="kw">import </span><span class="dt">Control.Applicative</span>
+
+<span class="kw">newtype</span> <span class="dt">Reader</span> r a <span class="fu">=</span> <span class="dt">Reader</span> {<span class="ot"> runReader ::</span> r <span class="ot">-&gt;</span> a }
+
+<span class="ot">ask ::</span> <span class="dt">Reader</span> a a
+ask <span class="fu">=</span> <span class="dt">Reader</span> id</code></pre></div>
+<h2 id="functions-have-an-applicative-too">22.6 Functions have an Applicative too</h2>
+<h2 id="exercise-readingcomprehension">Exercise: ReadingComprehension</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--22/ReadingComprehension.hs</span>
+<span class="ot">{-# LANGUAGE InstanceSigs #-}</span>
+<span class="kw">module</span> <span class="dt">ReadingComprehension</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Control.Monad</span>
+<span class="kw">import </span><span class="dt">Control.Applicative</span>
+
+<span class="kw">newtype</span> <span class="dt">Reader</span> r a <span class="fu">=</span> <span class="dt">Reader</span> {<span class="ot"> runReader ::</span> r <span class="ot">-&gt;</span> a }
+
+<span class="co">-- 1</span>
+<span class="ot">myLiftA2 ::</span> <span class="dt">Applicative</span> f <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b <span class="ot">-&gt;</span> f c
+myLiftA2 f x y <span class="fu">=</span> f <span class="fu">&lt;$&gt;</span> x <span class="fu">&lt;*&gt;</span> y
+
+<span class="co">-- 2</span>
+<span class="ot">asks ::</span> (r <span class="ot">-&gt;</span> a) <span class="ot">-&gt;</span> <span class="dt">Reader</span> r a
+asks f <span class="fu">=</span> <span class="dt">Reader</span> f
+
+<span class="co">--3</span>
+<span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Reader</span> r) <span class="kw">where</span>
+  fmap f (<span class="dt">Reader</span> r) <span class="fu">=</span> <span class="dt">Reader</span> <span class="fu">$</span> f <span class="fu">.</span> r
+
+<span class="kw">instance</span> <span class="dt">Applicative</span> (<span class="dt">Reader</span> r) <span class="kw">where</span>
+<span class="ot">  pure ::</span> a <span class="ot">-&gt;</span> <span class="dt">Reader</span> r a
+  pure a <span class="fu">=</span> <span class="dt">Reader</span> <span class="fu">$</span> const a
+<span class="ot">  (&lt;*&gt;) ::</span> <span class="dt">Reader</span> r (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">Reader</span> r a <span class="ot">-&gt;</span> <span class="dt">Reader</span> r b
+  (<span class="fu">&lt;*&gt;</span>) (<span class="dt">Reader</span> rab) (<span class="dt">Reader</span> ra) <span class="fu">=</span> <span class="dt">Reader</span> <span class="fu">$</span> \r <span class="ot">-&gt;</span> rab r (ra r)
+
+<span class="co">-- Reader Monad</span>
+<span class="co">-- 1</span>
+<span class="kw">instance</span> <span class="dt">Monad</span> (<span class="dt">Reader</span> r) <span class="kw">where</span>
+  return <span class="fu">=</span> pure
+<span class="ot">  (&gt;&gt;=) ::</span> <span class="dt">Reader</span> r a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">Reader</span> r b) <span class="ot">-&gt;</span> <span class="dt">Reader</span> r b
+  (<span class="fu">&gt;&gt;=</span>) (<span class="dt">Reader</span> ra) aRb <span class="fu">=</span> <span class="dt">Reader</span> <span class="fu">$</span> \r <span class="ot">-&gt;</span> runReader (aRb (ra r)) r</code></pre></div>
+<h2 id="the-monad-of-functions">22.7 The Monad of functions</h2>
+<h3 id="exercise-reader-monad">Exercise: Reader Monad</h3>
+<p>see <code>22/ReadingComprehension.hs</code></p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--22/Person.hs</span>
+<span class="kw">module</span> <span class="dt">Person</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Control.Monad</span>
+<span class="kw">import </span><span class="dt">Control.Applicative</span>
+
+<span class="kw">newtype</span> <span class="dt">Reader</span> r a <span class="fu">=</span> <span class="dt">Reader</span> {<span class="ot"> runReader ::</span> r <span class="ot">-&gt;</span> a }
+
+<span class="kw">newtype</span> <span class="dt">HumanName</span> <span class="fu">=</span> <span class="dt">HumanName</span> <span class="dt">String</span> <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">newtype</span> <span class="dt">DogName</span> <span class="fu">=</span> <span class="dt">DogName</span> <span class="dt">String</span> <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">newtype</span> <span class="dt">Address</span> <span class="fu">=</span> <span class="dt">Address</span> <span class="dt">String</span> <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">data</span> <span class="dt">Person</span> <span class="fu">=</span> <span class="dt">Person</span> {<span class="ot"> humanName ::</span> <span class="dt">HumanName</span>
+                     ,<span class="ot"> dogName ::</span> <span class="dt">DogName</span>
+                     ,<span class="ot"> address ::</span> <span class="dt">Address</span>
+                     } <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">data</span> <span class="dt">Dog</span> <span class="fu">=</span> <span class="dt">Dog</span> {<span class="ot"> dogsName ::</span> <span class="dt">DogName</span>
+               ,<span class="ot"> dogsAddress ::</span> <span class="dt">Address</span>
+               } <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="ot">pers ::</span> <span class="dt">Person</span>
+pers <span class="fu">=</span> <span class="dt">Person</span> (<span class="dt">HumanName</span> <span class="st">&quot;Big Bird&quot;</span>)
+              (<span class="dt">DogName</span> <span class="st">&quot;Barkley&quot;</span>)
+              (<span class="dt">Address</span> <span class="st">&quot;Sesame Street&quot;</span>)
+
+<span class="ot">chris ::</span> <span class="dt">Person</span>
+chris <span class="fu">=</span> <span class="dt">Person</span> (<span class="dt">HumanName</span> <span class="st">&quot;Chris Allen&quot;</span>)
+               (<span class="dt">DogName</span> <span class="st">&quot;Papu&quot;</span>)
+               (<span class="dt">Address</span> <span class="st">&quot;Austin&quot;</span>)
+
+<span class="ot">getDog ::</span> <span class="dt">Person</span> <span class="ot">-&gt;</span> <span class="dt">Dog</span>
+getDog p <span class="fu">=</span> <span class="dt">Dog</span> (dogName p) (address p)
+
+<span class="ot">getDogR ::</span> <span class="dt">Person</span> <span class="ot">-&gt;</span> <span class="dt">Dog</span>
+getDogR <span class="fu">=</span> <span class="dt">Dog</span> <span class="fu">&lt;$&gt;</span> dogName <span class="fu">&lt;*&gt;</span> address
+
+<span class="ot">getDogRM' ::</span> <span class="dt">Reader</span> <span class="dt">Person</span> <span class="dt">Dog</span>
+getDogRM' <span class="fu">=</span>  <span class="dt">Reader</span> <span class="fu">$</span> <span class="dt">Dog</span> <span class="fu">&lt;$&gt;</span> dogName <span class="fu">&lt;*&gt;</span> address</code></pre></div>
+<h2 id="chapter-exercises">22.11 Chapter Exercises</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--22/ReaderPractice.hs</span>
+<span class="kw">module</span> <span class="dt">ReaderPractice</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Control.Applicative</span>
+<span class="kw">import </span><span class="dt">Data.Maybe</span>
+
+x <span class="fu">=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]
+y <span class="fu">=</span> [<span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>]
+z <span class="fu">=</span> [<span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">9</span>]
+
+<span class="ot">xs ::</span> <span class="dt">Maybe</span> <span class="dt">Integer</span>
+xs <span class="fu">=</span> lookup <span class="dv">3</span> <span class="fu">$</span> zip x y
+
+<span class="ot">ys ::</span> <span class="dt">Maybe</span> <span class="dt">Integer</span>
+ys <span class="fu">=</span> lookup <span class="dv">6</span> <span class="fu">$</span> zip y z
+
+<span class="ot">zs ::</span> <span class="dt">Maybe</span> <span class="dt">Integer</span>
+zs <span class="fu">=</span> lookup <span class="dv">4</span> <span class="fu">$</span> zip x y
+
+<span class="ot">z' ::</span> <span class="dt">Integer</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Integer</span>
+z' n <span class="fu">=</span> lookup n <span class="fu">$</span> zip x z
+
+<span class="ot">x1 ::</span> <span class="dt">Maybe</span> (<span class="dt">Integer</span>, <span class="dt">Integer</span>)
+x1 <span class="fu">=</span> (,) <span class="fu">&lt;$&gt;</span> xs <span class="fu">&lt;*&gt;</span> ys
+
+<span class="ot">x2 ::</span> <span class="dt">Maybe</span> (<span class="dt">Integer</span>, <span class="dt">Integer</span>)
+x2 <span class="fu">=</span> (,) <span class="fu">&lt;$&gt;</span> ys <span class="fu">&lt;*&gt;</span> zs
+
+<span class="ot">x3 ::</span> <span class="dt">Integer</span> <span class="ot">-&gt;</span> (<span class="dt">Maybe</span> <span class="dt">Integer</span>, <span class="dt">Maybe</span> <span class="dt">Integer</span>)
+x3 n <span class="fu">=</span> (,) zn zn <span class="kw">where</span> zn <span class="fu">=</span> z' n
+
+<span class="ot">summed ::</span> <span class="dt">Num</span> c <span class="ot">=&gt;</span> (c, c) <span class="ot">-&gt;</span> c
+summed (x, y) <span class="fu">=</span> x <span class="fu">+</span> y
+
+<span class="ot">bolt ::</span> <span class="dt">Integer</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+bolt <span class="fu">=</span> (<span class="fu">&amp;&amp;</span>) <span class="fu">&lt;$&gt;</span> (<span class="fu">&gt;</span><span class="dv">3</span>) <span class="fu">&lt;*&gt;</span> (<span class="fu">&lt;</span><span class="dv">8</span>)
+
+<span class="ot">sequA ::</span> <span class="dt">Integral</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> [<span class="dt">Bool</span>]
+sequA m <span class="fu">=</span> sequenceA [(<span class="fu">&gt;</span><span class="dv">3</span>), (<span class="fu">&lt;</span><span class="dv">8</span>), even] m
+
+<span class="ot">s' ::</span> <span class="dt">Maybe</span> <span class="dt">Integer</span>
+s' <span class="fu">=</span> summed <span class="fu">&lt;$&gt;</span> ((,) <span class="fu">&lt;$&gt;</span> xs <span class="fu">&lt;*&gt;</span> ys)
+
+<span class="ot">main ::</span> <span class="dt">IO</span> ()
+main <span class="fu">=</span> <span class="kw">do</span>
+  print <span class="fu">$</span>
+    sequenceA [<span class="dt">Just</span> <span class="dv">3</span>, <span class="dt">Just</span> <span class="dv">2</span>, <span class="dt">Just</span> <span class="dv">1</span>]
+  print <span class="fu">$</span> sequenceA [x, y]
+  print <span class="fu">$</span> sequenceA [xs, ys]
+  print <span class="fu">$</span> summed <span class="fu">&lt;$&gt;</span> ((,) <span class="fu">&lt;$&gt;</span> xs <span class="fu">&lt;*&gt;</span> ys)
+  print <span class="fu">$</span> fmap summed ((,) <span class="fu">&lt;$&gt;</span> xs <span class="fu">&lt;*&gt;</span> zs)
+  print <span class="fu">$</span> bolt <span class="dv">7</span>
+  print <span class="fu">$</span> fmap bolt z
+  print <span class="fu">$</span> sequenceA [(<span class="fu">&gt;</span><span class="dv">3</span>), (<span class="fu">&lt;</span><span class="dv">8</span>), even] <span class="dv">7</span>
+<span class="co">-- 1</span>
+  print <span class="fu">$</span> foldr (<span class="fu">&amp;&amp;</span>) <span class="dt">True</span> <span class="fu">$</span> sequA <span class="dv">7</span>
+<span class="co">-- 2</span>
+  print <span class="fu">$</span> fromMaybe [] <span class="fu">$</span> sequA <span class="fu">&lt;$&gt;</span> s'
+<span class="co">-- 3</span>
+  print <span class="fu">$</span> fromMaybe <span class="dt">False</span> <span class="fu">$</span> bolt <span class="fu">&lt;$&gt;</span> ys</code></pre></div>
+<p>Rewriting Shawty: I’m gonna come back to this. I’m not the biggest fan of the url shortener exercise. It’s in this weird midpoint between too complicated to totally understand without prior background and not complicated enough to actually be fun to play with.</p>
+<h2 id="follow-up-resources">22.13 Follow-up resources</h2>
+<ol style="list-style-type: decimal">
+<li>Reader Monad; All About Monads https://wiki.haskell.org/All_About_Monads 2.Reader Monad; Programming with Monads; Real World Haskell</li>
+</ol>
+<hr />
+
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>

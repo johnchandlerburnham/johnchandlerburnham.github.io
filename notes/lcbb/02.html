@@ -4,22 +4,24 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>John Chandler Burnham - Workthrough: Intro to Lambda Calculus (Barendregt & Barendsen)</title>
-        <link rel="stylesheet" type="text/css" href="../css/default.css" />
+        <title>John Chandler Burnham - Notes (LCBB 02/07): Conversion</title>
+        <link rel="stylesheet" type="text/css" href="../../css/default.css" />
     </head>
     <body>
         <div id="header">
             <div id="navigation">
-                <a href="../">jcb</a>
-                <a href="../posts.html">posts</a>
-                <a href="../projects.html">projects</a>
+                <a href="../../">jcb</a>
+                <a href="../../posts.html">posts</a>
+                <a href="../../projects.html">projects</a>
                 <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://twitter.com/John_C_Burnham">twitter</a>
             </div>
         </div>
-
         <div id="content">
-            <h1>Workthrough: Intro to Lambda Calculus (Barendregt & Barendsen)</h1>
-              <div class="info">
+          <div id="title">
+            <h1>Notes (LCBB 02/07): Conversion</h1>
+          </div>
+          <div class="info">
     Posted on December 13, 2017
     
         by jcb
@@ -27,87 +29,12 @@
 </div>
 <div class="info">
     
-    Tags: <a href="../tags/workthrough.html">workthrough</a>, <a href="../tags/math.html">math</a>, <a href="../tags/haskell.html">haskell</a>, <a href="../tags/functional-programming.html">functional-programming</a>, <a href="../tags/lambda.html">lambda</a>
+    Tags: <a href="../../tags/workthrough.html">workthrough</a>, <a href="../../tags/math.html">math</a>, <a href="../../tags/functional-programming.html">functional-programming</a>, <a href="../../tags/lambda-calculus.html">lambda-calculus</a>
     
 </div>
 
 <hr>
 
-<hr>
-<h2>Contents</h2>
-<ul>
-<li><a href="#introduction">1 Introduction</a><ul>
-<li><a href="#reduction-and-functional-programming">Reduction and functional programming</a></li>
-<li><a href="#application-and-abstraction">Application and abstraction</a></li>
-<li><a href="#free-and-bound-variables">Free and bound variables</a></li>
-<li><a href="#functions-of-more-arguments">Functions of more arguments</a></li>
-</ul></li>
-<li><a href="#conversion">2 Conversion</a><ul>
-<li><a href="#definition-of-lambda-terms">2.1 Definition of Lambda Terms</a></li>
-<li><a href="#examples-of-lambda-terms">2.2 Examples of Lambda Terms</a></li>
-<li><a href="#convention-of-notation">2.3 Convention of Notation</a></li>
-<li><a href="#definition-of-free-variables">2.4 Definition of Free Variables</a></li>
-<li><a href="#definition-of-lambda-calculus">2.7 Definition of Lambda Calculus</a></li>
-<li><a href="#remark-on-alpha-conversion">2.8 Remark on Alpha Conversion</a></li>
-<li><a href="#ski-combinators">2.10 SKI Combinators</a></li>
-<li><a href="#fixed-point-combinator">2.12 Fixed-Point Combinator</a></li>
-<li><a href="#example">2.13 Example</a></li>
-<li><a href="#definition-of-numerals">2.14 Definition of Numerals</a></li>
-<li><a href="#definition-of-arithmetic-operations">2.15 Definition of Arithmetic Operations</a><ul>
-<li><a href="#addition">Addition</a></li>
-<li><a href="#multiplication">Multiplication</a></li>
-<li><a href="#exponentiation">Exponentiation</a></li>
-</ul></li>
-<li><a href="#exercises">Exercises</a></li>
-</ul></li>
-<li><a href="#the-power-of-lambda">3 The Power of Lambda</a><ul>
-<li><a href="#definition-of-booleans">3.1 Definition of Booleans</a></li>
-<li><a href="#definition-of-pairs">3.2 Definition of Pairs</a></li>
-<li><a href="#definition-of-natural-numbers-as-pairs">3.3 Definition of natural numbers as pairs</a></li>
-<li><a href="#lemma-successor-predecessor-iszero">3.4 Lemma: Successor, predecessor, isZero</a></li>
-<li><a href="#definition">3.5 Definition</a></li>
-</ul></li>
-<li><a href="#reduction">4 Reduction</a></li>
-</ul>
-<hr>
-<p><strong>Work in progress</strong></p>
-<h1 id="introduction">1 Introduction</h1>
-<p><strong>The Entsheidungsproblem</strong>: The decision problem. Loosely speaking, is it possible to to come up with a general procedure to determine whether statements are valid in some formal system.</p>
-<p>Take arithmetic as an example of a formal system. It has statements “1 + 1 = 2”, “5 &gt; 3” and so on. Some statements are true, like “1 + 1 = 2”, while others are false, like “1 = 0”. Given an arbitrary statement <code>X</code>, is there a function <code>D</code> such that <code>D(X)</code> returns True if <code>X</code> is true and False if <code>X</code> is false? That’s the decision problem. And the answer is no. No such function exists, nor can it exist.</p>
-<p><strong>lambda calculus</strong>: A formal system developed by Alonzo Church in 1936. Church proved the decision problem in the negative by showing that no function exists that can determine whether two expression in the lambda calculus were equivalent.</p>
-<p><strong>Turing Machines</strong>: A formal system developed by Alan Turing in 1936. Turing proved the decision problem in the negative by showing that no function exists that can determine whether a Turing machine will halt or run forever.</p>
-<p><strong>Church-Turing Thesis</strong>: The lambda calculus and Turing machines have equivalent power as formal systems. Any function defined in one can be defined in the other.</p>
-<p><strong>Von Neumann Machines</strong>: Turing machines with random access memory (RAM). The usual formulation of a Turing machine has sequential access memory on a tape. Most modern computers are hardware Von Neumann Machines.</p>
-<p>Assembly languages and imperative programming languages are based on Turing machines, and are generally built around sequences of statements and commands.</p>
-<p>Functional programming languages are based on the lambda calculus and are built around expression reduction.</p>
-<p><strong>Reduction Machine</strong>: A machine designed to execute expressions in a functional language. Such machines have been built in the flesh (in the silicon?), such as the <a href="https://en.wikipedia.org/wiki/Lisp_machine">Lisp Machines</a> but are generally rare. Most functional programming languages compile to Von Neumann Machine instructions.</p>
-<h2 id="reduction-and-functional-programming">Reduction and functional programming</h2>
-<p><strong>functional program</strong> An expression <code>E</code> that can be reduced. Reduction of <code>E</code> is equivalent to computing the function that <code>E</code> represents. <code>E</code> is reduced by some rewrite rules, such that a part <code>P</code> of E is replaced with <code>P'</code>:</p>
-<pre><code>E[P] -&gt; E[P']</code></pre>
-<p>as long as the replacement <code>P -&gt; P'</code> is implied by the rewrite rules.</p>
-<p><strong>Church-Rosser property</strong>: If applying the rewrite rules in a reduction system can be done in any order and yield the same expression, the reduction system satisfies the Church-Rosser property.</p>
-<h2 id="application-and-abstraction">Application and abstraction</h2>
-<p><strong>application</strong>: A pair of expressions <code>F</code> and <code>A</code> where <code>F</code> considered a function and <code>A</code> is the input to that function.</p>
-<p><strong>abstraction</strong>: An expression parameterized on some variable. The abstraction <code>\ x. M</code> can be considered the function from x to <code>M[x]</code>, where <code>M[x]</code> is the expression <code>M</code> containing some (or no) instances of <code>x.</code></p>
-<p><strong>Beta reduction</strong>: When an abstraction is the first expression in an application:</p>
-<pre><code>(\x.M) N</code></pre>
-<p>then the application can be reduced by replaceing each instance of <code>x</code> in the expression <code>M</code> with <code>N</code>:</p>
-<pre><code>(\x.M) N = M[x := N]</code></pre>
-<h2 id="free-and-bound-variables">Free and bound variables</h2>
-<p><strong>binding a variable</strong>: Every abstraction <em>binds</em> some variable. Variables can be either <em>free</em> or <em>bound</em>. <em>Free</em> variables are those that are not <em>bound</em> by any abstraction. When an abstraction is applied, only the variables bound by that abstraction are substituted with the input.</p>
-<pre><code>(\ x. y x (\ x. x)) N = y N (\ x. x)</code></pre>
-<p>The <code>x</code> in <code>\ x. x</code> is bound by inner <code>\ x.</code> abstraction head, not the outer one. The expression <code>N</code> is only substituted for the variables bound by the abstraction being applied, not those bound by any other.</p>
-<h2 id="functions-of-more-arguments">Functions of more arguments</h2>
-<p><strong>currying</strong>: A construction of some function <code>f</code> that depends on multiple arguments by the repeated application of functions of single arguments. Suppose <code>f(x, y)</code> is a function that depends on both <code>x</code> and <code>y</code>. Then <code>f</code> can be constructed from some function <code>F</code>, such that</p>
-<pre><code>F(x) = F_x
-F_x(y) = f(x, y)</code></pre>
-<p>In the lambda calculus:</p>
-<pre><code>\ x.(F x) = F_x
-\ y.(F_x y) = f(x, y)</code></pre>
-<p>So that,</p>
-<pre><code>(\ x. \ y. (F x) y) x y = (\ y. F_x y) y = f(x, y)</code></pre>
-<p>In other words, we transform <code>f</code> which mapped from the space of pairs <code>(x,y)</code> to some output space, into the function <code>F</code> which maps from the space of <code>x</code>s to the space of functions <code>F_x</code>, which are the functions that map from space of <code>y</code>s to the output space.</p>
-<p>In this way, we can build functions of multiple arguments out of chaining together functions of single arguments.</p>
 <h1 id="conversion">2 Conversion</h1>
 <h2 id="definition-of-lambda-terms">2.1 Definition of Lambda Terms</h2>
 <p>A lambda terms is either</p>
@@ -139,8 +66,8 @@ v'v = 2 1
 <li>Lower case letters are variables. Upper case letters are terms</li>
 <li><code>M == N</code> denotes that <code>M</code> and <code>N</code> are alpha equivalent. Two expressions are alpha equivalent if their Partial de Bruijn forms are identical. An expression may be converted into its Partial de Bruijn form by replacing every bound variable with the relative index of its binding abstraction layer, every <code>\</code> followed by a variable with <code>0</code> and leaving all free variables constant.</li>
 </ol>
-<pre><code>(\ x y) z == (\ x y) z =&gt; (0 y) z 
-(\ x x) z == (\ y y) z =&gt; (0 1) z 
+<pre><code>(\ x y) z == (\ x y) z =&gt; (0 y) z
+(\ x x) z == (\ y y) z =&gt; (0 1) z
 (\ x x) z =&gt; (0 1) z \= z
 (\ x x) z =&gt; (0 1) z \= (\ x y) z =&gt; (0 y) z</code></pre>
 <p>Hmm, this seems awkward, but I find the defintion in the book to be a little hand-wavy. Alpha equivalence can get really complicated when we start to think about name shadowing etc. I really want to just say that expressions are alpha equivalent if they’re de Bruijn index forms are equivalent, but I can’t because even though free variables are free, but they should be consistent in equivalent expressions.</p>
@@ -182,14 +109,14 @@ v'v = 2 1
 <pre><code>I  = \ x. x
 K  = \ x y. x
 K* = \ x y. y
-S  = \ x y z. x z (y z) </code></pre>
+S  = \ x y z. x z (y z)</code></pre>
 <p><code>I</code> is the identity function, <code>K</code> returns the first of two arguments, <code>K*</code> the second of two arguments.</p>
 <p><code>S</code> is trickier. It takes three arguments, and applies the application of the first to the third to the application of the second to the third. Think of it as amalgamating all three values.</p>
 <p>Suppose we had the term <code>\ x. X F</code> and we wanted to apply <code>F</code> to <code>X</code>. Then we could do:</p>
-<pre><code>S (\ x. K* x) (\ x. K x) (\ x. x X F) = 
-(\ x. K* x) (\ x. x X F) ( (\ x. K) (\ x. x X F)) = 
+<pre><code>S (\ x. K* x) (\ x. K x) (\ x. x X F) =
+(\ x. K* x) (\ x. x X F) ( (\ x. K) (\ x. x X F)) =
 (K* X F) (K X F) =
-= F X </code></pre>
+= F X</code></pre>
 <h2 id="fixed-point-combinator">2.12 Fixed-Point Combinator</h2>
 <p>Suppose <code>f</code> is a function. If there is an input <code>x</code> to <code>f</code> such that <code>f(x) = x</code>, then <code>x</code> is said to be a <em>fixed-point</em> of <code>f</code>.</p>
 <p>And let’s also suppose we have a function <code>fix</code> that returns a fixed point <code>x</code> of a function, so that <code>fix(f) = x</code>.</p>
@@ -204,7 +131,7 @@ fix(f) = x</code></pre>
 <p>But can we build a lambda expression for <code>fix</code>. We can!</p>
 <pre><code>Y = \ f. (\ x. f (x x)) (\ x. f (x x))
 
-Y F = (\ x. F (x x)) (\ x. F (x x)) =  F ((\ x. F (x x)) (\ x. F (x x))) 
+Y F = (\ x. F (x x)) (\ x. F (x x)) =  F ((\ x. F (x x)) (\ x. F (x x)))
   = F Y F</code></pre>
 <p>For a more intuitive explanation on how we might have invented the <code>Y</code> combinator ourselves take a look at <a href="http://localhost:8000/posts/workthrough-lambda-calculus-rojas.html#recursion">my workthrough on Rojas’ Tutorial Introduction to the Lambda Calculus</a>.</p>
 <h2 id="example">2.13 Example</h2>
@@ -220,10 +147,10 @@ G = Y S =&gt; G X = (Y S) X = S Y S X  = S G X</code></pre>
 </ol>
 <p>Well, if using an expression that generates <code>Y</code> doesn’t count as using <code>Y</code> then:</p>
 <pre><code>G = (\ f. (\ x . x x) (\ x. f x x)) (\ g x. g g)
-  = (\f . (\ x . f x x) (\ x. f x x)) (\ g x. g g) 
+  = (\f . (\ x . f x x) (\ x. f x x)) (\ g x. g g)
   = Y (\ g x. g g)
   = (\ g x. g g) (Y (\ g x. g g))
-  = \ x. (Y (\ g x. g g)) (Y (\ g x. g g)) 
+  = \ x. (Y (\ g x. g g)) (Y (\ g x. g g))
   = \ x. G G</code></pre>
 <p>But what if we can’t even use an expression that generates <code>Y</code>?</p>
 <p>Then we can just any another fixed point combinator. Let’s try the <code>Z</code> combinator:</p>
@@ -231,40 +158,40 @@ G = Y S =&gt; G X = (Y S) X = S Y S X  = S G X</code></pre>
 <p>Let’s prove the <code>Z</code> combinator is a fixed point combinator by applying it to some function <code>F</code> and showing that it satisfies <code>Z F = F (Z F)</code></p>
 <pre><code>Z F = (\ f. (\ x. f (\ v. x x v)) (\ x. f (\ v. x x v))) F
     = (\ x. F (\ v. x x v)) (\ x. F (\ v. x x v))
-    = F (\ v. (\ x. F (\ v. x x v)) 
-              (\ x. F (\ v. x x v)) 
+    = F (\ v. (\ x. F (\ v. x x v))
+              (\ x. F (\ v. x x v))
               v
         )
-    = F (\ v. F (\ v. (\ x. F (\ v. x x v)) 
-                      (\ x. F (\ v. x x v)) 
-                      v   
-                ) 
-              v 
+    = F (\ v. F (\ v. (\ x. F (\ v. x x v))
+                      (\ x. F (\ v. x x v))
+                      v
+                )
+              v
         )
-    = F (\ v. (F (\ v. (\ x. F (\ v. x x v)) 
-                      (\ x. F (\ v. x x v)) 
-                      v   
-                 ) 
+    = F (\ v. (F (\ v. (\ x. F (\ v. x x v))
+                      (\ x. F (\ v. x x v))
+                      v
+                 )
               )
-              v 
+              v
         )</code></pre>
 <p>Now this is a bit tricky, but remember that each entry of this is still equal to <code>Z F</code>. We’re going to use the third statement:</p>
-<pre><code>Z F = F (\ v. (\ x. F (\ v. x x v)) 
-              (\ x. F (\ v. x x v)) 
+<pre><code>Z F = F (\ v. (\ x. F (\ v. x x v))
+              (\ x. F (\ v. x x v))
               v
         )</code></pre>
 <p>To do a substitution in the last statement:</p>
-<pre><code>Z F  = F (\ v. ( F (\ v. (\ x. F (\ v. x x v)) 
-                        (\ x. F (\ v. x x v)) 
-                        v   
-                  ) 
+<pre><code>Z F  = F (\ v. ( F (\ v. (\ x. F (\ v. x x v))
+                        (\ x. F (\ v. x x v))
+                        v
+                  )
               )
-              v 
+              v
         )
     = F ((\ v. Z F) v)
-    = F (Z F) </code></pre>
+    = F (Z F)</code></pre>
 <p>So <code>Z</code> is a fixed point combinator. Therefore,</p>
-<pre><code>G = Z (\ g x . g g) 
+<pre><code>G = Z (\ g x . g g)
   = (\ g x . g g) (Z (\ g x . g g))
   = \ x. (Z (\ g x . g g)) (Z (\ g x . g g))
   = \ x. G G</code></pre>
@@ -279,14 +206,14 @@ F^(n+1) M = F (F^n M)</code></pre></li>
 <li><p>The Church numerals <code>C_0, C_1, C_2, ...</code> are defined by</p>
 <pre><code>C_n = \ f x. f^n x</code></pre></li>
 </ol>
-<p>For an alternative presentation, see <a href="../posts/workthrough-lambda-calculus-rojas.html#arithmetic">2 Arithmetic, Workthrough: Tutorial Intro to Lambda Calculus (Rojas)</a>.</p>
+<p>For an alternative presentation, see <a href="../../posts/workthrough-lambda-calculus-rojas.html#arithmetic">2 Arithmetic, Workthrough: Tutorial Intro to Lambda Calculus (Rojas)</a>.</p>
 <h2 id="definition-of-arithmetic-operations">2.15 Definition of Arithmetic Operations</h2>
 <p>Let’s prove that:</p>
 <p><code>add  = \ x y p q . x p (y p q);    mult = \ x y z. x (y z)    exp  = \ x y. y x</code></p>
 <p>are expressions that perform addition, multiplication and exponentiation, respectively.</p>
 <h3 id="addition">Addition</h3>
 <p>Okay, so a valid addition expresssion <code>add</code> will have the following property</p>
-<pre><code>add C_n C_m = C_(n + m) </code></pre>
+<pre><code>add C_n C_m = C_(n + m)</code></pre>
 <p>That is, the addition of two church numerals representing the natural numbers <code>n</code> and <code>m</code> will be the church numeral representing their sum <code>n + m</code></p>
 <p>By the definition of church numerals:</p>
 <pre><code>C_(n + m) = \ f x . (f^(n + m) x)
@@ -317,7 +244,7 @@ add C_m C_n = \ f x. (C_m f) (C_n f x)
              = \ t. (\ f x. f^n x) ((\ f x. f^m x) t)
              = \ t. (\ f x. f^n x) (\ x. t^m x)
              = \ t. (\ f x. f^n x) (\ x. t^m x)
-             = \ t. (\ x. (\ x. t^m x)^n x) </code></pre>
+             = \ t. (\ x. (\ x. t^m x)^n x)</code></pre>
 <p>By eta conversion <code>(\ x. F x) = F</code> and by the lemma 2.16, <code>(x^m)^n = x^(m*n)</code></p>
 <pre><code>mult C_n C_m = \ t x. (t^m)^n x
              = \ t x. (t^(m * n)) x
@@ -326,8 +253,8 @@ add C_m C_n = \ f x. (C_m f) (C_n f x)
 <p>A valid exponentiontial expression will have the following property:</p>
 <pre><code>exp C_n C_m = C_(n ^ m)</code></pre>
 <p>If <code>exp = \ x y. y x</code> then</p>
-<pre><code>exp C_n C_m = (\ x y. y x) C_n C_m 
-            = C_m C_n 
+<pre><code>exp C_n C_m = (\ x y. y x) C_n C_m
+            = C_m C_n
             = (\ f x. f^m x) C_n
             = \ x. (C_n)^m x
             = \ x. C (n ^ m) x   [By lemma 2.16]
@@ -348,28 +275,28 @@ add C_m C_n = \ f x. (C_m f) (C_n f x)
 <ol style="list-style-type: decimal">
 <li>By the compatibility rules,</li>
 </ol>
-<pre><code>\ |- M1 = M2 =&gt; 
-\ |- \x.M1 = \x.M2 =&gt; 
-\ |- (\x.M1) N= (\x.M2) N =&gt; 
+<pre><code>\ |- M1 = M2 =&gt;
+\ |- \x.M1 = \x.M2 =&gt;
+\ |- (\x.M1) N= (\x.M2) N =&gt;
 \ |- M1[x:= N] = M2[x:= N]</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li></li>
 </ol>
-<pre><code>\ |- M1 = M2 =&gt; 
+<pre><code>\ |- M1 = M2 =&gt;
 \ |- \x.M1 = \x.M2 =&gt;
 \ |- (\x.M1) N1 = (\x.M2) N1
 
 \ |- (\x.M1) N1 = (\x.M2) N1 &amp;&amp; \ |- N1 = N2 =&gt;
-\ |- (\x.M1) N1= (\x.M2) N2 =&gt; 
+\ |- (\x.M1) N1= (\x.M2) N2 =&gt;
 \ |- M1[x:= N1] = M2[x:= N2]</code></pre>
 <p><strong>2.4</strong>:</p>
-<p>See <a href="../posts/workthrough-lambda-calculus-barendregt-barendsen.html#definition-of-arithmetic-operations">Definition of Arithmetic Operations</a></p>
+<p>See <a href="../../posts/workthrough-lambda-calculus-barendregt-barendsen.html#definition-of-arithmetic-operations">Definition of Arithmetic Operations</a></p>
 <p><strong>2.5</strong>:</p>
 <p><code>N = X (Y Z)</code></p>
 <p><strong>2.6</strong>:</p>
 <ol style="list-style-type: decimal">
 <li><p><code>(\x y z. z y x) a a (\p q. q) = (\p q. q) a a = a</code></p></li>
-<li><pre><code>(\y z. z y) ((\x. x x x) (\x. x x x)) (\w. I) = 
+<li><pre><code>(\y z. z y) ((\x. x x x) (\x. x x x)) (\w. I) =
 (\w. I) ((\x. x x x) (\x. x x x)) =
 I</code></pre></li>
 <li><p><code>SKSKSK = (\x y z. x z (y z)) K S K S K = (K K (S K)) S K = K S K = S</code></p></li>
@@ -393,9 +320,9 @@ I</code></pre></li>
 <ol style="list-style-type: decimal">
 <li><code>K_n = Y K</code></li>
 <li><code>F = Y (\x y. y x) =&gt; F x = (\ x y. y x) (Y (\x y. y x)) x = x F</code></li>
-<li><pre><code>F = Y (\ w x y z.  w K)  =&gt; 
+<li><pre><code>F = Y (\ w x y z.  w K)  =&gt;
 F I K K = (\ w x y z. w K) (Y (\w x y z. w K)) I K K
-        = (Y (\x y z. w K)) K 
+        = (Y (\x y z. w K)) K
         = F K</code></pre></li>
 </ol>
 <p><strong>2.11</strong>:</p>
@@ -422,7 +349,7 @@ G K = K K K = K
 
 F = \p. ((\g. g K g) p) y x
 
-F I = (\p. ((\g. g K g) p) y x) I 
+F I = (\p. ((\g. g K g) p) y x) I
     = ((\g. g K g) I) y x
     = (I K I) y x
     = (K I) y x
@@ -441,97 +368,12 @@ F K = (\p .((\g. g K g) p) y x) K
 &lt;name&gt; := v' | v'' | v''' | v''' | ...
 &lt;abstraction&gt; := \ &lt;name&gt; &lt;expression&gt;
 &lt;application&gt; := &lt;expression&gt; &lt;expression&gt;</code></pre>
-<h1 id="the-power-of-lambda">3 The Power of Lambda</h1>
-<h2 id="definition-of-booleans">3.1 Definition of Booleans</h2>
-<ol style="list-style-type: decimal">
-<li><pre><code>true = K
-false = K*</code></pre></li>
-<li><pre><code>if-then-else = (\i t e. i t e)</code></pre></li>
-</ol>
-<p>I think the pattern of using the “first” and “second” selector combinators as booleans so that you can just use the truth-condition in an “if-then-else” to directly select the right branch is really pretty somehow.</p>
-<h2 id="definition-of-pairs">3.2 Definition of Pairs</h2>
-<pre><code>(M, N) = (\z. z M N)
-
-(M, N) true = M
-(M, N) false = N </code></pre>
-<p>Of course, an “if-then-else” is inherently a pair: a pair of two code branches that you switch between based on some condition. If you interpret the branches as data branches rather than code branches, you get a really nice representation of an ordered pair.</p>
-<p>You can even use this pattern to construct any k-tuple. So a triple would be:</p>
-<pre><code>(T1, T2, T3) = (\z. z T1 T2 T3)
-(T1, T2, T3) (choose-of 1 3) = T1 
-(T1, T2, T3) (choose-of 2 3) = T2 
-(T1, T2, T3) (choose-of 2 3) = T3</code></pre>
-<p>Where <code>choose-of i n</code> is an expression that gives you the <code>i</code>-th expression of <code>n</code> expressions:</p>
-<pre><code>choose-of 0 1 = \x1. x1   = I
-choose-of 0 2 = \x1 x2. x1 = K
-choose-of 1 2 = \x1 x2. x2 = K*
-choose-of 0 3 = \x1 x2 x3. x1
-choose-of 1 3 = \x1 x2 x3. x2
-choose-of 2 3 = \x1 x2 x3. x3</code></pre>
-<p>How might we implement “choose of”?</p>
-<p>Let’s start with an easier function <code>drop</code> which drops the first <code>n</code> arguments:</p>
-<p>Well, so first lets try to build a function that adds a layer of abstraction around any expression. So for any <code>M</code> we want:</p>
-<pre><code>(\x. M) = (\ m x . m) M = K M</code></pre>
-<p>Which is just the <code>K</code> combinator. Let’s look at what happens if we apply the <code>K</code> combinator multiple times:</p>
-<pre><code>K (K M) = K (\x. M) = (\x2. (\x1 . M)) = \x2 x1. M
-K (K (K M)) = K (\x2. (\x1 . M))  = (\x3. (\x2. (\x1 . M)) = \x3 x2 x1. M
-...</code></pre>
-<p>We can use the exponentiation notation from the last chapter to clean this up:</p>
-<pre><code>K^0 M = M
-K^1 M = K M
-K^2 M = K (K M)
-...</code></pre>
-<p>If we let <code>M</code> be the identity combinator, then we have our <code>choose-n</code> function:</p>
-<pre><code>drop C_m = C_m K I
-
-drop 0  = C_0 K I = I
-drop 1  = C_1 K I = K I = K*
-drop 2  = C_2 K I = K (K I) = (\x y z. z)</code></pre>
-<p>But if there are more than <code>n</code> arguments:</p>
-<pre><code>(T1, T2, T3) (drop 1) = (C_1 K I) T1 T2 T3 = K* T1 T2 T3 = T2 T3</code></pre>
-<p>So our <code>choose-of</code> function is going to need to get rid of a bunch of arguments that come after the one we want.</p>
-<p>Let’s define another function <code>first n</code> that returns the first of <code>n + 1</code> arguments.</p>
-<pre><code>first 0 = \ x1. x1
-first 1 = \ x1 x2. x1
-first 2 = \ x1 x2 x3. x1
-...</code></pre>
-<p>By a similar construction to <code>drop</code>:</p>
-<pre><code>first C_n = \x . C_n K x
-first 0 = \x . x
-first 1 = \x . K x
-first 2 = \x . K (K x)
-...</code></pre>
-<p>Let’s test this out:</p>
-<pre><code>(T1, T2, T3) (first 2) = (\x . K (K x)) T1 T2 T3
-= K (K T1) T2 T3
-= (K T1) T3
-= T1</code></pre>
-<p>So our <code>choose-of</code> function will be:</p>
-<pre><code>choose-of = \ i n t. (first (sub n i)) (t (drop i))</code></pre>
-<p>Where <code>sub</code> is integer subtraction, whose derivation I’ll leave for elsewhere.</p>
-<p>[TODO: Subtraction]</p>
-<p>Honestly, this construction of <code>n</code>-tuples seems ugly, and I’m not the biggest fan of writing lambda expressions that are complicated enough to feel like actual code. If I’m going to write code I want some actual tools…</p>
-<h2 id="definition-of-natural-numbers-as-pairs">3.3 Definition of natural numbers as pairs</h2>
-<pre><code>0_ = I
-(n + 1)_ = (false, n_)</code></pre>
-<p>So numbers can be defined as nested pairs.</p>
-<h2 id="lemma-successor-predecessor-iszero">3.4 Lemma: Successor, predecessor, isZero</h2>
-<pre><code>succ n_ = (n + 1)_ = (false, n_) 
-succ = (\n. (\p. p false n))
-
-pred (n+1) = (\n. n false) (\p. p false n_)  = false false n_ = n_
-pred = (\n. n false)
-
-isZero = (\x . x true)
-isZero 0 = (\x . x true) I = true
-isZero 1 = (\x . x true) (\ p. p false n_) = true false n_ = false</code></pre>
-<h2 id="definition">3.5 Definition</h2>
-<h1 id="reduction">4 Reduction</h1>
 
         </div>
         <div id="footer">
           <p>&copy; <script>document.write(new Date().getFullYear());</script>
-             John Chandler Burnham. 
-            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a> 
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
           </p>
         </div>
     </body>

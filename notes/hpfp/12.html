@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (HPFP 12/31): Signaling Adversity</title>
+        <link rel="stylesheet" type="text/css" href="../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../">jcb</a>
+                <a href="../../posts.html">posts</a>
+                <a href="../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+            </div>
+        </div>
+        <div id="content">
+          <div id="title">
+            <h1>Notes (HPFP 12/31): Signaling Adversity</h1>
+          </div>
+          <div class="info">
+    Posted on November  1, 2017
+    
+        by jcb
+    
+</div>
+<div class="info">
+    
+    Tags: <a href="../../tags/hpfp.html">hpfp</a>, <a href="../../tags/notes.html">notes</a>, <a href="../../tags/haskell.html">haskell</a>
+    
+</div>
+
+<hr>
+
+<h1 id="signaling-adversity">12 Signaling adversity</h1>
+<h2 id="chapter-exercises">12.5 Chapter Exercises</h2>
+<h3 id="determine-the-kinds">Determine the kinds</h3>
+<ol style="list-style-type: decimal">
+<li><code>*</code></li>
+<li><code>a</code> is <code>*</code>, <code>f</code> is <code>* -&gt; *</code></li>
+</ol>
+<h3 id="string-processing">String processing</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--12/StringProcessing.hs</span>
+<span class="kw">module</span> <span class="dt">StringProcessing</span> <span class="kw">where</span>
+
+<span class="ot">notThe ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">String</span>
+notThe str <span class="fu">=</span> <span class="kw">if</span> str <span class="fu">==</span> <span class="st">&quot;the&quot;</span> <span class="kw">then</span> <span class="dt">Nothing</span> <span class="kw">else</span> <span class="dt">Just</span> str
+
+<span class="ot">wurdz ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> [<span class="dt">String</span>]
+wurdz str <span class="fu">=</span> (fst a)<span class="fu">:</span>(<span class="kw">if</span> (snd a) <span class="fu">==</span> [] <span class="kw">then</span> [] <span class="kw">else</span> (wurdz <span class="fu">$</span> tail <span class="fu">$</span> snd a))
+  <span class="kw">where</span> a <span class="fu">=</span> break ((<span class="fu">==</span>) <span class="ch">' '</span>) str
+
+<span class="ot">wurdzMap ::</span>  (<span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span>) <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
+wurdzMap f str <span class="fu">=</span> (f (fst a)) <span class="fu">++</span> (<span class="kw">if</span> (snd a) <span class="fu">==</span> []
+                                 <span class="kw">then</span> <span class="st">&quot;&quot;</span>
+                                 <span class="kw">else</span> <span class="st">&quot; &quot;</span> <span class="fu">++</span> (wurdzMap f <span class="fu">$</span> tail <span class="fu">$</span> snd a))
+  <span class="kw">where</span> a <span class="fu">=</span> break ((<span class="fu">==</span>) <span class="ch">' '</span>) str
+
+<span class="ot">replaceThe ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
+replaceThe str <span class="fu">=</span> init <span class="fu">$</span> go (words str) <span class="kw">where</span>
+  go [] <span class="fu">=</span> []
+  go (x<span class="fu">:</span>xs) <span class="fu">=</span> (<span class="kw">if</span> notThe x <span class="fu">==</span> <span class="dt">Nothing</span> <span class="kw">then</span> <span class="st">&quot;a&quot;</span> <span class="kw">else</span> u <span class="fu">$</span> notThe x)
+                <span class="fu">++</span> <span class="st">&quot; &quot;</span> <span class="fu">++</span> (go xs)
+  u (<span class="dt">Just</span> a) <span class="fu">=</span> a
+
+<span class="ot">replaceThe' ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
+replaceThe' str <span class="fu">=</span> init <span class="fu">$</span> concatMap (g <span class="fu">.</span> f) <span class="fu">$</span> wurdz str <span class="kw">where</span>
+  g x <span class="fu">=</span> ((<span class="fu">++</span>) x <span class="st">&quot; &quot;</span>)
+  f x <span class="fu">=</span> (<span class="kw">if</span> notThe x <span class="fu">==</span> <span class="dt">Nothing</span> <span class="kw">then</span> <span class="st">&quot;a&quot;</span> <span class="kw">else</span> u <span class="fu">$</span> notThe x)
+  u (<span class="dt">Just</span> a) <span class="fu">=</span> a
+
+<span class="ot">replaceThe2 ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
+replaceThe2 str <span class="fu">=</span> wurdzMap (f <span class="fu">.</span>notThe) str <span class="kw">where</span>
+  f (<span class="dt">Nothing</span>) <span class="fu">=</span> <span class="st">&quot;a&quot;</span>
+  f (<span class="dt">Just</span> a) <span class="fu">=</span> a
+
+<span class="co">-- 2</span>
+
+<span class="ot">isVowel ::</span> <span class="dt">Char</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+isVowel c <span class="fu">=</span> (elem c <span class="st">&quot;aeiouAEIOU&quot;</span>)
+
+<span class="ot">countTheBeforeVowel ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Integer</span>
+countTheBeforeVowel str <span class="fu">=</span> go (words str) <span class="dv">0</span> <span class="kw">where</span>
+  go [] n <span class="fu">=</span> n
+  go [x] n <span class="fu">=</span> n
+  go (x<span class="fu">:</span>(c<span class="fu">:</span>cs)<span class="fu">:</span>xss) n <span class="fu">=</span> <span class="kw">if</span> (x <span class="fu">==</span> <span class="st">&quot;the&quot;</span> <span class="fu">&amp;&amp;</span> (isVowel c))
+                       <span class="kw">then</span> go xss (n <span class="fu">+</span> <span class="dv">1</span>)
+                       <span class="kw">else</span> go xss n
+
+<span class="ot">countVowels ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Integer</span>
+countVowels str <span class="fu">=</span> foldr f <span class="dv">0</span> str <span class="kw">where</span>
+  f x y <span class="fu">=</span> <span class="kw">if</span> isVowel x <span class="kw">then</span> y <span class="fu">+</span> <span class="dv">1</span> <span class="kw">else</span> y
+
+<span class="ot">countConsonants ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Integer</span>
+countConsonants str <span class="fu">=</span> foldr f <span class="dv">0</span> str <span class="kw">where</span>
+  f x y <span class="fu">=</span> <span class="kw">if</span> not <span class="fu">$</span> isVowel x <span class="kw">then</span> y <span class="fu">+</span> <span class="dv">1</span> <span class="kw">else</span> y
+
+<span class="co">-- Validate the word</span>
+
+<span class="kw">newtype</span> <span class="dt">Word'</span> <span class="fu">=</span> <span class="dt">Word'</span> <span class="dt">String</span> <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+vowels <span class="fu">=</span> <span class="st">&quot;aeiou&quot;</span>
+
+<span class="ot">mkWord ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Word'</span>
+mkWord str <span class="fu">=</span> <span class="kw">if</span> countConsonants str <span class="fu">&gt;=</span> countVowels str
+             <span class="kw">then</span> (<span class="dt">Just</span> (<span class="dt">Word'</span> str)) <span class="kw">else</span> <span class="dt">Nothing</span></code></pre></div>
+<h3 id="validate-the-word">Validate the word</h3>
+<p>see `12/StringProcessing.hs,</p>
+<h3 id="its-only-natural">It’s only Natural</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--12/Natural.hs</span>
+<span class="kw">module</span> <span class="dt">Natural</span> <span class="kw">where</span>
+
+<span class="kw">data</span> <span class="dt">Nat</span> <span class="fu">=</span> <span class="dt">Zero</span> <span class="fu">|</span> <span class="dt">Succ</span> <span class="dt">Nat</span> <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="ot">natToInteger ::</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">Integer</span>
+natToInteger nat <span class="fu">=</span> go nat <span class="dv">0</span>
+  <span class="kw">where</span>
+    go <span class="dt">Zero</span> n <span class="fu">=</span> n
+    go (<span class="dt">Succ</span> a) n <span class="fu">=</span> go a (n <span class="fu">+</span> <span class="dv">1</span>)
+
+<span class="ot">integerToNat ::</span> <span class="dt">Integer</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Nat</span>
+integerToNat n
+  <span class="fu">|</span> n <span class="fu">&lt;</span> <span class="dv">0</span> <span class="fu">=</span> <span class="dt">Nothing</span>
+  <span class="fu">|</span> otherwise <span class="fu">=</span> (<span class="dt">Just</span> <span class="fu">$</span> go n <span class="dt">Zero</span>)
+  <span class="kw">where</span>
+    go <span class="dv">0</span> nat <span class="fu">=</span> nat
+    go n nat <span class="fu">=</span> go (n <span class="fu">-</span> <span class="dv">1</span>) (<span class="dt">Succ</span> nat)</code></pre></div>
+<h3 id="small-library-for-maybe">Small library for Maybe</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--12/MaybeLib.hs</span>
+<span class="kw">module</span> <span class="dt">MaybeLib</span> <span class="kw">where</span>
+
+<span class="co">-- 1</span>
+<span class="ot">isJust ::</span> <span class="dt">Maybe</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+isJust <span class="dt">Nothing</span> <span class="fu">=</span> <span class="dt">False</span>
+isJust (<span class="dt">Just</span> a) <span class="fu">=</span> <span class="dt">True</span>
+
+<span class="ot">isNothing ::</span> <span class="dt">Maybe</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+isNothing <span class="fu">=</span> not <span class="fu">.</span> isJust
+
+<span class="co">-- 2</span>
+<span class="ot">mayybee ::</span> b <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a <span class="ot">-&gt;</span> b
+mayybee b f (<span class="dt">Just</span> a) <span class="fu">=</span> (f a)
+mayybee b f <span class="dt">Nothing</span> <span class="fu">=</span> b
+
+<span class="co">-- 3</span>
+<span class="ot">fromMaybe ::</span> a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a <span class="ot">-&gt;</span> a
+fromMaybe a m <span class="fu">=</span> mayybee a id m
+
+<span class="co">-- 4</span>
+<span class="ot">listToMaybe ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a
+listToMaybe [] <span class="fu">=</span> <span class="dt">Nothing</span>
+listToMaybe (x<span class="fu">:</span>xs) <span class="fu">=</span> (<span class="dt">Just</span> x)
+
+<span class="ot">maybeToList ::</span> <span class="dt">Maybe</span> a <span class="ot">-&gt;</span> [a]
+maybeToList <span class="dt">Nothing</span> <span class="fu">=</span> []
+maybeToList (<span class="dt">Just</span> a) <span class="fu">=</span> [a]
+
+<span class="co">-- 5</span>
+<span class="ot">catMaybes ::</span> [<span class="dt">Maybe</span> a] <span class="ot">-&gt;</span> [a]
+catMaybes [] <span class="fu">=</span> []
+catMaybes ((<span class="dt">Just</span> a)<span class="fu">:</span>xs) <span class="fu">=</span> a <span class="fu">:</span> (catMaybes xs)
+catMaybes (<span class="dt">Nothing</span><span class="fu">:</span>xs) <span class="fu">=</span> catMaybes xs
+
+<span class="co">-- 6</span>
+<span class="ot">flipMaybe ::</span> [<span class="dt">Maybe</span> a] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> [a]
+flipMaybe ms <span class="fu">=</span> go ms [] <span class="kw">where</span>
+  go [] acc <span class="fu">=</span> <span class="dt">Just</span> acc
+  go ((<span class="dt">Just</span> x)<span class="fu">:</span>xs) acc <span class="fu">=</span> go xs (x<span class="fu">:</span>acc)
+  go (<span class="dt">Nothing</span><span class="fu">:</span>xs) _ <span class="fu">=</span> <span class="dt">Nothing</span></code></pre></div>
+<h3 id="small-library-for-either">Small library for Either</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--12/EitherLib.hs</span>
+<span class="kw">module</span> <span class="dt">EitherLib</span> <span class="kw">where</span>
+
+<span class="ot">lefts' ::</span> [<span class="dt">Either</span> a b] <span class="ot">-&gt;</span> [a]
+lefts' es <span class="fu">=</span> foldr f [] es <span class="kw">where</span>
+  f (<span class="dt">Left</span> x) acc <span class="fu">=</span> x<span class="fu">:</span>acc
+  f _ acc <span class="fu">=</span> acc
+
+<span class="ot">rights' ::</span> [<span class="dt">Either</span> a b] <span class="ot">-&gt;</span> [b]
+rights' es <span class="fu">=</span> foldr f [] es <span class="kw">where</span>
+  f (<span class="dt">Right</span> x) acc <span class="fu">=</span> x<span class="fu">:</span>acc
+  f _ acc <span class="fu">=</span> acc
+
+<span class="ot">partitionEithers' ::</span> [<span class="dt">Either</span> a b] <span class="ot">-&gt;</span> ([a], [b])
+partitionEithers' es <span class="fu">=</span> (lefts' es, rights' es)
+
+<span class="ot">eitherMaybe' ::</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> <span class="dt">Either</span> a b <span class="ot">-&gt;</span> <span class="dt">Maybe</span> c
+eitherMaybe' f (<span class="dt">Left</span> a) <span class="fu">=</span> <span class="dt">Nothing</span>
+eitherMaybe' f (<span class="dt">Right</span> b) <span class="fu">=</span> <span class="dt">Just</span> <span class="fu">$</span> f b
+
+<span class="ot">either' ::</span> (a <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> <span class="dt">Either</span> a b <span class="ot">-&gt;</span> c
+either' f g (<span class="dt">Left</span> a) <span class="fu">=</span> f a
+either' f g (<span class="dt">Right</span> b) <span class="fu">=</span> g b
+
+<span class="ot">eitherMaybe'' ::</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> <span class="dt">Either</span> a b <span class="ot">-&gt;</span> <span class="dt">Maybe</span> c
+eitherMaybe'' f e <span class="fu">=</span> either' (const <span class="dt">Nothing</span>) (<span class="dt">Just</span> <span class="fu">.</span> f) e</code></pre></div>
+<h3 id="write-your-own-iterate-and-unfoldr">Write your own iterate and unfoldr</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--12/Unfolds.hs</span>
+<span class="kw">module</span> <span class="dt">Unfolds</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Data.List</span>
+
+<span class="ot">myIterate ::</span> (a <span class="ot">-&gt;</span> a) <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> [a]
+myIterate f a <span class="fu">=</span> a <span class="fu">:</span> myIterate f (f a)
+
+<span class="ot">myUnfoldr ::</span> (b <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (a, b)) <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> [a]
+myUnfoldr f s <span class="fu">=</span> go f s (f s) <span class="kw">where</span>
+  go f s <span class="dt">Nothing</span> <span class="fu">=</span> []
+  go f s (<span class="dt">Just</span> (a, b)) <span class="fu">=</span> a <span class="fu">:</span> go f b (f b)
+
+<span class="ot">betterIterate ::</span> (a <span class="ot">-&gt;</span> a) <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> [a]
+betterIterate f s <span class="fu">=</span> myUnfoldr (g f) s <span class="kw">where</span>
+  g f s <span class="fu">=</span> <span class="dt">Just</span> (s, (f s))</code></pre></div>
+<h3 id="finally-something-other-than-a-list">Finally something other than a list</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--12/BinaryTreeUnfold.hs</span>
+<span class="kw">module</span> <span class="dt">BinaryTreeUnfold</span> <span class="kw">where</span>
+
+<span class="kw">data</span> <span class="dt">BinaryTree</span> a <span class="fu">=</span> <span class="dt">Leaf</span> <span class="fu">|</span> <span class="dt">Node</span> (<span class="dt">BinaryTree</span> a) a (<span class="dt">BinaryTree</span> a)
+                    <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>, <span class="dt">Ord</span>)
+
+<span class="ot">unfold ::</span> (a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (a, b, a)) <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">BinaryTree</span> b
+unfold f s <span class="fu">=</span> <span class="kw">case</span> f s <span class="kw">of</span>
+  <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="dt">Leaf</span>
+  <span class="dt">Just</span> (l, v, r) <span class="ot">-&gt;</span> <span class="dt">Node</span> (unfold f l) v (unfold f r)
+
+<span class="ot">treeBuild ::</span> <span class="dt">Integer</span> <span class="ot">-&gt;</span> <span class="dt">BinaryTree</span> <span class="dt">Integer</span>
+treeBuild n <span class="fu">=</span> unfold (f n) <span class="dv">0</span> <span class="kw">where</span>
+  f n x <span class="fu">=</span> <span class="kw">if</span> x <span class="fu">&gt;=</span> n <span class="kw">then</span> <span class="dt">Nothing</span> <span class="kw">else</span> <span class="dt">Just</span> (x<span class="fu">+</span><span class="dv">1</span>, x, x<span class="fu">+</span><span class="dv">1</span>)</code></pre></div>
+
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>

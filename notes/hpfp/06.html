@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (HPFP 06/31): Typeclasses</title>
+        <link rel="stylesheet" type="text/css" href="../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../">jcb</a>
+                <a href="../../posts.html">posts</a>
+                <a href="../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+            </div>
+        </div>
+        <div id="content">
+          <div id="title">
+            <h1>Notes (HPFP 06/31): Typeclasses</h1>
+          </div>
+          <div class="info">
+    Posted on November  1, 2017
+    
+        by jcb
+    
+</div>
+<div class="info">
+    
+    Tags: <a href="../../tags/hpfp.html">hpfp</a>, <a href="../../tags/notes.html">notes</a>, <a href="../../tags/haskell.html">haskell</a>
+    
+</div>
+
+<hr>
+
+<h1 id="typeclasses">6 Typeclasses</h1>
+<h2 id="what-are-typeclasses">6.2 What are typeclasses?</h2>
+<p>“Typeclasses and types in Haskell are, in a sense, opposites”.</p>
+<p>Sentences like these frustrate me. You can say nearly anything is the case “in a sense:”</p>
+<p>“In a sense, the Moon really is made of cheese.” In the sense of poetic whimsy.</p>
+<p>“In a sense, Johnny is at the top of his class.” In unexcused absences and missed assignments.</p>
+<p>This is just some plain old fashioned jesuitical casuistry. Annoying.</p>
+<p>“In a sense, typeclasses and types are the same.” In the sense that they both specify and constrain the properties of expressions.</p>
+<p>If an expression’s type is an instance of <code>Eq</code> it means there’s a way to define to define and equals function <code>(==)</code> to check if two expressions of that type are equal:</p>
+<pre><code>Prelude&gt; :info Eq
+class Eq a where
+  (==) :: a -&gt; a -&gt; Bool
+  (/=) :: a -&gt; a -&gt; Bool
+  {-# MINIMAL (==) | (/=) #-}
+  	-- Defined in ‘GHC.Classes’</code></pre>
+<p>But there are types that it is impossible to define <code>(==)</code> for! The function constructor <code>(-&gt;)</code>, for example, cannot be an instance of <code>Eq</code>. Why? The Halting Problem! If there’s no general way to test whether a function will halt on a given input, there’s certainly no general way to determine whether two functions will do the same thing (run forever or return the same value) for a given input.</p>
+<p>So typeclasses constrains the potential things types can be by specifying what they can do.</p>
+<p>Some typeclasses and their relationships:</p>
+<p align="center">
+<img src="https://wiki.haskell.org/wikiupload/d/df/Typeclassopedia-diagram.png" width="600px" alt="Typeclassopedia">
+</p>
+<h2 id="exercises-eq-instances">Exercises: Eq Instances</h2>
+<ol style="list-style-type: decimal">
+<li><pre><code>instance Eq TisAnInteger where (==) TisAn x TisAn y = (==) x y</code></pre></li>
+<li><pre><code>instance Eq TwoIntegers where Two x y == Two p q = (x, y) == (p, q)</code></pre></li>
+<li><p>String or Int:</p>
+<pre><code>instance Eq StringOrInt where
+TisAnInt x == TisAnInt y = x == y
+TisAString x == TisAString y = x == y
+_ == _ = False</code></pre></li>
+<li><pre><code>instance Eq Pair where Pair a b == Pair x y = (a, b) == (x, y)</code></pre></li>
+<li><pre><code>instance Eq Tuple where Tuple a b == Tuple x y = (a, b) == (x, y)</code></pre></li>
+<li><p>Which</p>
+<pre><code>instance Eq a =&gt; Eq (Which a) where
+ThisOne x == ThisOne y = x == y
+ThatOne x == ThatOne y = x == y
+_ == _ = False</code></pre></li>
+<li><p>EitherOr</p>
+<pre><code>instance (Eq a, Eq b) =&gt; Eq (EitherOr a b) where
+Hello x == Hello y = x == y
+Goodbye x == Goodbye y = x == y
+_ == _ = False</code></pre></li>
+</ol>
+<h2 id="exercises-tuple-experiment">Exercises: Tuple Experiment</h2>
+<p><code>quotRem</code> and <code>divMod</code> return a tuple with the values from <code>quot</code> and <code>rem</code> or <code>div</code> and <code>mod</code> respectively.</p>
+<h2 id="exercises-will-they-work">Exercises: Will They Work?</h2>
+<ol style="list-style-type: decimal">
+<li><code>5</code></li>
+<li><code>LT</code></li>
+<li>error, a string and a bool are not comparable</li>
+<li><code>False</code></li>
+</ol>
+<h2 id="chapter-exercises">Chapter Exercises</h2>
+<h3 id="multiple-choice">Multiple choice</h3>
+<ol style="list-style-type: decimal">
+<li>c</li>
+<li>b</li>
+<li>a</li>
+<li>c</li>
+<li>a</li>
+</ol>
+<h3 id="does-it-typecheck">Does it typecheck?:</h3>
+<ol style="list-style-type: decimal">
+<li>ch6/ex1.hs</li>
+<li><p>ch6/ex2.hs</p></li>
+<li><ol style="list-style-type: lower-alpha">
+<li>any <code>Mood</code>, i.e. <code>Blah</code> or <code>Woot</code></li>
+<li>type error, <code>9</code> is not a <code>Mood</code></li>
+<li><code>Mood</code> does not derive <code>Ord</code></li>
+</ol></li>
+<li><p>ch6/ex4.hs</p></li>
+</ol>
+<h3 id="given-a-datatype-declaration-what-can-we-do">Given a datatype declaration, what can we do?</h3>
+<p>exdatatype.hs</p>
+<ol style="list-style-type: decimal">
+<li><code>&quot;chases&quot;</code> and <code>True</code> are a <code>String</code> and a <code>Bool</code>, not a <code>Rocks</code> and a <code>Yeah</code></li>
+<li>works</li>
+<li>works</li>
+<li><code>Papu</code> isn’t an instance of <code>Ord</code></li>
+</ol>
+<h3 id="match-the-types">Match the types:</h3>
+<p>exmatch1.hs and exmatch2.hs</p>
+<ol style="list-style-type: decimal">
+<li>Since <code>i = 1</code>, <code>i</code> has to be a <code>Num</code>, it can’t be a type that <code>1</code> isn’t, like e.g. a <code>String</code>. We can’t cast <code>i</code> upwards.</li>
+<li><code>1.0</code> is not just any instance of <code>Num</code>, the syntax implies <code>Fractional</code>.</li>
+<li>works</li>
+<li>works</li>
+<li>works, we can always cast downwards</li>
+<li>works</li>
+<li>Doesn’t work, <code>sigmund</code> returns <code>myX</code> which is an <code>Int</code></li>
+<li>Doesn’t work, <code>sigmund'</code> returns an <code>Int</code> not any instance of <code>Num</code></li>
+<li>Works, restricts <code>jung</code> to a list of <code>Ints</code> rather than any list</li>
+<li>Works, restricts input to <code>String</code></li>
+<li>Doesn’t work, <code>mySort</code> only sorts <code>Strings</code>, not any instance of <code>Ord</code></li>
+</ol>
+<h3 id="type-kwon-do-electric-typealoo">Type-Kwon-Do: Electric Typealoo</h3>
+<ol style="list-style-type: decimal">
+<li><code>chk f a b = f a == b</code></li>
+<li><code>arith f n a = (+ fromIntegral n) (f a)</code></li>
+</ol>
+<h2 id="follow-up-resources">6.17 Follow-up resources</h2>
+<ol style="list-style-type: decimal">
+<li><p>[P. Wadler and S. Blott. How to make ad-hoc polymorphism less ad hoc.] (http://www.cse.iitk.ac.in/users/karkare/courses/2010/cs653/Papers/ ad-hoc-polymorphism.pdf)</p></li>
+<li><p>[Cordelia V. Hall, Kevin Hammond, Simon L. Peyton Jones, and Philip L. Wadler. Typeclasses in Haskell.] (http://ropas.snu.ac.kr/lib/dock/HaHaJoWa1996.pdf)</p></li>
+</ol>
+<hr />
+
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>

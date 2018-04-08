@@ -1,0 +1,512 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (HPFP 15/31): Monoid, Semigroup</title>
+        <link rel="stylesheet" type="text/css" href="../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../">jcb</a>
+                <a href="../../posts.html">posts</a>
+                <a href="../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+            </div>
+        </div>
+        <div id="content">
+          <div id="title">
+            <h1>Notes (HPFP 15/31): Monoid, Semigroup</h1>
+          </div>
+          <div class="info">
+    Posted on November  1, 2017
+    
+        by jcb
+    
+</div>
+<div class="info">
+    
+    Tags: <a href="../../tags/notes.html">notes</a>, <a href="../../tags/haskell.html">haskell</a>, <a href="../../tags/hpfp.html">hpfp</a>
+    
+</div>
+
+<hr>
+
+<h1 id="monoid-semigroup">15 Monoid, Semigroup</h1>
+<h2 id="reusing-algebras-by-asking-for-algebras">15.10 Reusing algebras by asking for algebras</h2>
+<h3 id="exercise-optional-monoid">Exercise: Optional Monoid</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--15/Optional.hs</span>
+<span class="kw">module</span> <span class="dt">Optional</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Data.Monoid</span>
+
+<span class="kw">data</span> <span class="dt">Optional</span> a <span class="fu">=</span> <span class="dt">Nada</span> <span class="fu">|</span> <span class="dt">Only</span> a <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> <span class="dt">Monoid</span> a <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Optional</span> a) <span class="kw">where</span>
+  mempty <span class="fu">=</span> <span class="dt">Nada</span>
+  mappend <span class="dt">Nada</span> <span class="dt">Nada</span> <span class="fu">=</span> <span class="dt">Nada</span>
+  mappend <span class="dt">Nada</span> (<span class="dt">Only</span> x) <span class="fu">=</span> (<span class="dt">Only</span> x)
+  mappend (<span class="dt">Only</span> x) <span class="dt">Nada</span> <span class="fu">=</span> (<span class="dt">Only</span> x)
+  mappend (<span class="dt">Only</span> x) (<span class="dt">Only</span> y) <span class="fu">=</span> (<span class="dt">Only</span> (mappend x y))</code></pre></div>
+<h2 id="madness">15.11 Madness</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--15/Madness.hs</span>
+<span class="kw">module</span> <span class="dt">Madness</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Data.Monoid</span>
+
+<span class="kw">type</span> <span class="dt">Verb</span> <span class="fu">=</span> <span class="dt">String</span>
+<span class="kw">type</span> <span class="dt">Adjective</span> <span class="fu">=</span> <span class="dt">String</span>
+<span class="kw">type</span> <span class="dt">Adverb</span> <span class="fu">=</span> <span class="dt">String</span>
+<span class="kw">type</span> <span class="dt">Noun</span> <span class="fu">=</span> <span class="dt">String</span>
+<span class="kw">type</span> <span class="dt">Exclamation</span> <span class="fu">=</span> <span class="dt">String</span>
+
+<span class="ot">madlibbin' ::</span> <span class="dt">Exclamation</span> <span class="ot">-&gt;</span> <span class="dt">Adverb</span> <span class="ot">-&gt;</span> <span class="dt">Noun</span> <span class="ot">-&gt;</span> <span class="dt">Adjective</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
+madlibbin' e adv noun adj <span class="fu">=</span>
+  e <span class="fu">&lt;&gt;</span> <span class="st">&quot;! he said&quot;</span> <span class="fu">&lt;&gt;</span> adv <span class="fu">&lt;&gt;</span> <span class="st">&quot; as he jumped into his car &quot;</span> <span class="fu">&lt;&gt;</span>
+  noun  <span class="fu">&lt;&gt;</span> <span class="st">&quot; and drove off with his &quot;</span> <span class="fu">&lt;&gt;</span> adj <span class="fu">&lt;&gt;</span> <span class="st">&quot; wife.&quot;</span>
+
+<span class="ot">madlibbinBetter' ::</span> <span class="dt">Exclamation</span> <span class="ot">-&gt;</span> <span class="dt">Adverb</span> <span class="ot">-&gt;</span> <span class="dt">Noun</span> <span class="ot">-&gt;</span> <span class="dt">Adjective</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
+madlibbinBetter' e adv noun adj <span class="fu">=</span>
+  mconcat [ e, <span class="st">&quot;! he said&quot;</span>, adv, <span class="st">&quot; as he jumped into his car &quot;</span>, noun
+          , <span class="st">&quot; and drove off with his &quot;</span>, adj,  <span class="st">&quot; wife.&quot;</span>
+          ]</code></pre></div>
+<h2 id="better-living-through-quickcheck">15.12 Better living through QuickCheck</h2>
+<h3 id="testing-quickchecks-patience">Testing QuickCheck’s patience</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--15/Patience.hs</span>
+<span class="kw">module</span> <span class="dt">Patience</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Control.Monad</span>
+<span class="kw">import </span><span class="dt">Data.Monoid</span>
+<span class="kw">import </span><span class="dt">Test.QuickCheck</span>
+
+<span class="kw">data</span> <span class="dt">Bull</span> <span class="fu">=</span> <span class="dt">Fools</span> <span class="fu">|</span> <span class="dt">Twoo</span> <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">Bull</span> <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> frequency [ (<span class="dv">1</span>, return <span class="dt">Fools</span>), (<span class="dv">1</span>, return <span class="dt">Twoo</span>) ]
+
+<span class="kw">instance</span> <span class="dt">Monoid</span> <span class="dt">Bull</span> <span class="kw">where</span>
+  mempty <span class="fu">=</span> <span class="dt">Fools</span>
+  mappend _ _ <span class="fu">=</span> <span class="dt">Fools</span>
+
+<span class="kw">type</span> <span class="dt">BullMappend</span> <span class="fu">=</span> <span class="dt">Bull</span> <span class="ot">-&gt;</span> <span class="dt">Bull</span> <span class="ot">-&gt;</span> <span class="dt">Bull</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+
+<span class="ot">monoidAssoc ::</span> (<span class="dt">Eq</span> m, <span class="dt">Monoid</span> m) <span class="ot">=&gt;</span> m <span class="ot">-&gt;</span> m <span class="ot">-&gt;</span> m <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+monoidAssoc a b c <span class="fu">=</span> (a <span class="fu">&lt;&gt;</span> (b <span class="fu">&lt;&gt;</span> c)) <span class="fu">==</span> ((a <span class="fu">&lt;&gt;</span> b) <span class="fu">&lt;&gt;</span> c)
+
+<span class="ot">monoidLeftIdentity ::</span> (<span class="dt">Eq</span> m, <span class="dt">Monoid</span> m) <span class="ot">=&gt;</span> m <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+monoidLeftIdentity a <span class="fu">=</span> (mempty <span class="fu">&lt;&gt;</span> a) <span class="fu">==</span> a
+
+<span class="ot">monoidRightIdentity ::</span> (<span class="dt">Eq</span> m, <span class="dt">Monoid</span> m) <span class="ot">=&gt;</span> m <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+monoidRightIdentity a <span class="fu">=</span> (a <span class="fu">&lt;&gt;</span> mempty) <span class="fu">==</span> a
+
+<span class="ot">main ::</span> <span class="dt">IO</span> ()
+main <span class="fu">=</span> <span class="kw">do</span>
+  <span class="kw">let</span> ma <span class="fu">=</span> monoidAssoc
+      mli <span class="fu">=</span> monoidLeftIdentity
+      mlr <span class="fu">=</span> monoidRightIdentity
+  quickCheck (<span class="ot">ma ::</span> <span class="dt">BullMappend</span>)
+  quickCheck (<span class="ot">mli ::</span> <span class="dt">Bull</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">mlr ::</span> <span class="dt">Bull</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)</code></pre></div>
+<h3 id="exercise-maybe-another-monoid">Exercise: Maybe Another Monoid</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--15/MaybeAnother.hs</span>
+<span class="kw">module</span> <span class="dt">MaybeAnother</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Control.Monad</span>
+<span class="kw">import </span><span class="dt">Data.Monoid</span>
+<span class="kw">import </span><span class="dt">Test.QuickCheck</span>
+
+<span class="kw">data</span> <span class="dt">Optional</span> a <span class="fu">=</span> <span class="dt">Nada</span> <span class="fu">|</span> <span class="dt">Only</span> a <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> <span class="dt">Monoid</span> a <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Optional</span> a) <span class="kw">where</span>
+  mempty <span class="fu">=</span> <span class="dt">Nada</span>
+  mappend <span class="dt">Nada</span> <span class="dt">Nada</span> <span class="fu">=</span> <span class="dt">Nada</span>
+  mappend <span class="dt">Nada</span> (<span class="dt">Only</span> x) <span class="fu">=</span> (<span class="dt">Only</span> x)
+  mappend (<span class="dt">Only</span> x) <span class="dt">Nada</span> <span class="fu">=</span> (<span class="dt">Only</span> x)
+  mappend (<span class="dt">Only</span> x) (<span class="dt">Only</span> y) <span class="fu">=</span> (<span class="dt">Only</span> (mappend x y))
+
+<span class="kw">newtype</span> <span class="dt">First'</span> a <span class="fu">=</span> <span class="dt">First'</span> {<span class="ot"> getFirst' ::</span> <span class="dt">Optional</span> a } <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">First'</span> a) <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> <span class="kw">do</span>
+    a <span class="ot">&lt;-</span> arbitrary
+    oneof [return (<span class="dt">First'</span> (<span class="dt">Only</span> a)), return (<span class="dt">First'</span> <span class="dt">Nada</span>)]
+
+<span class="kw">instance</span> <span class="dt">Monoid</span> (<span class="dt">First'</span> a ) <span class="kw">where</span>
+  mempty <span class="fu">=</span> <span class="dt">First'</span> <span class="dt">Nada</span>
+  mappend (<span class="dt">First'</span> <span class="dt">Nada</span>) (<span class="dt">First'</span> <span class="dt">Nada</span>) <span class="fu">=</span> (<span class="dt">First'</span> <span class="dt">Nada</span>)
+  mappend (<span class="dt">First'</span> <span class="dt">Nada</span>) (<span class="dt">First'</span> (<span class="dt">Only</span> x)) <span class="fu">=</span> (<span class="dt">First'</span> (<span class="dt">Only</span> x))
+  mappend (<span class="dt">First'</span> (<span class="dt">Only</span> x)) _ <span class="fu">=</span> (<span class="dt">First'</span> (<span class="dt">Only</span> x))
+
+<span class="kw">type</span> <span class="dt">FirstMappend</span> <span class="fu">=</span> <span class="dt">First'</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">First'</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">First'</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+
+<span class="kw">type</span> <span class="dt">FstId</span> <span class="fu">=</span> <span class="dt">First'</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+
+<span class="ot">monoidAssoc ::</span> (<span class="dt">Eq</span> m, <span class="dt">Monoid</span> m) <span class="ot">=&gt;</span> m <span class="ot">-&gt;</span> m <span class="ot">-&gt;</span> m <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+monoidAssoc a b c <span class="fu">=</span> (a <span class="fu">&lt;&gt;</span> (b <span class="fu">&lt;&gt;</span> c)) <span class="fu">==</span> ((a <span class="fu">&lt;&gt;</span> b) <span class="fu">&lt;&gt;</span> c)
+
+<span class="ot">monoidLeftIdentity ::</span> (<span class="dt">Eq</span> m, <span class="dt">Monoid</span> m) <span class="ot">=&gt;</span> m <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+monoidLeftIdentity a <span class="fu">=</span> (mempty <span class="fu">&lt;&gt;</span> a) <span class="fu">==</span> a
+
+<span class="ot">monoidRightIdentity ::</span> (<span class="dt">Eq</span> m, <span class="dt">Monoid</span> m) <span class="ot">=&gt;</span> m <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+monoidRightIdentity a <span class="fu">=</span> (a <span class="fu">&lt;&gt;</span> mempty) <span class="fu">==</span> a
+
+<span class="ot">main ::</span> <span class="dt">IO</span> ()
+main <span class="fu">=</span> <span class="kw">do</span>
+  quickCheck (<span class="ot">monoidAssoc ::</span> <span class="dt">FirstMappend</span>)
+  quickCheck (<span class="ot">monoidLeftIdentity ::</span> <span class="dt">FstId</span>)
+  quickCheck (<span class="ot">monoidRightIdentity ::</span> <span class="dt">FstId</span>)</code></pre></div>
+<h2 id="chapter-exercises">15.15 Chapter Exercises</h2>
+<h3 id="semigroup-exercises-monoid-exercises">Semigroup exercises &amp; Monoid exercises</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--15/SemigroupMonoidExercises.hs</span>
+<span class="kw">module</span> <span class="dt">SemigroupMonoidExercises</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Test.QuickCheck</span>
+<span class="kw">import </span><span class="dt">Test.QuickCheck.Gen.Unsafe</span>
+<span class="kw">import </span><span class="dt">Data.Semigroup</span>
+<span class="kw">import qualified</span> <span class="dt">Data.Monoid</span> <span class="kw">as</span> <span class="dt">M</span>
+
+<span class="co">-- 1</span>
+<span class="kw">data</span> <span class="dt">Trivial</span> <span class="fu">=</span> <span class="dt">Trivial</span> <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> <span class="dt">Semigroup</span> <span class="dt">Trivial</span> <span class="kw">where</span>
+  _ <span class="fu">&lt;&gt;</span> _ <span class="fu">=</span> <span class="dt">Trivial</span>
+
+<span class="kw">instance</span> <span class="dt">Monoid</span> <span class="dt">Trivial</span> <span class="kw">where</span>
+  mempty <span class="fu">=</span> <span class="dt">Trivial</span>
+  mappend <span class="fu">=</span> (<span class="fu">&lt;&gt;</span>)
+
+<span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">Trivial</span> <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> return <span class="dt">Trivial</span>
+
+<span class="kw">type</span> <span class="dt">TrivAssoc</span> <span class="fu">=</span> <span class="dt">Trivial</span> <span class="ot">-&gt;</span> <span class="dt">Trivial</span> <span class="ot">-&gt;</span> <span class="dt">Trivial</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+
+<span class="co">-- 2</span>
+<span class="kw">newtype</span> <span class="dt">Identity</span> a <span class="fu">=</span> <span class="dt">Identity</span> a <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Identity</span> a) <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> <span class="kw">do</span>
+    a' <span class="ot">&lt;-</span> arbitrary
+    return (<span class="dt">Identity</span> a')
+
+<span class="kw">instance</span> (<span class="dt">Semigroup</span> a) <span class="ot">=&gt;</span> <span class="dt">Semigroup</span> (<span class="dt">Identity</span> a) <span class="kw">where</span>
+  (<span class="dt">Identity</span> a1) <span class="fu">&lt;&gt;</span> (<span class="dt">Identity</span> a2) <span class="fu">=</span> (<span class="dt">Identity</span> (a1 <span class="fu">&lt;&gt;</span> a2))
+
+<span class="kw">instance</span> (<span class="dt">Monoid</span> a) <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Identity</span> a) <span class="kw">where</span>
+  mempty <span class="fu">=</span> <span class="dt">Identity</span> mempty
+  mappend (<span class="dt">Identity</span> a) (<span class="dt">Identity</span> b) <span class="fu">=</span> <span class="dt">Identity</span> ((<span class="fu">M.&lt;&gt;</span>) a b)
+
+<span class="co">-- instance Semigroup (Identity a) where</span>
+<span class="co">--  (Identity a) &lt;&gt; _ = (Identity a)</span>
+
+<span class="kw">type</span> <span class="dt">IdentAssoc</span> <span class="fu">=</span> <span class="dt">Identity</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Identity</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Identity</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+
+<span class="co">-- 3</span>
+<span class="kw">data</span> <span class="dt">Two</span> a b <span class="fu">=</span> <span class="dt">Two</span> a b <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> (<span class="dt">Arbitrary</span> a, <span class="dt">Arbitrary</span> b) <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Two</span> a b) <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> <span class="kw">do</span>
+    a' <span class="ot">&lt;-</span> arbitrary
+    b' <span class="ot">&lt;-</span> arbitrary
+    return (<span class="dt">Two</span> a' b')
+
+<span class="kw">instance</span> (<span class="dt">Semigroup</span> a, <span class="dt">Semigroup</span> b) <span class="ot">=&gt;</span> <span class="dt">Semigroup</span> (<span class="dt">Two</span> a b) <span class="kw">where</span>
+  (<span class="dt">Two</span> a1 b1) <span class="fu">&lt;&gt;</span> (<span class="dt">Two</span> a2 b2) <span class="fu">=</span> <span class="dt">Two</span> (a1 <span class="fu">&lt;&gt;</span> a2) (b1 <span class="fu">&lt;&gt;</span> b2)
+
+<span class="kw">instance</span> (<span class="dt">Monoid</span> a, <span class="dt">Monoid</span> b) <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Two</span> a b) <span class="kw">where</span>
+  mempty <span class="fu">=</span> <span class="dt">Two</span> mempty mempty
+  mappend (<span class="dt">Two</span> a1 b1) (<span class="dt">Two</span> a2 b2) <span class="fu">=</span> <span class="dt">Two</span> ((<span class="fu">M.&lt;&gt;</span>) a1 a2) ((<span class="fu">M.&lt;&gt;</span>) b1 b2)
+
+<span class="kw">type</span> <span class="dt">TwoAssoc</span> <span class="fu">=</span>
+  (<span class="dt">Two</span> <span class="dt">String</span> <span class="dt">String</span>) <span class="ot">-&gt;</span> (<span class="dt">Two</span> <span class="dt">String</span> <span class="dt">String</span>) <span class="ot">-&gt;</span> (<span class="dt">Two</span> <span class="dt">String</span> <span class="dt">String</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+
+<span class="co">-- 4</span>
+<span class="kw">data</span> <span class="dt">Three</span> a b c <span class="fu">=</span> <span class="dt">Three</span> a b c <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> (<span class="dt">Arbitrary</span> a, <span class="dt">Arbitrary</span> b, <span class="dt">Arbitrary</span> c) <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Three</span> a b c) <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> <span class="kw">do</span>
+    a' <span class="ot">&lt;-</span> arbitrary
+    b' <span class="ot">&lt;-</span> arbitrary
+    c' <span class="ot">&lt;-</span> arbitrary
+    return (<span class="dt">Three</span> a' b' c')
+
+<span class="kw">instance</span> (<span class="dt">Semigroup</span> a, <span class="dt">Semigroup</span> b, <span class="dt">Semigroup</span> c) <span class="ot">=&gt;</span> <span class="dt">Semigroup</span> (<span class="dt">Three</span> a b c) <span class="kw">where</span>
+  (<span class="dt">Three</span> a1 b1 c1) <span class="fu">&lt;&gt;</span> (<span class="dt">Three</span> a2 b2 c2) <span class="fu">=</span> <span class="dt">Three</span> (a1 <span class="fu">&lt;&gt;</span> a2) (b1 <span class="fu">&lt;&gt;</span> b2) (c1 <span class="fu">&lt;&gt;</span> c2)
+
+<span class="kw">type</span> <span class="dt">ThreeAssoc</span> <span class="fu">=</span> (<span class="dt">Three</span> <span class="dt">String</span> <span class="dt">String</span> <span class="dt">String</span>) <span class="ot">-&gt;</span>
+                  (<span class="dt">Three</span> <span class="dt">String</span> <span class="dt">String</span> <span class="dt">String</span>) <span class="ot">-&gt;</span>
+                  (<span class="dt">Three</span> <span class="dt">String</span> <span class="dt">String</span> <span class="dt">String</span>) <span class="ot">-&gt;</span>
+                  <span class="dt">Bool</span>
+
+<span class="co">-- 5</span>
+<span class="kw">data</span> <span class="dt">Four</span> a b c d <span class="fu">=</span> <span class="dt">Four</span> a b c d <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> (<span class="dt">Arbitrary</span> a, <span class="dt">Arbitrary</span> b, <span class="dt">Arbitrary</span> c, <span class="dt">Arbitrary</span> d) <span class="ot">=&gt;</span>
+  <span class="dt">Arbitrary</span> (<span class="dt">Four</span> a b c d) <span class="kw">where</span>
+    arbitrary <span class="fu">=</span> <span class="kw">do</span>
+      a' <span class="ot">&lt;-</span> arbitrary
+      b' <span class="ot">&lt;-</span> arbitrary
+      c' <span class="ot">&lt;-</span> arbitrary
+      d' <span class="ot">&lt;-</span> arbitrary
+      return (<span class="dt">Four</span> a' b' c' d')
+
+<span class="kw">instance</span> (<span class="dt">Semigroup</span> a, <span class="dt">Semigroup</span> b, <span class="dt">Semigroup</span> c, <span class="dt">Semigroup</span> d) <span class="ot">=&gt;</span>
+  <span class="dt">Semigroup</span> (<span class="dt">Four</span> a b c d) <span class="kw">where</span>
+    (<span class="dt">Four</span> a1 b1 c1 d1) <span class="fu">&lt;&gt;</span> (<span class="dt">Four</span> a2 b2 c2 d2) <span class="fu">=</span>
+      <span class="dt">Four</span> (a1 <span class="fu">&lt;&gt;</span> a2) (b1 <span class="fu">&lt;&gt;</span> b2) (c1 <span class="fu">&lt;&gt;</span> c2) (d1 <span class="fu">&lt;&gt;</span> d2)
+
+<span class="kw">type</span> <span class="dt">FourAssoc</span> <span class="fu">=</span> (<span class="dt">Four</span> <span class="dt">String</span> <span class="dt">String</span> <span class="dt">String</span> <span class="dt">String</span>) <span class="ot">-&gt;</span>
+                 (<span class="dt">Four</span> <span class="dt">String</span> <span class="dt">String</span> <span class="dt">String</span> <span class="dt">String</span>) <span class="ot">-&gt;</span>
+                 (<span class="dt">Four</span> <span class="dt">String</span> <span class="dt">String</span> <span class="dt">String</span> <span class="dt">String</span>) <span class="ot">-&gt;</span>
+                 <span class="dt">Bool</span>
+
+<span class="co">-- 6</span>
+<span class="kw">newtype</span> <span class="dt">BoolConj</span> <span class="fu">=</span> <span class="dt">BoolConj</span> <span class="dt">Bool</span> <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">BoolConj</span> <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> <span class="kw">do</span>
+    a <span class="ot">&lt;- arbitrary ::</span> <span class="dt">Gen</span> <span class="dt">Bool</span>
+    return (<span class="dt">BoolConj</span> a)
+
+<span class="kw">instance</span> <span class="dt">Semigroup</span> <span class="dt">BoolConj</span> <span class="kw">where</span>
+  (<span class="dt">BoolConj</span> <span class="dt">True</span>) <span class="fu">&lt;&gt;</span> (<span class="dt">BoolConj</span> <span class="dt">True</span>) <span class="fu">=</span> (<span class="dt">BoolConj</span> <span class="dt">True</span>)
+  _ <span class="fu">&lt;&gt;</span> _ <span class="fu">=</span> (<span class="dt">BoolConj</span> <span class="dt">False</span>)
+
+<span class="kw">instance</span> <span class="dt">Monoid</span> <span class="dt">BoolConj</span> <span class="kw">where</span>
+  mempty <span class="fu">=</span> <span class="dt">BoolConj</span> <span class="dt">True</span>
+  mappend (<span class="dt">BoolConj</span> <span class="dt">True</span>) (<span class="dt">BoolConj</span> <span class="dt">True</span>) <span class="fu">=</span> (<span class="dt">BoolConj</span> <span class="dt">True</span>)
+  mappend _ _ <span class="fu">=</span> (<span class="dt">BoolConj</span> <span class="dt">False</span>)
+
+<span class="kw">type</span> <span class="dt">BoolConjAssoc</span> <span class="fu">=</span> <span class="dt">BoolConj</span> <span class="ot">-&gt;</span> <span class="dt">BoolConj</span> <span class="ot">-&gt;</span> <span class="dt">BoolConj</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+
+<span class="co">-- 7</span>
+<span class="kw">newtype</span> <span class="dt">BoolDisj</span> <span class="fu">=</span> <span class="dt">BoolDisj</span> <span class="dt">Bool</span> <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">BoolDisj</span> <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> <span class="kw">do</span>
+    a <span class="ot">&lt;- arbitrary ::</span> <span class="dt">Gen</span> <span class="dt">Bool</span>
+    return (<span class="dt">BoolDisj</span> a)
+
+<span class="kw">instance</span> <span class="dt">Semigroup</span> <span class="dt">BoolDisj</span> <span class="kw">where</span>
+  (<span class="dt">BoolDisj</span> <span class="dt">False</span>) <span class="fu">&lt;&gt;</span> (<span class="dt">BoolDisj</span> <span class="dt">False</span>) <span class="fu">=</span> (<span class="dt">BoolDisj</span> <span class="dt">False</span>)
+  _ <span class="fu">&lt;&gt;</span> _ <span class="fu">=</span> (<span class="dt">BoolDisj</span> <span class="dt">True</span>)
+
+<span class="kw">instance</span> <span class="dt">Monoid</span> <span class="dt">BoolDisj</span> <span class="kw">where</span>
+  mempty <span class="fu">=</span> <span class="dt">BoolDisj</span> <span class="dt">False</span>
+  mappend (<span class="dt">BoolDisj</span> <span class="dt">False</span>) (<span class="dt">BoolDisj</span> <span class="dt">False</span>) <span class="fu">=</span> (<span class="dt">BoolDisj</span> <span class="dt">False</span>)
+  mappend _ _ <span class="fu">=</span> (<span class="dt">BoolDisj</span> <span class="dt">True</span>)
+
+<span class="kw">type</span> <span class="dt">BoolDisjAssoc</span> <span class="fu">=</span> <span class="dt">BoolDisj</span> <span class="ot">-&gt;</span> <span class="dt">BoolDisj</span> <span class="ot">-&gt;</span> <span class="dt">BoolDisj</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+
+<span class="co">-- 8</span>
+<span class="kw">data</span> <span class="dt">Or</span> a b <span class="fu">=</span> <span class="dt">Fst</span> a <span class="fu">|</span> <span class="dt">Snd</span> b <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> (<span class="dt">Arbitrary</span> a, <span class="dt">Arbitrary</span> b) <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Or</span> a b) <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> <span class="kw">do</span>
+    a' <span class="ot">&lt;-</span> arbitrary
+    b' <span class="ot">&lt;-</span> arbitrary
+    oneof [return (<span class="dt">Fst</span> a'), return (<span class="dt">Snd</span> b')]
+
+<span class="kw">instance</span> <span class="dt">Semigroup</span> (<span class="dt">Or</span> a b) <span class="kw">where</span>
+  (<span class="dt">Snd</span> b) <span class="fu">&lt;&gt;</span> _       <span class="fu">=</span> (<span class="dt">Snd</span> b)
+  _       <span class="fu">&lt;&gt;</span> (<span class="dt">Snd</span> b) <span class="fu">=</span> (<span class="dt">Snd</span> b)
+  _       <span class="fu">&lt;&gt;</span> (<span class="dt">Fst</span> a) <span class="fu">=</span> (<span class="dt">Fst</span> a)
+
+<span class="kw">type</span> <span class="dt">OrAssoc</span> <span class="fu">=</span>
+  (<span class="dt">Or</span> <span class="dt">String</span> <span class="dt">String</span>) <span class="ot">-&gt;</span> (<span class="dt">Or</span> <span class="dt">String</span> <span class="dt">String</span>) <span class="ot">-&gt;</span> (<span class="dt">Or</span> <span class="dt">String</span> <span class="dt">String</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+
+<span class="co">-- 9</span>
+<span class="kw">newtype</span> <span class="dt">Combine</span> a b <span class="fu">=</span> <span class="dt">Combine</span> {<span class="ot"> unCombine ::</span> (a <span class="ot">-&gt;</span> b) }
+
+<span class="kw">instance</span> (<span class="dt">Show</span> a, <span class="dt">Show</span> b) <span class="ot">=&gt;</span> <span class="dt">Show</span> (<span class="dt">Combine</span> a b) <span class="kw">where</span>
+  show _ <span class="fu">=</span> <span class="st">&quot;Combine&quot;</span>
+
+<span class="kw">instance</span> (<span class="dt">Semigroup</span> b) <span class="ot">=&gt;</span> <span class="dt">Semigroup</span> (<span class="dt">Combine</span> a b) <span class="kw">where</span>
+  (<span class="dt">Combine</span> f) <span class="fu">&lt;&gt;</span> (<span class="dt">Combine</span> g) <span class="fu">=</span> <span class="dt">Combine</span> (\n <span class="ot">-&gt;</span> (f n) <span class="fu">&lt;&gt;</span> (g n))
+
+<span class="kw">instance</span> (<span class="dt">Monoid</span> b) <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Combine</span> a b) <span class="kw">where</span>
+  mempty <span class="fu">=</span> <span class="dt">Combine</span> (\n <span class="ot">-&gt;</span> mempty)
+  mappend (<span class="dt">Combine</span> f) (<span class="dt">Combine</span> g) <span class="fu">=</span> <span class="dt">Combine</span> (\n <span class="ot">-&gt;</span> (<span class="fu">M.&lt;&gt;</span>) (f n) (g n))
+
+<span class="kw">instance</span> (<span class="dt">CoArbitrary</span> a, <span class="dt">Arbitrary</span> b) <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Combine</span> a b) <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> fmap <span class="dt">Combine</span> <span class="fu">$</span> promote (\n <span class="ot">-&gt;</span> coarbitrary n arbitrary)
+
+<span class="ot">combineAssoc ::</span> (<span class="dt">Combine</span> <span class="dt">String</span> <span class="dt">String</span>) <span class="ot">-&gt;</span>
+                (<span class="dt">Combine</span> <span class="dt">String</span> <span class="dt">String</span>) <span class="ot">-&gt;</span>
+                (<span class="dt">Combine</span> <span class="dt">String</span> <span class="dt">String</span>) <span class="ot">-&gt;</span>
+                <span class="dt">String</span> <span class="ot">-&gt;</span>
+                <span class="dt">Bool</span>
+combineAssoc a b c s <span class="fu">=</span>
+  (unCombine (a <span class="fu">&lt;&gt;</span> (b <span class="fu">&lt;&gt;</span> c)) s) <span class="fu">==</span> (unCombine ((a <span class="fu">&lt;&gt;</span> b) <span class="fu">&lt;&gt;</span> c) s)
+
+<span class="ot">combineLeftIdentity ::</span> (<span class="dt">Combine</span> <span class="dt">String</span> <span class="dt">String</span>) <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+combineLeftIdentity a s <span class="fu">=</span> ((unCombine (mempty <span class="fu">M.&lt;&gt;</span> a)) s) <span class="fu">==</span> ((unCombine a) s)
+
+<span class="ot">combineRightIdentity ::</span> (<span class="dt">Combine</span> <span class="dt">String</span> <span class="dt">String</span>) <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+combineRightIdentity a s <span class="fu">=</span> ((unCombine (a <span class="fu">M.&lt;&gt;</span> mempty)) s) <span class="fu">==</span> ((unCombine a) s)
+
+
+<span class="co">-- 10</span>
+<span class="kw">newtype</span> <span class="dt">Comp</span> a <span class="fu">=</span> <span class="dt">Comp</span> {<span class="ot"> unComp ::</span> (a <span class="ot">-&gt;</span> a) }
+
+<span class="kw">instance</span> <span class="dt">Show</span> (<span class="dt">Comp</span> a) <span class="kw">where</span>
+  show _ <span class="fu">=</span> <span class="st">&quot;Comp&quot;</span>
+
+<span class="kw">instance</span> (<span class="dt">Semigroup</span> a) <span class="ot">=&gt;</span> <span class="dt">Semigroup</span> (<span class="dt">Comp</span> a) <span class="kw">where</span>
+  (<span class="dt">Comp</span> f) <span class="fu">&lt;&gt;</span> (<span class="dt">Comp</span> g) <span class="fu">=</span> <span class="dt">Comp</span> (f <span class="fu">.</span> g)
+
+<span class="kw">instance</span> (<span class="dt">Monoid</span> a) <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Comp</span> a) <span class="kw">where</span>
+  mempty <span class="fu">=</span> <span class="dt">Comp</span> id
+  mappend (<span class="dt">Comp</span> f) (<span class="dt">Comp</span> g) <span class="fu">=</span> <span class="dt">Comp</span> (f <span class="fu">.</span> g)
+
+<span class="kw">instance</span> (<span class="dt">CoArbitrary</span> a, <span class="dt">Arbitrary</span> a) <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Comp</span> a) <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> fmap <span class="dt">Comp</span> <span class="fu">$</span> promote (\n <span class="ot">-&gt;</span> coarbitrary n arbitrary)
+
+<span class="ot">compAssoc ::</span> (<span class="dt">Comp</span> <span class="dt">String</span>) <span class="ot">-&gt;</span> (<span class="dt">Comp</span> <span class="dt">String</span>) <span class="ot">-&gt;</span> (<span class="dt">Comp</span> <span class="dt">String</span>) <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+compAssoc a b c s <span class="fu">=</span> (unComp (a <span class="fu">&lt;&gt;</span> (b <span class="fu">&lt;&gt;</span> c)) s) <span class="fu">==</span> (unComp ((a <span class="fu">&lt;&gt;</span> b) <span class="fu">&lt;&gt;</span> c) s)
+
+<span class="ot">compLeftIdentity ::</span> (<span class="dt">Comp</span> <span class="dt">String</span>) <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+compLeftIdentity a s <span class="fu">=</span> ((unComp (mempty <span class="fu">M.&lt;&gt;</span> a)) s) <span class="fu">==</span> ((unComp a) s)
+
+<span class="ot">compRightIdentity ::</span> (<span class="dt">Comp</span> <span class="dt">String</span>) <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+compRightIdentity a s <span class="fu">=</span> ((unComp (a <span class="fu">M.&lt;&gt;</span> mempty)) s) <span class="fu">==</span> ((unComp a) s)
+
+<span class="co">-- 11</span>
+<span class="kw">data</span> <span class="dt">Validation</span> a b <span class="fu">=</span> <span class="dt">Fail</span> a <span class="fu">|</span> <span class="dt">Pass</span> b <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> <span class="dt">Semigroup</span> a <span class="ot">=&gt;</span> <span class="dt">Semigroup</span> (<span class="dt">Validation</span> a b) <span class="kw">where</span>
+  (<span class="dt">Fail</span> a) <span class="fu">&lt;&gt;</span> (<span class="dt">Fail</span> b) <span class="fu">=</span> (<span class="dt">Fail</span> (a <span class="fu">&lt;&gt;</span> b))
+  _        <span class="fu">&lt;&gt;</span> (<span class="dt">Fail</span> a) <span class="fu">=</span> (<span class="dt">Fail</span> a)
+  (<span class="dt">Fail</span> a) <span class="fu">&lt;&gt;</span> _        <span class="fu">=</span> (<span class="dt">Fail</span> a)
+  _        <span class="fu">&lt;&gt;</span> (<span class="dt">Pass</span> b) <span class="fu">=</span> (<span class="dt">Pass</span> b)
+
+<span class="kw">instance</span> (<span class="dt">Arbitrary</span> a, <span class="dt">Arbitrary</span> b) <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Validation</span> a b) <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> <span class="kw">do</span>
+    a <span class="ot">&lt;-</span> arbitrary
+    b <span class="ot">&lt;-</span> arbitrary
+    oneof [return (<span class="dt">Fail</span> a), return (<span class="dt">Pass</span> b)]
+
+<span class="kw">type</span> <span class="dt">ValidationAssoc</span> <span class="fu">=</span> (<span class="dt">Validation</span> <span class="dt">String</span> <span class="dt">String</span>) <span class="ot">-&gt;</span>
+                       (<span class="dt">Validation</span> <span class="dt">String</span> <span class="dt">String</span>) <span class="ot">-&gt;</span>
+                       (<span class="dt">Validation</span> <span class="dt">String</span> <span class="dt">String</span>) <span class="ot">-&gt;</span>
+                       <span class="dt">Bool</span>
+
+<span class="co">-- 12</span>
+<span class="kw">newtype</span> <span class="dt">AccRight</span> a b <span class="fu">=</span> <span class="dt">AccRight</span> (<span class="dt">Validation</span> a b) <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> (<span class="dt">Semigroup</span> b) <span class="ot">=&gt;</span> <span class="dt">Semigroup</span> (<span class="dt">AccRight</span> a b) <span class="kw">where</span>
+  (<span class="dt">AccRight</span> (<span class="dt">Pass</span> a)) <span class="fu">&lt;&gt;</span> (<span class="dt">AccRight</span> (<span class="dt">Pass</span> b)) <span class="fu">=</span> <span class="dt">AccRight</span> (<span class="dt">Pass</span> (a <span class="fu">&lt;&gt;</span> b))
+  (<span class="dt">AccRight</span> (<span class="dt">Fail</span> a)) <span class="fu">&lt;&gt;</span> _                   <span class="fu">=</span> <span class="dt">AccRight</span> (<span class="dt">Fail</span> a)
+  _                   <span class="fu">&lt;&gt;</span> (<span class="dt">AccRight</span> (<span class="dt">Fail</span> b)) <span class="fu">=</span> <span class="dt">AccRight</span> (<span class="dt">Fail</span> b)
+
+<span class="kw">instance</span> (<span class="dt">Arbitrary</span> a, <span class="dt">Arbitrary</span> b) <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">AccRight</span> a b) <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> <span class="kw">do</span>
+    a <span class="ot">&lt;-</span> arbitrary
+    b <span class="ot">&lt;-</span> arbitrary
+    oneof [return (<span class="dt">AccRight</span> (<span class="dt">Fail</span> a)), return (<span class="dt">AccRight</span> (<span class="dt">Pass</span> b))]
+
+<span class="kw">type</span> <span class="dt">AccRightAssoc</span> <span class="fu">=</span> (<span class="dt">AccRight</span> <span class="dt">String</span> <span class="dt">String</span>) <span class="ot">-&gt;</span>
+                     (<span class="dt">AccRight</span> <span class="dt">String</span> <span class="dt">String</span>) <span class="ot">-&gt;</span>
+                     (<span class="dt">AccRight</span> <span class="dt">String</span> <span class="dt">String</span>) <span class="ot">-&gt;</span>
+                     <span class="dt">Bool</span>
+
+<span class="co">-- 13</span>
+<span class="kw">newtype</span> <span class="dt">AccBoth</span> a b <span class="fu">=</span> <span class="dt">AccBoth</span> (<span class="dt">Validation</span> a b) <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+
+<span class="kw">instance</span> (<span class="dt">Semigroup</span> a, <span class="dt">Semigroup</span> b) <span class="ot">=&gt;</span> <span class="dt">Semigroup</span> (<span class="dt">AccBoth</span> a b) <span class="kw">where</span>
+  (<span class="dt">AccBoth</span> (<span class="dt">Pass</span> a)) <span class="fu">&lt;&gt;</span> (<span class="dt">AccBoth</span> (<span class="dt">Pass</span> b)) <span class="fu">=</span> <span class="dt">AccBoth</span> (<span class="dt">Pass</span> (a <span class="fu">&lt;&gt;</span> b))
+  (<span class="dt">AccBoth</span> (<span class="dt">Fail</span> a)) <span class="fu">&lt;&gt;</span> (<span class="dt">AccBoth</span> (<span class="dt">Fail</span> b)) <span class="fu">=</span> <span class="dt">AccBoth</span> (<span class="dt">Fail</span> (a <span class="fu">&lt;&gt;</span> b))
+  _                  <span class="fu">&lt;&gt;</span> (<span class="dt">AccBoth</span> (<span class="dt">Fail</span> b)) <span class="fu">=</span> <span class="dt">AccBoth</span> (<span class="dt">Fail</span> b)
+  (<span class="dt">AccBoth</span> (<span class="dt">Fail</span> a)) <span class="fu">&lt;&gt;</span> _                  <span class="fu">=</span> <span class="dt">AccBoth</span> (<span class="dt">Fail</span> a)
+
+<span class="kw">instance</span> (<span class="dt">Arbitrary</span> a, <span class="dt">Arbitrary</span> b) <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">AccBoth</span> a b) <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> <span class="kw">do</span>
+    a <span class="ot">&lt;-</span> arbitrary
+    b <span class="ot">&lt;-</span> arbitrary
+    oneof [return (<span class="dt">AccBoth</span> (<span class="dt">Fail</span> a)), return (<span class="dt">AccBoth</span> (<span class="dt">Pass</span> b))]
+
+<span class="kw">type</span> <span class="dt">AccBothAssoc</span> <span class="fu">=</span> (<span class="dt">AccBoth</span> <span class="dt">String</span> <span class="dt">String</span>) <span class="ot">-&gt;</span>
+                    (<span class="dt">AccBoth</span> <span class="dt">String</span> <span class="dt">String</span>) <span class="ot">-&gt;</span>
+                    (<span class="dt">AccBoth</span> <span class="dt">String</span> <span class="dt">String</span>) <span class="ot">-&gt;</span>
+                    <span class="dt">Bool</span>
+<span class="co">-- Testing</span>
+<span class="ot">semigroupAssoc ::</span> (<span class="dt">Eq</span> m, <span class="dt">Semigroup</span> m) <span class="ot">=&gt;</span> m <span class="ot">-&gt;</span> m <span class="ot">-&gt;</span> m <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+semigroupAssoc a b c <span class="fu">=</span> (a <span class="fu">&lt;&gt;</span> (b <span class="fu">&lt;&gt;</span> c)) <span class="fu">==</span> ((a <span class="fu">&lt;&gt;</span> b) <span class="fu">&lt;&gt;</span> c)
+
+<span class="ot">monoidLeftIdentity ::</span> (<span class="dt">Eq</span> m, <span class="dt">Monoid</span> m) <span class="ot">=&gt;</span> m <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+monoidLeftIdentity a <span class="fu">=</span> ((<span class="fu">M.&lt;&gt;</span>) mempty a) <span class="fu">==</span> a
+
+<span class="ot">monoidRightIdentity ::</span> (<span class="dt">Eq</span> m, <span class="dt">Monoid</span> m) <span class="ot">=&gt;</span> m <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+monoidRightIdentity a <span class="fu">=</span> ((<span class="fu">M.&lt;&gt;</span>) a mempty) <span class="fu">==</span> a
+
+<span class="ot">main ::</span> <span class="dt">IO</span> ()
+main <span class="fu">=</span> <span class="kw">do</span>
+  quickCheck (<span class="ot">semigroupAssoc ::</span> <span class="dt">TrivAssoc</span>)
+  quickCheck (<span class="ot">monoidLeftIdentity ::</span> <span class="dt">Trivial</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">monoidRightIdentity ::</span> <span class="dt">Trivial</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">semigroupAssoc ::</span> <span class="dt">IdentAssoc</span>)
+  quickCheck (<span class="ot">monoidLeftIdentity ::</span> <span class="dt">Identity</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">monoidRightIdentity ::</span> <span class="dt">Identity</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">semigroupAssoc ::</span> <span class="dt">TwoAssoc</span>)
+  quickCheck (<span class="ot">monoidLeftIdentity ::</span> <span class="dt">Two</span> <span class="dt">String</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">monoidRightIdentity ::</span> <span class="dt">Two</span> <span class="dt">String</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">semigroupAssoc ::</span> <span class="dt">ThreeAssoc</span>)
+  quickCheck (<span class="ot">semigroupAssoc ::</span> <span class="dt">FourAssoc</span>)
+  quickCheck (<span class="ot">semigroupAssoc ::</span> <span class="dt">BoolConjAssoc</span>)
+  quickCheck (<span class="ot">monoidLeftIdentity ::</span> <span class="dt">BoolConj</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">monoidRightIdentity ::</span> <span class="dt">BoolConj</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">semigroupAssoc ::</span> <span class="dt">BoolDisjAssoc</span>)
+  quickCheck (<span class="ot">monoidLeftIdentity ::</span> <span class="dt">BoolDisj</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">monoidRightIdentity ::</span> <span class="dt">BoolDisj</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+  quickCheck (<span class="ot">semigroupAssoc ::</span> <span class="dt">OrAssoc</span>)
+  quickCheck combineAssoc
+  quickCheck combineLeftIdentity
+  quickCheck combineRightIdentity
+  quickCheck compAssoc
+  quickCheck compLeftIdentity
+  quickCheck compRightIdentity
+  quickCheck (<span class="ot">semigroupAssoc ::</span> <span class="dt">ValidationAssoc</span>)
+  quickCheck (<span class="ot">semigroupAssoc ::</span> <span class="dt">AccRightAssoc</span>)
+  quickCheck (<span class="ot">semigroupAssoc ::</span> <span class="dt">AccBothAssoc</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--15/Mem.hs</span>
+<span class="kw">module</span> <span class="dt">Mem</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Data.Monoid</span>
+<span class="kw">import </span><span class="dt">Test.QuickCheck</span>
+
+<span class="kw">newtype</span> <span class="dt">Mem</span> s a <span class="fu">=</span> <span class="dt">Mem</span> {<span class="ot"> runMem ::</span> s <span class="ot">-&gt;</span> (a , s) }
+
+<span class="kw">instance</span> <span class="dt">Monoid</span> a <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Mem</span> s a) <span class="kw">where</span>
+  mempty <span class="fu">=</span> <span class="dt">Mem</span> (\n <span class="ot">-&gt;</span> (mempty, n))
+  mappend (<span class="dt">Mem</span> f) (<span class="dt">Mem</span> g) <span class="fu">=</span> <span class="dt">Mem</span> h <span class="kw">where</span>
+    h <span class="fu">=</span> (\n <span class="ot">-&gt;</span> ((fst <span class="fu">$</span> f n) <span class="fu">&lt;&gt;</span> (fst <span class="fu">$</span> g n), snd <span class="fu">$</span> f <span class="fu">$</span> snd <span class="fu">$</span> g n))
+
+f' <span class="fu">=</span> <span class="dt">Mem</span> <span class="fu">$</span> \s <span class="ot">-&gt;</span> (<span class="st">&quot;hi&quot;</span>, s <span class="fu">+</span> <span class="dv">1</span>)
+
+main <span class="fu">=</span> <span class="kw">do</span>
+  <span class="kw">let</span> rmzero <span class="fu">=</span> runMem mempty <span class="dv">0</span>
+      rmleft <span class="fu">=</span> runMem (f' <span class="fu">&lt;&gt;</span> mempty) <span class="dv">0</span>
+      rmright <span class="fu">=</span> runMem (mempty <span class="fu">&lt;&gt;</span> f') <span class="dv">0</span>
+  print <span class="fu">$</span> rmleft
+  print <span class="fu">$</span> rmright
+  print <span class="fu">$</span> (<span class="ot">rmzero ::</span> (<span class="dt">String</span>, <span class="dt">Int</span>))
+  print <span class="fu">$</span> rmleft <span class="fu">==</span> runMem f' <span class="dv">0</span>
+  print <span class="fu">$</span> rmright <span class="fu">==</span> runMem f' <span class="dv">0</span></code></pre></div>
+<h2 id="follow-up-resources">15.17 Follow-up resources</h2>
+<ol style="list-style-type: decimal">
+<li>Algebraic structure; Simple English Wikipedia</li>
+<li>Haskell Monoids and Their Uses; Dan Piponi</li>
+</ol>
+<hr />
+
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>
