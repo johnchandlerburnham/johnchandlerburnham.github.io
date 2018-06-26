@@ -90,7 +90,7 @@ span#post--date {
 
 div#content {
   text-align:left;
-  max-width: 650px;
+  max-width: 800px;
   margin-left: 50px;
   margin-right: 50px;
   margin-bottom: 5.5rem; /* foot/r-height + 1.5rem */
@@ -203,16 +203,36 @@ pre {
     font-family: Inconsolata, monospace;
 }
 
+table {
+  border-collapse: collapse;
+  width: 100%;
+  background: var(--base2);
+}
+td {
+  padding: 0.25rem;
+  text-align: left;
+  color: var(--base00);
+  border: 1px solid var(--base3);
+}
+
+th {
+  background: var(--green);
+  color: var(--base3);
+  padding: 0.25rem;
+  text-align: left;
+  border: 1px solid var(--base3);
+  }
+
 td.sourceCode {
-  max-width: 680px;
+  max-width: 700px;
 }
 
 tr.sourceCode {
-  max-width: 680px;
+  max-width: 700px;
 }
 
 table.sourceCode {
-  max-width: 680px;
+  max-width: 700px;
   border-radius: 5px;
   padding: 6px 10px;
   overflow-x: auto;
