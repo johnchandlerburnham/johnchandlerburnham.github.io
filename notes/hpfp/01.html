@@ -72,13 +72,52 @@
 </ol>
 <h3 id="beta-reduce">Beta Reduce</h3>
 <ol type="1">
-<li><p><code>(\abc.cba)zz(\wv.w)</code> reduction: <code>(\abc.cba)zz(\wv.w) -&gt;  (\bc.cbz)z(\wv.w) -&gt;  (\c.czz)(\wv.w) -&gt;  (\wv.w)zz -&gt;  (\v.z)z -&gt;  z</code></p></li>
-<li><p><code>(\x.\y.xyy)(\a.a)b</code> reduction: <code>(\x.\y.xyy)(\a.a)b -&gt;  (\y.(\a.a)yy)b -&gt;  (\a.a)bb -&gt;  bb</code></p></li>
-<li><p><code>(\y.y)(\x.xx)(\z.zq)</code> reduction: <code>(\y.y)(\x.xx)(\z.zq) -&gt;  (\x.xx)(\z.zq) -&gt;  (\z.zq)(\z.zq) -&gt;  (\z.zq)q -&gt;  (\z.zq)q -&gt;  qq</code></p></li>
-<li><p><code>(\z.z)(\z.zz)(\z.zy)</code> reduction: <code>(\z.z)(\z.zz)(\z.zy) -&gt;  (\z.zz)(\z.zy) -&gt;  (\z.zy)(\z.zy) -&gt;  (\z.zy)y -&gt;  yy</code></p></li>
-<li><p><code>(\x.\y.xyy)(\y.y)y</code> reduction: <code>(\x.\y.xyy)(\y.y)y -&gt;  (\y.(\y.y)yy)y  (\y.y)yy  yy</code></p></li>
-<li><p><code>(\a.aa)(\b.ba)c</code> reduction: <code>(\a.aa)(\b.ba)c -&gt;  (\b.ba)(\b.ba)c -&gt;  (\b.ba)ac -&gt;  aac</code></p></li>
-<li><p><code>(\xyz.xz(yz))(\x.z)(\x.a)</code> reduction: <code>(\xyz.xz(yz))(\x.z)(\x.a) -&gt;  (\z.(\x.z1)z((\x.a)z))  (\z.z1a)</code></p></li>
+<li><p><code>(\abc.cba)zz(\wv.w)</code></p>
+<p>Reduction:</p>
+<pre><code>(\abc.cba)zz(\wv.w) -&gt;
+(\bc.cbz)z(\wv.w) -&gt;
+(\c.czz)(\wv.w) -&gt;
+(\wv.w)zz -&gt;
+(\v.z)z -&gt;
+z</code></pre></li>
+<li><p><code>(\x.\y.xyy)(\a.a)b</code></p>
+<p>Reduction:</p>
+<pre><code>(\x.\y.xyy)(\a.a)b -&gt;
+(\y.(\a.a)yy)b -&gt;
+(\a.a)bb -&gt;
+bb</code></pre></li>
+<li><p><code>(\y.y)(\x.xx)(\z.zq)</code></p>
+<p>Reduction:</p>
+<pre><code>(\y.y)(\x.xx)(\z.zq) -&gt;
+(\x.xx)(\z.zq) -&gt;
+(\z.zq)(\z.zq) -&gt;
+(\z.zq)q -&gt;
+(\z.zq)q -&gt;
+qq</code></pre></li>
+<li><p><code>(\z.z)(\z.zz)(\z.zy)</code></p>
+<p>Reduction:</p>
+<pre><code>(\z.z)(\z.zz)(\z.zy) -&gt;
+(\z.zz)(\z.zy) -&gt;
+(\z.zy)(\z.zy) -&gt;
+(\z.zy)y -&gt;
+yy</code></pre></li>
+<li><p><code>(\x.\y.xyy)(\y.y)y</code></p>
+<p>Reduction:</p>
+<pre><code>(\x.\y.xyy)(\y.y)y -&gt;
+(\y.(\y.y)yy)y
+(\y.y)yy
+yy</code></pre></li>
+<li><p><code>(\a.aa)(\b.ba)c</code></p>
+<p>Reduction:</p>
+<pre><code>(\a.aa)(\b.ba)c -&gt;
+(\b.ba)(\b.ba)c -&gt;
+(\b.ba)ac -&gt;
+aac</code></pre></li>
+<li><p><code>(\xyz.xz(yz))(\x.z)(\x.a)</code></p>
+<p>Reduction:</p>
+<pre><code>(\xyz.xz(yz))(\x.z)(\x.a) -&gt;
+(\z.(\x.z1)z((\x.a)z))
+(\z.z1a)</code></pre></li>
 </ol>
 <h2 id="follow-up-resources">1.14 Follow-up Resources</h2>
 <ol type="1">
