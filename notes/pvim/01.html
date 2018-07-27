@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (PVIM 01/21): The Vim Way</title>
+        <link rel="stylesheet" type="text/css" href="../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../">jcb</a>
+                <a href="../../posts.html">posts</a>
+                <a href="../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+            </div>
+        </div>
+        <div id="content">
+            <h1>Notes (PVIM 01/21): The Vim Way</h1>
+          <div id="title" class="info">
+    Posted on June 18, 2018
+    
+        by jcb
+    
+<hr>
+</div>
+
+<h1 id="chapter-1-the-vim-way">Chapter 1: The Vim Way</h1>
+<h3 id="tip-1-meet-the-dot-command">Tip 1: Meet the Dot Command</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Mode</th>
+<th>Key</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>N</td>
+<td><code>.</code></td>
+<td>repeat last change</td>
+</tr>
+<tr class="even">
+<td>N</td>
+<td><code>u</code></td>
+<td>undo last change</td>
+</tr>
+<tr class="odd">
+<td>N</td>
+<td><code>d</code></td>
+<td>delete <code>{motion}</code></td>
+</tr>
+<tr class="even">
+<td>N</td>
+<td><code>dd</code></td>
+<td>delete line</td>
+</tr>
+<tr class="odd">
+<td>N</td>
+<td><code>&gt;</code></td>
+<td>indent <code>{motion}</code></td>
+</tr>
+<tr class="even">
+<td>N</td>
+<td><code>&gt;G</code></td>
+<td>increase indent until end of file</td>
+</tr>
+<tr class="odd">
+<td>N</td>
+<td><code>i</code></td>
+<td>enter insert mode</td>
+</tr>
+<tr class="even">
+<td>I</td>
+<td><code>&lt;Esc&gt;</code></td>
+<td>exit insert mode</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tip-2-dont-repeat-yourself">Tip 2: Don’t Repeat Yourself</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Mode</th>
+<th>Key</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>N</td>
+<td><code>$</code></td>
+<td>move to end of line (buck stops here)</td>
+</tr>
+<tr class="even">
+<td>N</td>
+<td><code>a</code></td>
+<td>append after current position“</td>
+</tr>
+<tr class="odd">
+<td>N</td>
+<td><code>A</code></td>
+<td><code>$a</code> append at end of line</td>
+</tr>
+<tr class="even">
+<td>N</td>
+<td><code>c</code></td>
+<td><code>c</code> change text</td>
+</tr>
+<tr class="odd">
+<td>N</td>
+<td><code>C</code></td>
+<td><code>c$</code> change to end of line</td>
+</tr>
+<tr class="even">
+<td>N</td>
+<td><code>s</code></td>
+<td><code>cl</code> substitute one to right</td>
+</tr>
+<tr class="odd">
+<td>N</td>
+<td><code>S</code></td>
+<td><code>^C</code> substitute line</td>
+</tr>
+<tr class="even">
+<td>N</td>
+<td><code>I</code></td>
+<td><code>^i</code> insert at start of line</td>
+</tr>
+<tr class="odd">
+<td>N</td>
+<td><code>o</code></td>
+<td><code>A&lt;CR&gt;</code> open a new line</td>
+</tr>
+<tr class="even">
+<td>N</td>
+<td><code>O</code></td>
+<td><code>ko</code> open a new line above</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tip-3-take-one-step-back-then-three-forward">Tip 3: Take One Step Back, Then Three Forward</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Mode</th>
+<th>Key</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>N</td>
+<td><code>s</code></td>
+<td>substitute</td>
+</tr>
+<tr class="even">
+<td>N</td>
+<td><code>f</code></td>
+<td>find a character</td>
+</tr>
+<tr class="odd">
+<td>N</td>
+<td><code>;</code></td>
+<td>repeat last search</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tip-4-act-repeat-reverse">Tip 4: Act, Repeat, Reverse</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Mode</th>
+<th>Key</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>N</td>
+<td><code>@:</code></td>
+<td>repeat Ex command</td>
+</tr>
+<tr class="even">
+<td>N</td>
+<td><code>&amp;</code></td>
+<td>repeat last :s[ubstitute] command</td>
+</tr>
+<tr class="odd">
+<td>N</td>
+<td><code>t</code></td>
+<td>toward (one before) a character</td>
+</tr>
+<tr class="even">
+<td>N</td>
+<td><code>F</code></td>
+<td>find backwards</td>
+</tr>
+<tr class="odd">
+<td>N</td>
+<td><code>T</code></td>
+<td>toward backwards</td>
+</tr>
+<tr class="even">
+<td>N</td>
+<td><code>n</code></td>
+<td>repeat <code>/</code> or <code>?</code> search</td>
+</tr>
+<tr class="odd">
+<td>N</td>
+<td><code>N</code></td>
+<td>repeat <code>/</code> or <code>?</code> search backwards</td>
+</tr>
+<tr class="even">
+<td>N</td>
+<td><code>qx{changes}q</code></td>
+<td>quote changes as “x”</td>
+</tr>
+<tr class="odd">
+<td>N</td>
+<td><code>@x</code></td>
+<td>repeat changes quoted as <code>x</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="tip-5-find-and-replace-by-hand">Tip 5: Find and Replace by Hand</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Mode</th>
+<th>Key</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>N</td>
+<td><code>*</code></td>
+<td>search for word</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tip-6-meet-the-dot-formula">Tip 6: Meet the Dot Formula</h3>
+<ul>
+<li>{move}{execute} pattern. One keystroke to move, one to make a change. e.g. <code>n.</code> or <code>;.</code></li>
+</ul>
+
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>

@@ -38,7 +38,7 @@
 <li><code>-&gt;</code> is an arrow, <code>f :: A -&gt; B</code> means <code>f</code> is a morphism from <code>A</code> to <code>B</code></li>
 </ul>
 <h2 id="properties-of-composition">1.2 Properties of Composition</h2>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><p>Composition of arrows is associative, so that</p>
 <pre><code>h . (g . f) = (h . g) . f = h . g . f</code></pre>
 <p>This makes sense with the definition of a category. Suppose a category contains objects <code>A, B, C, D</code> and arrows:</p>
@@ -85,7 +85,7 @@ g . f' :: A -&gt; A</code></pre>
 </ul>
 <p>This really confused me for a bit, until I realized that when I was doing the latter I was just trying to build a superset of <code>C</code> that actually was a category. This is apparently called a “free category”.</p>
 <h2 id="challenges">1. 4 Challenges</h2>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><code>I = (\x. x)</code> in the lambda calculus.</li>
 <li><p><code>compose = (\x y z. x (y z))</code></p></li>
 <li><p><code>compose I F X = (\x y z. x (y z)) I F X = I (F X) = F X</code> <code>compose F I X = (\x y z. x (y z)) F I X = F (I X) = F X</code></p></li>

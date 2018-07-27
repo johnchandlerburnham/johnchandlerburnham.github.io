@@ -70,7 +70,7 @@ g :: I2 -&gt; I1</code></pre>
 <h2 id="coproduct">5.6 Coproduct</h2>
 <p><strong>coproduct</strong>: The dual of the product. Take the definition of the product and reverse the arrows. In other words, the coproduct <code>X</code> of <code>X1</code> and <code>X2</code> is the object that has arrows to every object that both <code>X1</code> and <code>X2</code> have arrows to. It is the most “upwind”, or initial-like object in the collection of objects that have arrows from both <code>X1</code> and <code>X2</code>.</p>
 <h2 id="challenges">5.8 Challenges</h2>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><p>See Theorem in 5.4</p></li>
 <li><p>Okay, so the arrows in a poset represent the less-than-or-equal operator <code>&lt;=</code>, so for any object in the poset <code>A</code>, all objects <code>B</code> such that <code>A &lt;= B</code> have an arrow from <code>B</code> to <code>A</code>.</p>
 <p>For the product of two objects <code>X</code> and <code>Y</code>, let’s consider all the objects <code>Z_n</code> that have arrows to both <code>X</code> and <code>Y.</code></p>
@@ -146,7 +146,7 @@ embed (Right b) = j b
 factorizer i j (Left a) = i a
 factorizer i j (Right b) = j b</code></pre></li>
 <li><p><code>id_Int = embed . Left</code>, but <code>id_Either \= Left . embed</code>, because <code>(Left . embed) (Right True) = Left 1</code></p>
-<p>So there is an <code>Either Int Bool -&gt; Int</code> arrow that factorizes <code>Int -&gt; Int but not an</code>Int -&gt; Either Int Bool<code>that factorizes</code>Either Int Bool -&gt; Either Int Bool`</p>
+<p>So there is an <code>Either Int Bool -&gt; Int</code> arrow that factorizes <code>Int -&gt; Int  but not an</code>Int -&gt; Either Int Bool<code>that factorizes</code>Either Int Bool -&gt; Either Int Bool`</p>
 <p>Another way to look at this is that if we try to treat <code>Int</code> as an <code>Either</code>, we don’t know if any given integer is supposed to be a <code>Left</code> or a <code>Right</code>.</p>
 <p>Like, if <code>j</code> sends <code>True, False</code> to <code>1, 0</code> and <code>i</code> sends <code>1, 0</code> to <code>1, 0</code> we don’t know if applying <code>m :: Int -&gt; Either Int Bool</code> to <code>1</code> should be a <code>Left 1</code> or a <code>Right True</code>.</p></li>
 <li><p>Our Category:</p>

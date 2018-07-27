@@ -38,7 +38,7 @@ false = \x y.y</code></pre>
 <h2 id="logical-operations">3.1 Logical operations</h2>
 <pre><code>and = \x y. x y (\x y. y) =&gt; \x y. x y false</code></pre>
 <p>The first parameter of <code>and</code> returns the second parameter, if it is <code>true</code> and <code>false</code> if it is <code>false</code>. The only way <code>And</code> returns <code>true</code> is if both parameters are <code>true</code>.</p>
-<p>or = y. x (y. x) y = y. x true y ``</p>
+<pre><code>or = \x y. x (\x y. x) y = \x y. x true y</code></pre>
 <p>Same general idea as <code>And</code>. The first parameter selects <code>true</code> if <code>true</code> and <code>y</code> if <code>false</code>.</p>
 <pre><code>not = \x. x false true</code></pre>
 <p>Straightforward, it’s just flipping the order of the parameter.</p>

@@ -43,7 +43,7 @@
 <p>Let’s start with <code>0_</code>. We know that all the <code>n_</code> functions are functions of <code>s</code>, (<code>succ</code>) and <code>z</code> (<code>Zero</code>), so the heads of all our <code>n_</code> will be the same: <code>\s z</code>.</p>
 <p>For <code>0_</code> we throw away the successor and just return the zero:</p>
 <pre><code>0_ = \s z. z</code></pre>
-<p>For <code>1_</code> we apply the succesor once:</p>
+<p>For <code>1_</code> we apply the successor once:</p>
 <pre><code>1_ = \s z. s z</code></pre>
 <p>For <code>2_</code> we apply the succesor twice:</p>
 <pre><code>2_ = \s z. s (s z)</code></pre>
@@ -64,7 +64,7 @@
 \f x. f ((\s z.z) f x) =&gt;
 \f x. f x</code></pre>
 <p>Through alpha equivalence <code>\f x. f x</code> is the same as <code>\s z. s z</code> which is <code>1_</code>.</p>
-<p>Applying <code>succ</code> to `1_</p>
+<p>Applying <code>succ</code> to <code>1_</code></p>
 <pre><code>succ 1_ = (\n f x. f (n f x)) (\s z. s z) =&gt;
 \fx. f ((\s z. s z) f x) =&gt;
 \f x. f (f x) =&gt;
@@ -102,7 +102,7 @@
 \t z. t (t (t (t z))) =&gt;
 \s z. s (s (s (s z))) =&gt;
  4_</code></pre>
-<p>Okay, maybe that was a little tough to read. Maybs a little substitution will make things cleaner?</p>
+<p>Okay, maybe that was a little tough to read. Maybe a little substitution will make things cleaner?</p>
 <pre><code>multiply 2_ 2_ =&gt;
 (\n m t. n (m t)) 2_ 2_ =&gt;
 \t. 2_ (2_ t) =&gt;

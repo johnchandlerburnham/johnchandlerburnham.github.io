@@ -30,186 +30,186 @@
 <h1 id="functor">16 Functor</h1>
 <h2 id="lets-talk-about-4-baby">16.4 Let’s talk about 4, baby</h2>
 <h3 id="excercises-be-kind">Excercises: Be Kind</h3>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><code>*</code></li>
 <li><code>b</code> is <code>* -&gt; *</code>, <code>T</code> is <code>* -&gt; *</code></li>
 <li><code>* -&gt; * -&gt; *</code></li>
 </ol>
 <h2 id="commonly-used-functors">16.7 Commonly used functors</h2>
 <h3 id="exercises-heavy-lifting">Exercises: Heavy Lifting</h3>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--16/HeavyLifting.hs</span>
-<span class="kw">module</span> <span class="dt">HeavyLifting</span> <span class="kw">where</span>
-
-<span class="co">-- 1</span>
-a <span class="fu">=</span> (<span class="fu">+</span><span class="dv">1</span>) <span class="fu">&lt;$&gt;</span> read <span class="st">&quot;[1]&quot;</span><span class="ot"> ::</span> [<span class="dt">Int</span>]
-
-<span class="co">-- 2</span>
-b <span class="fu">=</span> (fmap <span class="fu">.</span> fmap) (<span class="fu">++</span> <span class="st">&quot;lol&quot;</span>) (<span class="dt">Just</span> [<span class="st">&quot;Hi,&quot;</span>, <span class="st">&quot;Hello&quot;</span>])
-
-<span class="co">-- 3</span>
-c <span class="fu">=</span> (<span class="fu">*</span><span class="dv">2</span>) <span class="fu">.</span> (\x <span class="ot">-&gt;</span> x <span class="fu">-</span> <span class="dv">2</span>)
-
-<span class="co">-- 4</span>
-d <span class="fu">=</span> ((return <span class="ch">'1'</span> <span class="fu">++</span>) <span class="fu">.</span> show) <span class="fu">.</span> (\x <span class="ot">-&gt;</span> [x, <span class="dv">1</span><span class="fu">..</span><span class="dv">3</span>])
-
-<span class="co">-- 5, this one is a lot less scary if you break it into its pieces first</span>
-<span class="co">--    the input and output are both IO Integer and the rest is just legos</span>
-<span class="ot">e ::</span> <span class="dt">IO</span> <span class="dt">Integer</span>
-e <span class="fu">=</span> <span class="kw">let</span> ioi <span class="fu">=</span> readIO <span class="st">&quot;1&quot;</span><span class="ot"> ::</span> <span class="dt">IO</span> <span class="dt">Integer</span>
-        changed <span class="fu">=</span> read <span class="fu">&lt;$&gt;</span> (<span class="st">&quot;123&quot;</span><span class="fu">++</span>) <span class="fu">&lt;$&gt;</span> show <span class="fu">&lt;$&gt;</span> ioi
-    <span class="kw">in</span> (<span class="fu">*</span><span class="dv">3</span>) <span class="fu">&lt;$&gt;</span> changed</code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co">--16/HeavyLifting.hs</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">module</span> <span class="dt">HeavyLifting</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="co">-- 1</span></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">a <span class="fu">=</span> (<span class="fu">+</span><span class="dv">1</span>) <span class="fu">&lt;$&gt;</span> read <span class="st">&quot;[1]&quot;</span><span class="ot"> ::</span> [<span class="dt">Int</span>]</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co">-- 2</span></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">b <span class="fu">=</span> (fmap <span class="fu">.</span> fmap) (<span class="fu">++</span> <span class="st">&quot;lol&quot;</span>) (<span class="dt">Just</span> [<span class="st">&quot;Hi,&quot;</span>, <span class="st">&quot;Hello&quot;</span>])</a>
+<a class="sourceLine" id="cb1-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb1-10" data-line-number="10"><span class="co">-- 3</span></a>
+<a class="sourceLine" id="cb1-11" data-line-number="11">c <span class="fu">=</span> (<span class="fu">*</span><span class="dv">2</span>) <span class="fu">.</span> (\x <span class="ot">-&gt;</span> x <span class="fu">-</span> <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb1-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb1-13" data-line-number="13"><span class="co">-- 4</span></a>
+<a class="sourceLine" id="cb1-14" data-line-number="14">d <span class="fu">=</span> ((return <span class="ch">'1'</span> <span class="fu">++</span>) <span class="fu">.</span> show) <span class="fu">.</span> (\x <span class="ot">-&gt;</span> [x, <span class="dv">1</span><span class="fu">..</span><span class="dv">3</span>])</a>
+<a class="sourceLine" id="cb1-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb1-16" data-line-number="16"><span class="co">-- 5, this one is a lot less scary if you break it into its pieces first</span></a>
+<a class="sourceLine" id="cb1-17" data-line-number="17"><span class="co">--    the input and output are both IO Integer and the rest is just legos</span></a>
+<a class="sourceLine" id="cb1-18" data-line-number="18"><span class="ot">e ::</span> <span class="dt">IO</span> <span class="dt">Integer</span></a>
+<a class="sourceLine" id="cb1-19" data-line-number="19">e <span class="fu">=</span> <span class="kw">let</span> ioi <span class="fu">=</span> readIO <span class="st">&quot;1&quot;</span><span class="ot"> ::</span> <span class="dt">IO</span> <span class="dt">Integer</span></a>
+<a class="sourceLine" id="cb1-20" data-line-number="20">        changed <span class="fu">=</span> read <span class="fu">&lt;$&gt;</span> (<span class="st">&quot;123&quot;</span><span class="fu">++</span>) <span class="fu">&lt;$&gt;</span> show <span class="fu">&lt;$&gt;</span> ioi</a>
+<a class="sourceLine" id="cb1-21" data-line-number="21">    <span class="kw">in</span> (<span class="fu">*</span><span class="dv">3</span>) <span class="fu">&lt;$&gt;</span> changed</a></code></pre></div>
 <h2 id="exercises-instances-of-func">16.10 Exercises: Instances of Func</h2>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--16/FunctorInstances.hs</span>
-<span class="kw">module</span> <span class="dt">FunctorInstances</span> <span class="kw">where</span>
-
-<span class="kw">import </span><span class="dt">Test.QuickCheck</span>
-<span class="kw">import </span><span class="dt">Test.QuickCheck.Function</span>
-
-<span class="co">-- 1</span>
-<span class="kw">newtype</span> <span class="dt">Identity</span> a <span class="fu">=</span> <span class="dt">Identity</span> a <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
-
-<span class="kw">instance</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Identity</span> a) <span class="kw">where</span>
-  arbitrary <span class="fu">=</span> <span class="kw">do</span>
-    a' <span class="ot">&lt;-</span> arbitrary
-    return (<span class="dt">Identity</span> a')
-
-<span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">Identity</span> <span class="kw">where</span>
-  fmap f (<span class="dt">Identity</span> a) <span class="fu">=</span> <span class="dt">Identity</span> (f a)
-
-<span class="co">-- 2</span>
-<span class="kw">data</span> <span class="dt">Pair</span> a <span class="fu">=</span> <span class="dt">Pair</span> a a <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
-
-<span class="kw">instance</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Pair</span> a) <span class="kw">where</span>
-  arbitrary <span class="fu">=</span> <span class="kw">do</span>
-    a <span class="ot">&lt;-</span> arbitrary
-    a' <span class="ot">&lt;-</span> arbitrary
-    return (<span class="dt">Pair</span> a a')
-
-<span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">Pair</span> <span class="kw">where</span>
-  fmap f (<span class="dt">Pair</span> a a') <span class="fu">=</span> <span class="dt">Pair</span> (f a) (f a')
-
-<span class="co">-- 3</span>
-<span class="kw">data</span> <span class="dt">Two</span> a b <span class="fu">=</span> <span class="dt">Two</span> a b <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
-
-<span class="kw">instance</span> (<span class="dt">Arbitrary</span> a, <span class="dt">Arbitrary</span> b) <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Two</span> a b) <span class="kw">where</span>
-  arbitrary <span class="fu">=</span> <span class="kw">do</span>
-    a' <span class="ot">&lt;-</span> arbitrary
-    b' <span class="ot">&lt;-</span> arbitrary
-    return (<span class="dt">Two</span> a' b')
-
-<span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Two</span> a) <span class="kw">where</span>
-  fmap f (<span class="dt">Two</span> a b) <span class="fu">=</span> <span class="dt">Two</span> a (f b)
-
-<span class="co">-- 4</span>
-<span class="kw">data</span> <span class="dt">Three</span> a b c <span class="fu">=</span> <span class="dt">Three</span> a b c <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
-
-<span class="kw">instance</span> (<span class="dt">Arbitrary</span> a, <span class="dt">Arbitrary</span> b, <span class="dt">Arbitrary</span> c) <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Three</span> a b c) <span class="kw">where</span>
-  arbitrary <span class="fu">=</span> <span class="kw">do</span>
-    a' <span class="ot">&lt;-</span> arbitrary
-    b' <span class="ot">&lt;-</span> arbitrary
-    c' <span class="ot">&lt;-</span> arbitrary
-    return (<span class="dt">Three</span> a' b' c')
-
-<span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Three</span> a b) <span class="kw">where</span>
-  fmap f (<span class="dt">Three</span> a b c) <span class="fu">=</span> <span class="dt">Three</span> a b (f c)
-
-<span class="co">-- 5</span>
-<span class="kw">data</span> <span class="dt">Three'</span> a b <span class="fu">=</span> <span class="dt">Three'</span> a b b <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
-
-<span class="kw">instance</span> (<span class="dt">Arbitrary</span> a, <span class="dt">Arbitrary</span> b) <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Three'</span> a b) <span class="kw">where</span>
-  arbitrary <span class="fu">=</span> <span class="kw">do</span>
-    a <span class="ot">&lt;-</span> arbitrary
-    b <span class="ot">&lt;-</span> arbitrary
-    b' <span class="ot">&lt;-</span> arbitrary
-    return (<span class="dt">Three'</span> a b b')
-
-<span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Three'</span> a) <span class="kw">where</span>
-  fmap f (<span class="dt">Three'</span> a b b') <span class="fu">=</span> <span class="dt">Three'</span> a (f b) (f b')
-
-<span class="co">-- 6</span>
-<span class="kw">data</span> <span class="dt">Four</span> a b c d <span class="fu">=</span> <span class="dt">Four</span> a b c d <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
-
-<span class="kw">instance</span> (<span class="dt">Arbitrary</span> a, <span class="dt">Arbitrary</span> b, <span class="dt">Arbitrary</span> c, <span class="dt">Arbitrary</span> d) <span class="ot">=&gt;</span>
-  <span class="dt">Arbitrary</span> (<span class="dt">Four</span> a b c d) <span class="kw">where</span>
-    arbitrary <span class="fu">=</span> <span class="kw">do</span>
-      a' <span class="ot">&lt;-</span> arbitrary
-      b' <span class="ot">&lt;-</span> arbitrary
-      c' <span class="ot">&lt;-</span> arbitrary
-      d' <span class="ot">&lt;-</span> arbitrary
-      return (<span class="dt">Four</span> a' b' c' d')
-
-<span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Four</span> a b c) <span class="kw">where</span>
-  fmap f (<span class="dt">Four</span> a b c d) <span class="fu">=</span> <span class="dt">Four</span> a b c (f d)
-
-<span class="co">-- 7</span>
-<span class="kw">data</span> <span class="dt">Four'</span> a b <span class="fu">=</span> <span class="dt">Four'</span> a a a b <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
-
-<span class="kw">instance</span> (<span class="dt">Arbitrary</span> a, <span class="dt">Arbitrary</span> b) <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Four'</span> a b) <span class="kw">where</span>
-    arbitrary <span class="fu">=</span> <span class="kw">do</span>
-      a <span class="ot">&lt;-</span> arbitrary
-      a' <span class="ot">&lt;-</span> arbitrary
-      a'' <span class="ot">&lt;-</span> arbitrary
-      b <span class="ot">&lt;-</span> arbitrary
-      return (<span class="dt">Four'</span> a a' a'' b)
-
-<span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Four'</span> a) <span class="kw">where</span>
-  fmap f (<span class="dt">Four'</span> a a' a'' b) <span class="fu">=</span> <span class="dt">Four'</span> a a' a'' (f b)
-
-<span class="co">-- Testing</span>
-<span class="kw">type</span> <span class="dt">IntToInt</span> <span class="fu">=</span> <span class="dt">Fun</span> <span class="dt">Int</span> <span class="dt">Int</span>
-
-<span class="ot">functorIdentity ::</span> (<span class="dt">Functor</span> f, <span class="dt">Eq</span> (f a)) <span class="ot">=&gt;</span> f a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
-functorIdentity f <span class="fu">=</span> fmap id f <span class="fu">==</span> f
-
-<span class="ot">functorCompose ::</span> (<span class="dt">Eq</span> (f c), <span class="dt">Functor</span> f) <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
-functorCompose f g x <span class="fu">=</span> (fmap g (fmap f x)) <span class="fu">==</span> (fmap (g <span class="fu">.</span> f) x)
-
-<span class="ot">functorCompose' ::</span> (<span class="dt">Eq</span> (f c), <span class="dt">Functor</span> f) <span class="ot">=&gt;</span> <span class="dt">Fun</span> a b <span class="ot">-&gt;</span> <span class="dt">Fun</span> b c <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
-functorCompose' (<span class="dt">Fun</span> _ f) (<span class="dt">Fun</span> _ g) x <span class="fu">=</span> (fmap g (fmap f x)) <span class="fu">==</span> (fmap (g <span class="fu">.</span> f) x)
-
-<span class="ot">main ::</span> <span class="dt">IO</span> ()
-main <span class="fu">=</span> <span class="kw">do</span>
-  quickCheck (<span class="ot">functorIdentity ::</span> (<span class="dt">Identity</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
-  quickCheck (<span class="ot">functorCompose' ::</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> (<span class="dt">Identity</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
-  quickCheck (<span class="ot">functorIdentity ::</span> (<span class="dt">Pair</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
-  quickCheck (<span class="ot">functorCompose' ::</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> (<span class="dt">Pair</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
-  quickCheck (<span class="ot">functorIdentity ::</span> (<span class="dt">Two</span> <span class="dt">Int</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
-  quickCheck (<span class="ot">functorCompose' ::</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> (<span class="dt">Two</span> <span class="dt">Int</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
-  quickCheck (<span class="ot">functorIdentity ::</span> (<span class="dt">Three</span> <span class="dt">Int</span> <span class="dt">Int</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
-  quickCheck (<span class="ot">functorCompose' ::</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> (<span class="dt">Three</span> <span class="dt">Int</span> <span class="dt">Int</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
-  quickCheck (<span class="ot">functorIdentity ::</span> (<span class="dt">Three'</span> <span class="dt">Int</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
-  quickCheck (<span class="ot">functorCompose' ::</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> (<span class="dt">Three'</span> <span class="dt">Int</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
-  quickCheck (<span class="ot">functorIdentity ::</span> (<span class="dt">Four</span> <span class="dt">Int</span> <span class="dt">Int</span> <span class="dt">Int</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
-  quickCheck (<span class="ot">functorCompose' ::</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> (<span class="dt">Four</span> <span class="dt">Int</span> <span class="dt">Int</span> <span class="dt">Int</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
-  quickCheck (<span class="ot">functorIdentity ::</span> (<span class="dt">Four'</span> <span class="dt">Int</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
-  quickCheck (<span class="ot">functorCompose' ::</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> (<span class="dt">Four'</span> <span class="dt">Int</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)</code></pre></div>
-<ol start="8" style="list-style-type: decimal">
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co">--16/FunctorInstances.hs</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">module</span> <span class="dt">FunctorInstances</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="kw">import</span> <span class="dt">Test.QuickCheck</span></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="kw">import</span> <span class="dt">Test.QuickCheck.Function</span></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="co">-- 1</span></a>
+<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="kw">newtype</span> <span class="dt">Identity</span> a <span class="fu">=</span> <span class="dt">Identity</span> a <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</a>
+<a class="sourceLine" id="cb2-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb2-10" data-line-number="10"><span class="kw">instance</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Identity</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">  arbitrary <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-12" data-line-number="12">    a' <span class="ot">&lt;-</span> arbitrary</a>
+<a class="sourceLine" id="cb2-13" data-line-number="13">    return (<span class="dt">Identity</span> a')</a>
+<a class="sourceLine" id="cb2-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb2-15" data-line-number="15"><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">Identity</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-16" data-line-number="16">  fmap f (<span class="dt">Identity</span> a) <span class="fu">=</span> <span class="dt">Identity</span> (f a)</a>
+<a class="sourceLine" id="cb2-17" data-line-number="17"></a>
+<a class="sourceLine" id="cb2-18" data-line-number="18"><span class="co">-- 2</span></a>
+<a class="sourceLine" id="cb2-19" data-line-number="19"><span class="kw">data</span> <span class="dt">Pair</span> a <span class="fu">=</span> <span class="dt">Pair</span> a a <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</a>
+<a class="sourceLine" id="cb2-20" data-line-number="20"></a>
+<a class="sourceLine" id="cb2-21" data-line-number="21"><span class="kw">instance</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Pair</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-22" data-line-number="22">  arbitrary <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-23" data-line-number="23">    a <span class="ot">&lt;-</span> arbitrary</a>
+<a class="sourceLine" id="cb2-24" data-line-number="24">    a' <span class="ot">&lt;-</span> arbitrary</a>
+<a class="sourceLine" id="cb2-25" data-line-number="25">    return (<span class="dt">Pair</span> a a')</a>
+<a class="sourceLine" id="cb2-26" data-line-number="26"></a>
+<a class="sourceLine" id="cb2-27" data-line-number="27"><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">Pair</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-28" data-line-number="28">  fmap f (<span class="dt">Pair</span> a a') <span class="fu">=</span> <span class="dt">Pair</span> (f a) (f a')</a>
+<a class="sourceLine" id="cb2-29" data-line-number="29"></a>
+<a class="sourceLine" id="cb2-30" data-line-number="30"><span class="co">-- 3</span></a>
+<a class="sourceLine" id="cb2-31" data-line-number="31"><span class="kw">data</span> <span class="dt">Two</span> a b <span class="fu">=</span> <span class="dt">Two</span> a b <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</a>
+<a class="sourceLine" id="cb2-32" data-line-number="32"></a>
+<a class="sourceLine" id="cb2-33" data-line-number="33"><span class="kw">instance</span> (<span class="dt">Arbitrary</span> a, <span class="dt">Arbitrary</span> b) <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Two</span> a b) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-34" data-line-number="34">  arbitrary <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-35" data-line-number="35">    a' <span class="ot">&lt;-</span> arbitrary</a>
+<a class="sourceLine" id="cb2-36" data-line-number="36">    b' <span class="ot">&lt;-</span> arbitrary</a>
+<a class="sourceLine" id="cb2-37" data-line-number="37">    return (<span class="dt">Two</span> a' b')</a>
+<a class="sourceLine" id="cb2-38" data-line-number="38"></a>
+<a class="sourceLine" id="cb2-39" data-line-number="39"><span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Two</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-40" data-line-number="40">  fmap f (<span class="dt">Two</span> a b) <span class="fu">=</span> <span class="dt">Two</span> a (f b)</a>
+<a class="sourceLine" id="cb2-41" data-line-number="41"></a>
+<a class="sourceLine" id="cb2-42" data-line-number="42"><span class="co">-- 4</span></a>
+<a class="sourceLine" id="cb2-43" data-line-number="43"><span class="kw">data</span> <span class="dt">Three</span> a b c <span class="fu">=</span> <span class="dt">Three</span> a b c <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</a>
+<a class="sourceLine" id="cb2-44" data-line-number="44"></a>
+<a class="sourceLine" id="cb2-45" data-line-number="45"><span class="kw">instance</span> (<span class="dt">Arbitrary</span> a, <span class="dt">Arbitrary</span> b, <span class="dt">Arbitrary</span> c) <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Three</span> a b c) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-46" data-line-number="46">  arbitrary <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-47" data-line-number="47">    a' <span class="ot">&lt;-</span> arbitrary</a>
+<a class="sourceLine" id="cb2-48" data-line-number="48">    b' <span class="ot">&lt;-</span> arbitrary</a>
+<a class="sourceLine" id="cb2-49" data-line-number="49">    c' <span class="ot">&lt;-</span> arbitrary</a>
+<a class="sourceLine" id="cb2-50" data-line-number="50">    return (<span class="dt">Three</span> a' b' c')</a>
+<a class="sourceLine" id="cb2-51" data-line-number="51"></a>
+<a class="sourceLine" id="cb2-52" data-line-number="52"><span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Three</span> a b) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-53" data-line-number="53">  fmap f (<span class="dt">Three</span> a b c) <span class="fu">=</span> <span class="dt">Three</span> a b (f c)</a>
+<a class="sourceLine" id="cb2-54" data-line-number="54"></a>
+<a class="sourceLine" id="cb2-55" data-line-number="55"><span class="co">-- 5</span></a>
+<a class="sourceLine" id="cb2-56" data-line-number="56"><span class="kw">data</span> <span class="dt">Three'</span> a b <span class="fu">=</span> <span class="dt">Three'</span> a b b <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</a>
+<a class="sourceLine" id="cb2-57" data-line-number="57"></a>
+<a class="sourceLine" id="cb2-58" data-line-number="58"><span class="kw">instance</span> (<span class="dt">Arbitrary</span> a, <span class="dt">Arbitrary</span> b) <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Three'</span> a b) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-59" data-line-number="59">  arbitrary <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-60" data-line-number="60">    a <span class="ot">&lt;-</span> arbitrary</a>
+<a class="sourceLine" id="cb2-61" data-line-number="61">    b <span class="ot">&lt;-</span> arbitrary</a>
+<a class="sourceLine" id="cb2-62" data-line-number="62">    b' <span class="ot">&lt;-</span> arbitrary</a>
+<a class="sourceLine" id="cb2-63" data-line-number="63">    return (<span class="dt">Three'</span> a b b')</a>
+<a class="sourceLine" id="cb2-64" data-line-number="64"></a>
+<a class="sourceLine" id="cb2-65" data-line-number="65"><span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Three'</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-66" data-line-number="66">  fmap f (<span class="dt">Three'</span> a b b') <span class="fu">=</span> <span class="dt">Three'</span> a (f b) (f b')</a>
+<a class="sourceLine" id="cb2-67" data-line-number="67"></a>
+<a class="sourceLine" id="cb2-68" data-line-number="68"><span class="co">-- 6</span></a>
+<a class="sourceLine" id="cb2-69" data-line-number="69"><span class="kw">data</span> <span class="dt">Four</span> a b c d <span class="fu">=</span> <span class="dt">Four</span> a b c d <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</a>
+<a class="sourceLine" id="cb2-70" data-line-number="70"></a>
+<a class="sourceLine" id="cb2-71" data-line-number="71"><span class="kw">instance</span> (<span class="dt">Arbitrary</span> a, <span class="dt">Arbitrary</span> b, <span class="dt">Arbitrary</span> c, <span class="dt">Arbitrary</span> d) <span class="ot">=&gt;</span></a>
+<a class="sourceLine" id="cb2-72" data-line-number="72">  <span class="dt">Arbitrary</span> (<span class="dt">Four</span> a b c d) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-73" data-line-number="73">    arbitrary <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-74" data-line-number="74">      a' <span class="ot">&lt;-</span> arbitrary</a>
+<a class="sourceLine" id="cb2-75" data-line-number="75">      b' <span class="ot">&lt;-</span> arbitrary</a>
+<a class="sourceLine" id="cb2-76" data-line-number="76">      c' <span class="ot">&lt;-</span> arbitrary</a>
+<a class="sourceLine" id="cb2-77" data-line-number="77">      d' <span class="ot">&lt;-</span> arbitrary</a>
+<a class="sourceLine" id="cb2-78" data-line-number="78">      return (<span class="dt">Four</span> a' b' c' d')</a>
+<a class="sourceLine" id="cb2-79" data-line-number="79"></a>
+<a class="sourceLine" id="cb2-80" data-line-number="80"><span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Four</span> a b c) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-81" data-line-number="81">  fmap f (<span class="dt">Four</span> a b c d) <span class="fu">=</span> <span class="dt">Four</span> a b c (f d)</a>
+<a class="sourceLine" id="cb2-82" data-line-number="82"></a>
+<a class="sourceLine" id="cb2-83" data-line-number="83"><span class="co">-- 7</span></a>
+<a class="sourceLine" id="cb2-84" data-line-number="84"><span class="kw">data</span> <span class="dt">Four'</span> a b <span class="fu">=</span> <span class="dt">Four'</span> a a a b <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</a>
+<a class="sourceLine" id="cb2-85" data-line-number="85"></a>
+<a class="sourceLine" id="cb2-86" data-line-number="86"><span class="kw">instance</span> (<span class="dt">Arbitrary</span> a, <span class="dt">Arbitrary</span> b) <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Four'</span> a b) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-87" data-line-number="87">    arbitrary <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-88" data-line-number="88">      a <span class="ot">&lt;-</span> arbitrary</a>
+<a class="sourceLine" id="cb2-89" data-line-number="89">      a' <span class="ot">&lt;-</span> arbitrary</a>
+<a class="sourceLine" id="cb2-90" data-line-number="90">      a'' <span class="ot">&lt;-</span> arbitrary</a>
+<a class="sourceLine" id="cb2-91" data-line-number="91">      b <span class="ot">&lt;-</span> arbitrary</a>
+<a class="sourceLine" id="cb2-92" data-line-number="92">      return (<span class="dt">Four'</span> a a' a'' b)</a>
+<a class="sourceLine" id="cb2-93" data-line-number="93"></a>
+<a class="sourceLine" id="cb2-94" data-line-number="94"><span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Four'</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-95" data-line-number="95">  fmap f (<span class="dt">Four'</span> a a' a'' b) <span class="fu">=</span> <span class="dt">Four'</span> a a' a'' (f b)</a>
+<a class="sourceLine" id="cb2-96" data-line-number="96"></a>
+<a class="sourceLine" id="cb2-97" data-line-number="97"><span class="co">-- Testing</span></a>
+<a class="sourceLine" id="cb2-98" data-line-number="98"><span class="kw">type</span> <span class="dt">IntToInt</span> <span class="fu">=</span> <span class="dt">Fun</span> <span class="dt">Int</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb2-99" data-line-number="99"></a>
+<a class="sourceLine" id="cb2-100" data-line-number="100"><span class="ot">functorIdentity ::</span> (<span class="dt">Functor</span> f, <span class="dt">Eq</span> (f a)) <span class="ot">=&gt;</span> f a <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb2-101" data-line-number="101">functorIdentity f <span class="fu">=</span> fmap id f <span class="fu">==</span> f</a>
+<a class="sourceLine" id="cb2-102" data-line-number="102"></a>
+<a class="sourceLine" id="cb2-103" data-line-number="103"><span class="ot">functorCompose ::</span> (<span class="dt">Eq</span> (f c), <span class="dt">Functor</span> f) <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb2-104" data-line-number="104">functorCompose f g x <span class="fu">=</span> (fmap g (fmap f x)) <span class="fu">==</span> (fmap (g <span class="fu">.</span> f) x)</a>
+<a class="sourceLine" id="cb2-105" data-line-number="105"></a>
+<a class="sourceLine" id="cb2-106" data-line-number="106"><span class="ot">functorCompose' ::</span> (<span class="dt">Eq</span> (f c), <span class="dt">Functor</span> f) <span class="ot">=&gt;</span> <span class="dt">Fun</span> a b <span class="ot">-&gt;</span> <span class="dt">Fun</span> b c <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb2-107" data-line-number="107">functorCompose' (<span class="dt">Fun</span> _ f) (<span class="dt">Fun</span> _ g) x <span class="fu">=</span> (fmap g (fmap f x)) <span class="fu">==</span> (fmap (g <span class="fu">.</span> f) x)</a>
+<a class="sourceLine" id="cb2-108" data-line-number="108"></a>
+<a class="sourceLine" id="cb2-109" data-line-number="109"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb2-110" data-line-number="110">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-111" data-line-number="111">  quickCheck (<span class="ot">functorIdentity ::</span> (<span class="dt">Identity</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)</a>
+<a class="sourceLine" id="cb2-112" data-line-number="112">  quickCheck (<span class="ot">functorCompose' ::</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> (<span class="dt">Identity</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)</a>
+<a class="sourceLine" id="cb2-113" data-line-number="113">  quickCheck (<span class="ot">functorIdentity ::</span> (<span class="dt">Pair</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)</a>
+<a class="sourceLine" id="cb2-114" data-line-number="114">  quickCheck (<span class="ot">functorCompose' ::</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> (<span class="dt">Pair</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)</a>
+<a class="sourceLine" id="cb2-115" data-line-number="115">  quickCheck (<span class="ot">functorIdentity ::</span> (<span class="dt">Two</span> <span class="dt">Int</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)</a>
+<a class="sourceLine" id="cb2-116" data-line-number="116">  quickCheck (<span class="ot">functorCompose' ::</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> (<span class="dt">Two</span> <span class="dt">Int</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)</a>
+<a class="sourceLine" id="cb2-117" data-line-number="117">  quickCheck (<span class="ot">functorIdentity ::</span> (<span class="dt">Three</span> <span class="dt">Int</span> <span class="dt">Int</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)</a>
+<a class="sourceLine" id="cb2-118" data-line-number="118">  quickCheck (<span class="ot">functorCompose' ::</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> (<span class="dt">Three</span> <span class="dt">Int</span> <span class="dt">Int</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)</a>
+<a class="sourceLine" id="cb2-119" data-line-number="119">  quickCheck (<span class="ot">functorIdentity ::</span> (<span class="dt">Three'</span> <span class="dt">Int</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)</a>
+<a class="sourceLine" id="cb2-120" data-line-number="120">  quickCheck (<span class="ot">functorCompose' ::</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> (<span class="dt">Three'</span> <span class="dt">Int</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)</a>
+<a class="sourceLine" id="cb2-121" data-line-number="121">  quickCheck (<span class="ot">functorIdentity ::</span> (<span class="dt">Four</span> <span class="dt">Int</span> <span class="dt">Int</span> <span class="dt">Int</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)</a>
+<a class="sourceLine" id="cb2-122" data-line-number="122">  quickCheck (<span class="ot">functorCompose' ::</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> (<span class="dt">Four</span> <span class="dt">Int</span> <span class="dt">Int</span> <span class="dt">Int</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)</a>
+<a class="sourceLine" id="cb2-123" data-line-number="123">  quickCheck (<span class="ot">functorIdentity ::</span> (<span class="dt">Four'</span> <span class="dt">Int</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)</a>
+<a class="sourceLine" id="cb2-124" data-line-number="124">  quickCheck (<span class="ot">functorCompose' ::</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> <span class="dt">IntToInt</span> <span class="ot">-&gt;</span> (<span class="dt">Four'</span> <span class="dt">Int</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span>)</a></code></pre></div>
+<ol start="8" type="1">
 <li>Trivial doesn’t have anything inside it that fmap can apply a function to, fmap doesn’t make sense for things with kind <code>*</code>, or rather fmap on type constants is just function application, which is all f and no map.</li>
 </ol>
 <h2 id="ignoring-possibilities">16.11 Ignoring possibilities</h2>
 <h3 id="exercise-possibly">Exercise: Possibly</h3>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--16/PossiblyEither.hs</span>
-<span class="kw">module</span> <span class="dt">PossiblyEither</span> <span class="kw">where</span>
-
-<span class="kw">data</span> <span class="dt">Possibly</span> a <span class="fu">=</span> <span class="dt">LolNope</span> <span class="fu">|</span> <span class="dt">Yeppers</span> a <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
-
-<span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">Possibly</span> <span class="kw">where</span>
-  fmap f (<span class="dt">Yeppers</span> a) <span class="fu">=</span> <span class="dt">Yeppers</span> (f a)
-
-<span class="kw">data</span> <span class="dt">Sum</span> a b <span class="fu">=</span> <span class="dt">First</span> a <span class="fu">|</span> <span class="dt">Second</span> b <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
-
-
-<span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Sum</span> a) <span class="kw">where</span>
-  fmap f (<span class="dt">Second</span> b) <span class="fu">=</span> <span class="dt">Second</span> (f b)
-  fmap _ (<span class="dt">First</span> a) <span class="fu">=</span> <span class="dt">First</span> a</code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co">--16/PossiblyEither.hs</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">module</span> <span class="dt">PossiblyEither</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="kw">data</span> <span class="dt">Possibly</span> a <span class="fu">=</span> <span class="dt">LolNope</span> <span class="fu">|</span> <span class="dt">Yeppers</span> a <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">Possibly</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-7" data-line-number="7">  fmap f (<span class="dt">Yeppers</span> a) <span class="fu">=</span> <span class="dt">Yeppers</span> (f a)</a>
+<a class="sourceLine" id="cb3-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="kw">data</span> <span class="dt">Sum</span> a b <span class="fu">=</span> <span class="dt">First</span> a <span class="fu">|</span> <span class="dt">Second</span> b <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</a>
+<a class="sourceLine" id="cb3-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb3-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb3-12" data-line-number="12"><span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Sum</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-13" data-line-number="13">  fmap f (<span class="dt">Second</span> b) <span class="fu">=</span> <span class="dt">Second</span> (f b)</a>
+<a class="sourceLine" id="cb3-14" data-line-number="14">  fmap _ (<span class="dt">First</span> a) <span class="fu">=</span> <span class="dt">First</span> a</a></code></pre></div>
 <h3 id="short-exercise">Short Exercise</h3>
 <p>see PossiblyEither.hs</p>
-<ol start="2" style="list-style-type: decimal">
+<ol start="2" type="1">
 <li>The <code>a</code> in <code>First a</code> might be a different type than the <code>b</code> in <code>Second b</code>. The function we pass to fmap can only operate on one of those types, but not both. In other words the function that fmap maps is of type <code>b -&gt; c</code> and kind <code>*</code>. Furthermore, we have to apply the function to <code>Second b</code> rather than <code>First a</code>, because the structure that fmaps maps onto is of kind <code>* -&gt; *</code>. Our structure is <code>(Sum a)</code> because <code>Sum</code> is of kind <code>* -&gt; * -&gt; *</code> and it needs to have accepted every type constructer but the last before its something that fmap can work on. But that doesn’t mean we’re barred from writing another function that does something different to <code>Sum</code>, but something different wont be fmap.</li>
 </ol>
 <h2 id="chapter-exercises">16.7 Chapter Exercises</h2>
 <p>Determine if a valid Fucntor can be written for the datatype provided:</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li>No, Bool has kind <code>*</code> but fmap only works on <code>* -&gt; *</code></li>
 <li>Yes, note that <code>False'</code> and <code>True'</code> both take the same type <code>a</code></li>
 <li>Yes, fmap can ignore <code>Falsish</code></li>
@@ -217,112 +217,112 @@ main <span class="fu">=</span> <span class="kw">do</span>
 <li>Nope, theres nothing to fmap over, kind <code>*</code></li>
 </ol>
 <p>Rearrange the arguments:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--16/Rearrange.hs</span>
-<span class="kw">module</span> <span class="dt">Rearrange</span> <span class="kw">where</span>
-
-<span class="co">-- 1.</span>
-<span class="kw">data</span> <span class="dt">Sum</span> b a <span class="fu">=</span> <span class="dt">First</span> a <span class="fu">|</span> <span class="dt">Second</span> b
-
-<span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Sum</span> e) <span class="kw">where</span>
-  fmap f (<span class="dt">First</span> a)<span class="fu">=</span> <span class="dt">First</span> (f a)
-  fmap f (<span class="dt">Second</span> b) <span class="fu">=</span> <span class="dt">Second</span> b
-
-<span class="co">-- 2.</span>
-<span class="kw">data</span> <span class="dt">Company</span> a c b <span class="fu">=</span> <span class="dt">DeepBlue</span> a c <span class="fu">|</span> <span class="dt">Something</span> b
-
-<span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Company</span> e e') <span class="kw">where</span>
-  fmap f (<span class="dt">Something</span> b) <span class="fu">=</span> <span class="dt">Something</span> (f b)
-  fmap _ (<span class="dt">DeepBlue</span> a c) <span class="fu">=</span> <span class="dt">DeepBlue</span> a c
-
-<span class="co">-- 3.</span>
-<span class="kw">data</span> <span class="dt">More</span> b a <span class="fu">=</span> <span class="dt">L</span> a b a <span class="fu">|</span> <span class="dt">R</span> b a b <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
-
-<span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">More</span> x) <span class="kw">where</span>
-  fmap f (<span class="dt">L</span> a b a') <span class="fu">=</span> <span class="dt">L</span> (f a) b (f a')
-  fmap f (<span class="dt">R</span> b a b') <span class="fu">=</span> <span class="dt">R</span> b (f a) b'</code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co">--16/Rearrange.hs</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">module</span> <span class="dt">Rearrange</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="co">-- 1.</span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="kw">data</span> <span class="dt">Sum</span> b a <span class="fu">=</span> <span class="dt">First</span> a <span class="fu">|</span> <span class="dt">Second</span> b</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Sum</span> e) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb4-8" data-line-number="8">  fmap f (<span class="dt">First</span> a)<span class="fu">=</span> <span class="dt">First</span> (f a)</a>
+<a class="sourceLine" id="cb4-9" data-line-number="9">  fmap f (<span class="dt">Second</span> b) <span class="fu">=</span> <span class="dt">Second</span> b</a>
+<a class="sourceLine" id="cb4-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb4-11" data-line-number="11"><span class="co">-- 2.</span></a>
+<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="kw">data</span> <span class="dt">Company</span> a c b <span class="fu">=</span> <span class="dt">DeepBlue</span> a c <span class="fu">|</span> <span class="dt">Something</span> b</a>
+<a class="sourceLine" id="cb4-13" data-line-number="13"></a>
+<a class="sourceLine" id="cb4-14" data-line-number="14"><span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Company</span> e e') <span class="kw">where</span></a>
+<a class="sourceLine" id="cb4-15" data-line-number="15">  fmap f (<span class="dt">Something</span> b) <span class="fu">=</span> <span class="dt">Something</span> (f b)</a>
+<a class="sourceLine" id="cb4-16" data-line-number="16">  fmap _ (<span class="dt">DeepBlue</span> a c) <span class="fu">=</span> <span class="dt">DeepBlue</span> a c</a>
+<a class="sourceLine" id="cb4-17" data-line-number="17"></a>
+<a class="sourceLine" id="cb4-18" data-line-number="18"><span class="co">-- 3.</span></a>
+<a class="sourceLine" id="cb4-19" data-line-number="19"><span class="kw">data</span> <span class="dt">More</span> b a <span class="fu">=</span> <span class="dt">L</span> a b a <span class="fu">|</span> <span class="dt">R</span> b a b <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</a>
+<a class="sourceLine" id="cb4-20" data-line-number="20"></a>
+<a class="sourceLine" id="cb4-21" data-line-number="21"><span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">More</span> x) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb4-22" data-line-number="22">  fmap f (<span class="dt">L</span> a b a') <span class="fu">=</span> <span class="dt">L</span> (f a) b (f a')</a>
+<a class="sourceLine" id="cb4-23" data-line-number="23">  fmap f (<span class="dt">R</span> b a b') <span class="fu">=</span> <span class="dt">R</span> b (f a) b'</a></code></pre></div>
 <p>Write Functor instances:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--16/Instances.hs</span>
-<span class="ot">{-# LANGUAGE FlexibleInstances #-}</span>
-<span class="kw">module</span> <span class="dt">Instances</span> <span class="kw">where</span>
-
-<span class="co">-- 1</span>
-<span class="kw">data</span> <span class="dt">Quant</span> a b <span class="fu">=</span> <span class="dt">Finance</span> <span class="fu">|</span> <span class="dt">Desk</span> a <span class="fu">|</span> <span class="dt">Bloor</span> b
-
-<span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Quant</span> a) <span class="kw">where</span>
-  fmap f (<span class="dt">Bloor</span> b) <span class="fu">=</span> <span class="dt">Bloor</span> (f b)
-  fmap _ (<span class="dt">Desk</span> a) <span class="fu">=</span> (<span class="dt">Desk</span> a)
-  fmap _ <span class="dt">Finance</span> <span class="fu">=</span> <span class="dt">Finance</span>
-
-<span class="co">-- 2</span>
-<span class="kw">data</span> <span class="dt">K</span> a b <span class="fu">=</span> <span class="dt">K</span> a
-
-<span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">K</span> a) <span class="kw">where</span>
-  fmap _ (<span class="dt">K</span> a) <span class="fu">=</span> (<span class="dt">K</span> a)
-
-<span class="co">-- 3</span>
-<span class="kw">newtype</span> <span class="dt">Flip</span> f a b <span class="fu">=</span> <span class="dt">Flip</span> (f b a) <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
-
-<span class="kw">newtype</span> <span class="dt">K'</span> a b <span class="fu">=</span> <span class="dt">K'</span> a
-
-<span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Flip</span> <span class="dt">K'</span> a) <span class="kw">where</span>
-  fmap f (<span class="dt">Flip</span> (<span class="dt">K'</span> a)) <span class="fu">=</span> <span class="dt">Flip</span> (<span class="dt">K'</span> (f a))
-
-<span class="co">-- 4</span>
-<span class="kw">data</span> <span class="dt">EvilGoateeConst</span> a b <span class="fu">=</span> <span class="dt">GoatyConst</span> b
-
-<span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">EvilGoateeConst</span> a) <span class="kw">where</span>
-  fmap f (<span class="dt">GoatyConst</span> b) <span class="fu">=</span> <span class="dt">GoatyConst</span> (f b)
-
-<span class="co">-- 5</span>
-<span class="kw">data</span> <span class="dt">LiftItOut</span> f a <span class="fu">=</span> <span class="dt">LiftItOut</span> (f a)
-
-<span class="kw">instance</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Functor</span> (<span class="dt">LiftItOut</span> f) <span class="kw">where</span>
-  fmap f (<span class="dt">LiftItOut</span> fa ) <span class="fu">=</span> <span class="dt">LiftItOut</span> (fmap f fa)
-
-<span class="co">-- 6</span>
-<span class="kw">data</span> <span class="dt">Parappa</span> f g a <span class="fu">=</span> <span class="dt">DaWrappa</span> (f a) (g a)
-
-<span class="kw">instance</span> (<span class="dt">Functor</span> f, <span class="dt">Functor</span> g) <span class="ot">=&gt;</span> <span class="dt">Functor</span> (<span class="dt">Parappa</span> f g) <span class="kw">where</span>
-  fmap f (<span class="dt">DaWrappa</span> fa gb) <span class="fu">=</span> <span class="dt">DaWrappa</span> (fmap f fa) (fmap f gb)
-
-<span class="co">-- 7</span>
-
-<span class="kw">data</span> <span class="dt">IgnoreOne</span> f g a b <span class="fu">=</span> <span class="dt">IgnoringSomething</span> (f a) (g b)
-
-<span class="kw">instance</span> (<span class="dt">Functor</span> f, <span class="dt">Functor</span> g) <span class="ot">=&gt;</span> <span class="dt">Functor</span> (<span class="dt">IgnoreOne</span> f g a) <span class="kw">where</span>
-  fmap f (<span class="dt">IgnoringSomething</span> fa gb) <span class="fu">=</span> <span class="dt">IgnoringSomething</span> fa (fmap f gb)
-
-<span class="co">-- 8</span>
-<span class="kw">data</span> <span class="dt">Notorious</span> g o a t <span class="fu">=</span> <span class="dt">Notorious</span> (g o) (g a) (g t)
-
-<span class="kw">instance</span> (<span class="dt">Functor</span> g) <span class="ot">=&gt;</span> <span class="dt">Functor</span> (<span class="dt">Notorious</span> g o a) <span class="kw">where</span>
-  fmap f (<span class="dt">Notorious</span> go ga gt) <span class="fu">=</span> <span class="dt">Notorious</span> go ga (fmap f gt)
-
-<span class="co">-- 9</span>
-<span class="kw">data</span> <span class="dt">List</span> a <span class="fu">=</span> <span class="dt">Nil</span> <span class="fu">|</span> <span class="dt">Cons</span> a (<span class="dt">List</span> a)
-
-<span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">List</span> <span class="kw">where</span>
-  fmap f (<span class="dt">Cons</span> a l) <span class="fu">=</span> <span class="dt">Cons</span> (f a) (fmap f l)
-  fmap _ <span class="dt">Nil</span> <span class="fu">=</span> <span class="dt">Nil</span>
-
-<span class="co">-- 10</span>
-
-<span class="kw">data</span> <span class="dt">GLord</span> a <span class="fu">=</span> <span class="dt">NoG</span> <span class="fu">|</span> <span class="dt">OneG</span> a <span class="fu">|</span> <span class="dt">MoreG</span> (<span class="dt">GLord</span> a) (<span class="dt">GLord</span> a) (<span class="dt">GLord</span> a)
-
-<span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">GLord</span> <span class="kw">where</span>
-  fmap f (<span class="dt">MoreG</span> g g' g'') <span class="fu">=</span> <span class="dt">MoreG</span> (fmap f g) (fmap f g') (fmap f g'')
-  fmap f (<span class="dt">OneG</span> a) <span class="fu">=</span> <span class="dt">OneG</span> (f a)
-  fmap _ <span class="dt">NoG</span> <span class="fu">=</span> <span class="dt">NoG</span>
-
-<span class="co">-- 11</span>
-<span class="kw">data</span> <span class="dt">TalkToMe</span> a <span class="fu">=</span> <span class="dt">Halt</span> <span class="fu">|</span> <span class="dt">Print</span> <span class="dt">String</span> a <span class="fu">|</span> <span class="dt">Read</span> (<span class="dt">String</span> <span class="ot">-&gt;</span> a)
-
-<span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">TalkToMe</span> <span class="kw">where</span>
-  fmap f (<span class="dt">Read</span> g) <span class="fu">=</span> <span class="dt">Read</span> (f <span class="fu">.</span> g)
-  fmap f (<span class="dt">Print</span> s a) <span class="fu">=</span> <span class="dt">Print</span> s (f a)
-  fmap _ <span class="dt">Halt</span> <span class="fu">=</span> <span class="dt">Halt</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co">--16/Instances.hs</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="ot">{-# LANGUAGE FlexibleInstances #-}</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="kw">module</span> <span class="dt">Instances</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="co">-- 1</span></a>
+<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="kw">data</span> <span class="dt">Quant</span> a b <span class="fu">=</span> <span class="dt">Finance</span> <span class="fu">|</span> <span class="dt">Desk</span> a <span class="fu">|</span> <span class="dt">Bloor</span> b</a>
+<a class="sourceLine" id="cb5-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb5-8" data-line-number="8"><span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Quant</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-9" data-line-number="9">  fmap f (<span class="dt">Bloor</span> b) <span class="fu">=</span> <span class="dt">Bloor</span> (f b)</a>
+<a class="sourceLine" id="cb5-10" data-line-number="10">  fmap _ (<span class="dt">Desk</span> a) <span class="fu">=</span> (<span class="dt">Desk</span> a)</a>
+<a class="sourceLine" id="cb5-11" data-line-number="11">  fmap _ <span class="dt">Finance</span> <span class="fu">=</span> <span class="dt">Finance</span></a>
+<a class="sourceLine" id="cb5-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb5-13" data-line-number="13"><span class="co">-- 2</span></a>
+<a class="sourceLine" id="cb5-14" data-line-number="14"><span class="kw">data</span> <span class="dt">K</span> a b <span class="fu">=</span> <span class="dt">K</span> a</a>
+<a class="sourceLine" id="cb5-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb5-16" data-line-number="16"><span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">K</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-17" data-line-number="17">  fmap _ (<span class="dt">K</span> a) <span class="fu">=</span> (<span class="dt">K</span> a)</a>
+<a class="sourceLine" id="cb5-18" data-line-number="18"></a>
+<a class="sourceLine" id="cb5-19" data-line-number="19"><span class="co">-- 3</span></a>
+<a class="sourceLine" id="cb5-20" data-line-number="20"><span class="kw">newtype</span> <span class="dt">Flip</span> f a b <span class="fu">=</span> <span class="dt">Flip</span> (f b a) <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</a>
+<a class="sourceLine" id="cb5-21" data-line-number="21"></a>
+<a class="sourceLine" id="cb5-22" data-line-number="22"><span class="kw">newtype</span> <span class="dt">K'</span> a b <span class="fu">=</span> <span class="dt">K'</span> a</a>
+<a class="sourceLine" id="cb5-23" data-line-number="23"></a>
+<a class="sourceLine" id="cb5-24" data-line-number="24"><span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Flip</span> <span class="dt">K'</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-25" data-line-number="25">  fmap f (<span class="dt">Flip</span> (<span class="dt">K'</span> a)) <span class="fu">=</span> <span class="dt">Flip</span> (<span class="dt">K'</span> (f a))</a>
+<a class="sourceLine" id="cb5-26" data-line-number="26"></a>
+<a class="sourceLine" id="cb5-27" data-line-number="27"><span class="co">-- 4</span></a>
+<a class="sourceLine" id="cb5-28" data-line-number="28"><span class="kw">data</span> <span class="dt">EvilGoateeConst</span> a b <span class="fu">=</span> <span class="dt">GoatyConst</span> b</a>
+<a class="sourceLine" id="cb5-29" data-line-number="29"></a>
+<a class="sourceLine" id="cb5-30" data-line-number="30"><span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">EvilGoateeConst</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-31" data-line-number="31">  fmap f (<span class="dt">GoatyConst</span> b) <span class="fu">=</span> <span class="dt">GoatyConst</span> (f b)</a>
+<a class="sourceLine" id="cb5-32" data-line-number="32"></a>
+<a class="sourceLine" id="cb5-33" data-line-number="33"><span class="co">-- 5</span></a>
+<a class="sourceLine" id="cb5-34" data-line-number="34"><span class="kw">data</span> <span class="dt">LiftItOut</span> f a <span class="fu">=</span> <span class="dt">LiftItOut</span> (f a)</a>
+<a class="sourceLine" id="cb5-35" data-line-number="35"></a>
+<a class="sourceLine" id="cb5-36" data-line-number="36"><span class="kw">instance</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Functor</span> (<span class="dt">LiftItOut</span> f) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-37" data-line-number="37">  fmap f (<span class="dt">LiftItOut</span> fa ) <span class="fu">=</span> <span class="dt">LiftItOut</span> (fmap f fa)</a>
+<a class="sourceLine" id="cb5-38" data-line-number="38"></a>
+<a class="sourceLine" id="cb5-39" data-line-number="39"><span class="co">-- 6</span></a>
+<a class="sourceLine" id="cb5-40" data-line-number="40"><span class="kw">data</span> <span class="dt">Parappa</span> f g a <span class="fu">=</span> <span class="dt">DaWrappa</span> (f a) (g a)</a>
+<a class="sourceLine" id="cb5-41" data-line-number="41"></a>
+<a class="sourceLine" id="cb5-42" data-line-number="42"><span class="kw">instance</span> (<span class="dt">Functor</span> f, <span class="dt">Functor</span> g) <span class="ot">=&gt;</span> <span class="dt">Functor</span> (<span class="dt">Parappa</span> f g) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-43" data-line-number="43">  fmap f (<span class="dt">DaWrappa</span> fa gb) <span class="fu">=</span> <span class="dt">DaWrappa</span> (fmap f fa) (fmap f gb)</a>
+<a class="sourceLine" id="cb5-44" data-line-number="44"></a>
+<a class="sourceLine" id="cb5-45" data-line-number="45"><span class="co">-- 7</span></a>
+<a class="sourceLine" id="cb5-46" data-line-number="46"></a>
+<a class="sourceLine" id="cb5-47" data-line-number="47"><span class="kw">data</span> <span class="dt">IgnoreOne</span> f g a b <span class="fu">=</span> <span class="dt">IgnoringSomething</span> (f a) (g b)</a>
+<a class="sourceLine" id="cb5-48" data-line-number="48"></a>
+<a class="sourceLine" id="cb5-49" data-line-number="49"><span class="kw">instance</span> (<span class="dt">Functor</span> f, <span class="dt">Functor</span> g) <span class="ot">=&gt;</span> <span class="dt">Functor</span> (<span class="dt">IgnoreOne</span> f g a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-50" data-line-number="50">  fmap f (<span class="dt">IgnoringSomething</span> fa gb) <span class="fu">=</span> <span class="dt">IgnoringSomething</span> fa (fmap f gb)</a>
+<a class="sourceLine" id="cb5-51" data-line-number="51"></a>
+<a class="sourceLine" id="cb5-52" data-line-number="52"><span class="co">-- 8</span></a>
+<a class="sourceLine" id="cb5-53" data-line-number="53"><span class="kw">data</span> <span class="dt">Notorious</span> g o a t <span class="fu">=</span> <span class="dt">Notorious</span> (g o) (g a) (g t)</a>
+<a class="sourceLine" id="cb5-54" data-line-number="54"></a>
+<a class="sourceLine" id="cb5-55" data-line-number="55"><span class="kw">instance</span> (<span class="dt">Functor</span> g) <span class="ot">=&gt;</span> <span class="dt">Functor</span> (<span class="dt">Notorious</span> g o a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-56" data-line-number="56">  fmap f (<span class="dt">Notorious</span> go ga gt) <span class="fu">=</span> <span class="dt">Notorious</span> go ga (fmap f gt)</a>
+<a class="sourceLine" id="cb5-57" data-line-number="57"></a>
+<a class="sourceLine" id="cb5-58" data-line-number="58"><span class="co">-- 9</span></a>
+<a class="sourceLine" id="cb5-59" data-line-number="59"><span class="kw">data</span> <span class="dt">List</span> a <span class="fu">=</span> <span class="dt">Nil</span> <span class="fu">|</span> <span class="dt">Cons</span> a (<span class="dt">List</span> a)</a>
+<a class="sourceLine" id="cb5-60" data-line-number="60"></a>
+<a class="sourceLine" id="cb5-61" data-line-number="61"><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">List</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-62" data-line-number="62">  fmap f (<span class="dt">Cons</span> a l) <span class="fu">=</span> <span class="dt">Cons</span> (f a) (fmap f l)</a>
+<a class="sourceLine" id="cb5-63" data-line-number="63">  fmap _ <span class="dt">Nil</span> <span class="fu">=</span> <span class="dt">Nil</span></a>
+<a class="sourceLine" id="cb5-64" data-line-number="64"></a>
+<a class="sourceLine" id="cb5-65" data-line-number="65"><span class="co">-- 10</span></a>
+<a class="sourceLine" id="cb5-66" data-line-number="66"></a>
+<a class="sourceLine" id="cb5-67" data-line-number="67"><span class="kw">data</span> <span class="dt">GLord</span> a <span class="fu">=</span> <span class="dt">NoG</span> <span class="fu">|</span> <span class="dt">OneG</span> a <span class="fu">|</span> <span class="dt">MoreG</span> (<span class="dt">GLord</span> a) (<span class="dt">GLord</span> a) (<span class="dt">GLord</span> a)</a>
+<a class="sourceLine" id="cb5-68" data-line-number="68"></a>
+<a class="sourceLine" id="cb5-69" data-line-number="69"><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">GLord</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-70" data-line-number="70">  fmap f (<span class="dt">MoreG</span> g g' g'') <span class="fu">=</span> <span class="dt">MoreG</span> (fmap f g) (fmap f g') (fmap f g'')</a>
+<a class="sourceLine" id="cb5-71" data-line-number="71">  fmap f (<span class="dt">OneG</span> a) <span class="fu">=</span> <span class="dt">OneG</span> (f a)</a>
+<a class="sourceLine" id="cb5-72" data-line-number="72">  fmap _ <span class="dt">NoG</span> <span class="fu">=</span> <span class="dt">NoG</span></a>
+<a class="sourceLine" id="cb5-73" data-line-number="73"></a>
+<a class="sourceLine" id="cb5-74" data-line-number="74"><span class="co">-- 11</span></a>
+<a class="sourceLine" id="cb5-75" data-line-number="75"><span class="kw">data</span> <span class="dt">TalkToMe</span> a <span class="fu">=</span> <span class="dt">Halt</span> <span class="fu">|</span> <span class="dt">Print</span> <span class="dt">String</span> a <span class="fu">|</span> <span class="dt">Read</span> (<span class="dt">String</span> <span class="ot">-&gt;</span> a)</a>
+<a class="sourceLine" id="cb5-76" data-line-number="76"></a>
+<a class="sourceLine" id="cb5-77" data-line-number="77"><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">TalkToMe</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-78" data-line-number="78">  fmap f (<span class="dt">Read</span> g) <span class="fu">=</span> <span class="dt">Read</span> (f <span class="fu">.</span> g)</a>
+<a class="sourceLine" id="cb5-79" data-line-number="79">  fmap f (<span class="dt">Print</span> s a) <span class="fu">=</span> <span class="dt">Print</span> s (f a)</a>
+<a class="sourceLine" id="cb5-80" data-line-number="80">  fmap _ <span class="dt">Halt</span> <span class="fu">=</span> <span class="dt">Halt</span></a></code></pre></div>
 <h2 id="follow-up-resources">16.19 Follow-up resources</h2>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><p><a href="https://en.wikibooks.org/wiki/Haskell/The_Functor_class">Haskell Wikibook; The Functor class.</a></p></li>
 <li><p>Mark P. Jones; A system of constructor classes: overloading and implicit higher-order polymorphism.</p></li>
 <li><p>Gabriel Gonzalez; The functor design pattern.</p></li>

@@ -29,12 +29,14 @@
 
 <h1 id="the-power-of-lambda">3 The Power of Lambda</h1>
 <h2 id="definition-of-booleans">3.1 Definition of Booleans</h2>
-<ol style="list-style-type: decimal">
-<li><pre><code>true = K
-false = K*</code></pre></li>
-<li><pre><code>if-then-else = (\i t e. i t e)</code></pre></li>
-</ol>
-<p>I think the pattern of using the “first” and “second” selector combinators as booleans so that you can just use the truth-condition in an “if-then-else” to directly select the right branch is really pretty somehow.</p>
+<ul>
+<li><p>(i):</p>
+<pre><code>true  = K  = \x y. x
+false = K* = \x y. y</code></pre></li>
+<li><p>(ii):</p>
+<pre><code>if-then-else = (\i t e. i t e)</code></pre></li>
+</ul>
+<p>I think the pattern of using the “first” and “second” selector combinators as booleans so that you can just use the truth-condition in an “if-then-else” to directly select the right branch is really pretty.</p>
 <h2 id="definition-of-pairs">3.2 Definition of Pairs</h2>
 <pre><code>(M, N) = (\z. z M N)
 
@@ -47,7 +49,7 @@ false = K*</code></pre></li>
 (T1, T2, T3) (choose-of 2 3) = T2
 (T1, T2, T3) (choose-of 2 3) = T3</code></pre>
 <p>Where <code>choose-of i n</code> is an expression that gives you the <code>i</code>-th expression of <code>n</code> expressions:</p>
-<pre><code>choose-of 0 1 = \x1. x1   = I
+<pre><code>choose-of 0 1 = \x1. x1    = I
 choose-of 0 2 = \x1 x2. x1 = K
 choose-of 1 2 = \x1 x2. x2 = K*
 choose-of 0 3 = \x1 x2 x3. x1
@@ -93,8 +95,9 @@ first 2 = \x . K (K x)
 = T1</code></pre>
 <p>So our <code>choose-of</code> function will be:</p>
 <pre><code>choose-of = \ i n t. (first (sub n i)) (t (drop i))</code></pre>
-<p>Where <code>sub</code> is integer subtraction, whose derivation I’ll leave for elsewhere.</p>
-<p>[TODO: Subtraction]</p>
+<p>Where <code>sub</code> is subtraction with Church numerals:</p>
+<pre><code>sub = \ x y. y pred x</code></pre>
+<p><code>pred</code> is the predecessor or decrement function, which I explored in my notes on <a href="../../notes/tilc/03.html#the-predecessor-function">Tutorial Introduction to Lambda Calculus by Raul Rojas</a> for Church numerals, and is defined below in section 3.4 for the nested pair encoding.</p>
 <p>Honestly, this construction of <code>n</code>-tuples seems ugly, and I’m not the biggest fan of writing lambda expressions that are complicated enough to feel like actual code. If I’m going to write code I want some actual tools…</p>
 <h2 id="definition-of-natural-numbers-as-pairs">3.3 Definition of natural numbers as pairs</h2>
 <pre><code>0_ = I
@@ -107,10 +110,217 @@ succ = (\n. (\p. p false n))
 pred (n+1) = (\n. n false) (\p. p false n_)  = false false n_ = n_
 pred = (\n. n false)
 
-isZero = (\x . x true)
+isZero = \x . x true
 isZero 0 = (\x . x true) I = true
 isZero 1 = (\x . x true) (\ p. p false n_) = true false n_ = false</code></pre>
-<h2 id="definition">3.5 Definition</h2>
+<h2 id="definition-of-lambda-definability">3.5 Definition of Lambda Definability</h2>
+<ul>
+<li><p>(i): This is just saying that a <em>numeric function</em> is a transformation or map from some (or no) numbers to one number. If we label the number of inputs as <code>p</code>, we can call the function a <em><code>p</code>-ary</em> function. The <em>ary</em> in <code>p-ary</code> is a word pattern, called <em>arity</em> or sometimes <em>adicity</em>:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Inputs</th>
+<th>Arity</th>
+<th>Adicity</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>nullary</td>
+<td>nulladic</td>
+<td><code>f()</code></td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>unary</td>
+<td>monadic</td>
+<td><code>f(a)</code></td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>binary</td>
+<td>dyadic</td>
+<td><code>f(a,b)</code></td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>ternary</td>
+<td>triadic</td>
+<td><code>f(a,b,c)</code></td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>quaternary</td>
+<td>tetradic</td>
+<td><code>f(a,b,c,d)</code></td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>quinary</td>
+<td>pentadic</td>
+<td><code>f(a,b,c,d,e)</code></td>
+</tr>
+<tr class="odd">
+<td>&gt;= 2</td>
+<td>multiary</td>
+<td>polyadic</td>
+<td><code>g(x_1,x_2,...,x_n)</code></td>
+</tr>
+<tr class="even">
+<td>n</td>
+<td>n-ary</td>
+<td>n-adic</td>
+<td><code>g(..., x_n)</code></td>
+</tr>
+</tbody>
+</table>
+<p>For example, a binary function, in this context, is one that takes two arguments.</p>
+<p>Note that the <em>arity</em> pattern uses the Latin roots (un-, bi-, ter-, …) plus the <em>-ary</em> suffix, whereas the <em>adicity</em> pattern uses Greek roots (mon-, dy-, tri-,…) plus the <em>-adic</em> suffix. The <em>Adicity</em> words are almost always identical in meaning to their <em>Arity</em> counterparts. A common, but not universal convention is to use Latin words like <em>arity</em> to refer to values and Greek words like <em>adicity</em> to refer to types.</p></li>
+<li><p>(ii): A numeric function is called <em>λ-definable</em> if there is a lambda expression which computes the function.</p></li>
+</ul>
+<h2 id="definition-of-initial-functions">3.6 Definition of initial functions</h2>
+<ul>
+<li>The <code>U</code> functions are simply our <code>choose-of</code> functions from section 3.2. E.g. <code>U_2^4</code> is the same as <code>(choose-of 2 4)</code>, which returns the 2nd of 4 arguments.</li>
+<li><code>S</code> is the successor or increment function <code>succ</code></li>
+<li><code>Z</code> is the constant function <code>\ x. 0</code></li>
+<li>The minimization function <code>μm[P(m)]</code> is tricky to understand, so lets work through it step by step:
+<ul>
+<li><code>m</code> is a number</li>
+<li><code>P(m)</code> is predicate or true/false question on <code>m</code>: <code>&quot;True or False: m is an even-number&quot;</code> is an example of a predicate.</li>
+<li><code>μm[P(m)]</code> returns the smallest number for which the <code>P(m)</code> predicate is true. <code>μm[&quot;m is even&quot;]</code> returns <code>2</code>, because <code>2</code> is the smallest even number.</li>
+<li>If the predicate is always false though, like it would be for <code>&quot;m is the square root of -1</code>&quot; (since numeric functions only operate on natural numbers), then the minimization function is undefined.</li>
+</ul></li>
+</ul>
+<h2 id="definition-of-a-class-of-numeric-functions">3.7 Definition of a class of numeric functions</h2>
+<p>A class is a collection of objects that share some property. Class <code>A</code> is a class of numeric functions where:</p>
+<ul>
+<li><p>(i): Any function built out of composing functions in <code>A</code> is a function in <code>A</code>. Composition in this case means chaining functions together by hooking up the output of one function to the inputs of another. E.g. the nested function <code>g(f(m)</code> is the same as <code>(g . f)(m)</code>, where <code>.</code> is the composition operator (for unary or curried functions).</p></li>
+<li><p>(ii): Primitive recursion means we start with a base case and then iterate through the natural numbers. <code>n^</code> is a vector of natural numbers (the initial state), <code>χ(n^)</code> is the base case, and <code>ψ</code> is the iterator function, which takes the current iteration <code>φ(k,n^)</code>, the counter <code>k</code> and the initial state <code>n^</code> as arguments.</p>
+<p>“<code>A</code> is closed under primitive recursion” means that any function we build by doing that kind of iteration with functions in <code>A</code> is still a function in <code>A</code>.</p></li>
+<li><p>(iii): Closure under minimization means that if we build a defined predicate out of a function in <code>A</code>, then the minimization function on that predicate is also in <code>A</code> (defined predicate means that there is some <code>m</code> for which the predicate is true.)</p></li>
+</ul>
+<h2 id="definition-of-the-class-of-recursive-functions">3.8 Definition of the class of recursive functions</h2>
+<p>The class of recursive functions is smallest possible class <code>A</code> that also has the initial functions in it.</p>
+<h2 id="lemma-the-initial-functions-are-λ-definable">3.9 Lemma: The initial functions are λ-definable</h2>
+<p>see 3.6.</p>
+<h2 id="λ-closure-under-composition">3.10 λ closure under composition</h2>
+<p>If <code>G, H1, .. Hm</code> are λ-expressions, and <code>x^</code> is some vector of variables, then</p>
+<pre><code>\ x^. G(H1 x^)... G(Hm x^)</code></pre>
+<p>is a lambda expression.</p>
+<h2 id="λ-closure-under-primitive-recursion">3.11 λ closure under primitive recursion</h2>
+<p>Basically the idea here is that we’re building a lambda expression that executes the primitive recursion calculation with a fixed-point combinator. It’s a little tedious, but looks really similar in mechanics to what I did above in 3.2 for the <code>choose-of</code> function.</p>
+<h2 id="λ-closure-under-minimization">3.12 λ closure under minimization</h2>
+<p>Again, same basic concept of using a fixed point combinator to iterate through all the natural numbers. Here we’re building an expression to return the first natural number that satisfies the predicate.</p>
+<h2 id="all-recursive-functions-are-λ-definable">3.13 All recursive functions are λ definable</h2>
+<p>By definition, if λ-definable functions satisfy the above closures and contain the initial functions, then they are a class of recursive functions. One question this text doesn’t really cover is whether the λ-definable functions are the smallest possible class of recursive functions <code>R</code>. We not only need to show that all functions in <code>R</code> are λ-definable, but also vice-versa.</p>
+<h2 id="λ-definability-with-respect-to-the-church-numerals">3.14 λ-definability with respect to the Church numerals</h2>
+<p>If we can convert nested pair numerals to Church numerals and back, then we can convert the above proof.</p>
+<h2 id="numeral-conversion">3.15 Numeral conversion</h2>
+<p>Let <code>C_n</code> be the <code>n</code>-th Church numeral, and <code>P_n</code> be the <code>n</code>-th Pair numeral:</p>
+<pre><code>churchToPair = \ x. x succ P_0
+pairToChurch = \ x. if isZero x then C_0 else succ (pairToChurch (pred x))</code></pre>
+<h2 id="multiple-fixedpoint-theorem">3.17 Multiple Fixedpoint Theorem</h2>
+<p>Okay, so regular recursion with the fixed point theorem works like this:</p>
+<pre><code>Y F = X
+    = F X
+    = F (F X)
+    = F (F (F X))
+    = F (F (F (F X)))
+    ...</code></pre>
+<p>Mutual recursion with the multiple fixed point works like this:</p>
+<pre><code>X1 = F1 X1 ... Xn
+...
+Xn = Fn X1 ... Xn</code></pre>
+<p>For <code>n = 2</code>:</p>
+<pre><code>X1 = F1 X1 X2
+   = F1 (F1 X1 X2) (F2 X1 X2)
+   = F1 (F1 (F1 X1 X2) (F2 X1 X2)) (F2 (F1 X1 X2) (F2 X1 X2))
+   ...
+X2 = F2 X1 X2
+   = F2 (F1 X1 X2) (F2 X1 X2)
+   = F2 (F1 (F1 X1 X2) (F2 X1 X2)) (F2 (F1 X1 X2) (F2 X1 X2))
+   ....</code></pre>
+<p>Notice that the only difference between <code>X1</code> and <code>X2</code> above is outer application of <code>F1</code> vs <code>F2</code> and the rest of the expressions are the same.</p>
+<p>We can collapse mutual recursion to regular recursion by constructing a new function <code>G</code> that has a single fixed point <code>X</code>:</p>
+<pre><code>G = \ x. [ F1 ((choose-of 1 2) x) ((choose-of 2 2) x)
+         , F2 ((choose-of 1 2) x) ((choose-of 2 2) x)
+         ]</code></pre>
+<p>where <code>choose-of</code> is the function that selects the <code>k</code>-th element of <code>n</code> elements in a tuple according to our construction in section 3.2. To make <code>G</code> more legible, lets label:</p>
+<pre><code>fst = choose 1 2
+snd = choose 2 2
+
+G = \ x. [ F1 (fst x) (snd x)
+         , F2 (fst x) (snd x)
+         ]</code></pre>
+<p>Now, let’s find the fixed point of <code>G</code> with the <code>Y</code> combinator from section 2.12:</p>
+<pre><code>Y G = X
+    = G X     = [ F1 (fst X) (snd X)
+                , F2 (fst X) (snd X)
+                ]
+    = G (G X) = [ F1 (fst (G X) (snd (G X))
+                , F2 (fst (G X) (snd (G X))
+                ]
+              = [ F1 (F1 (fst X) (snd X)) (F2 (fst X) (snd X))
+                , F2 (F1 (fst X) (snd X)) (F2 (fst X) (snd X))
+                ]
+    ...</code></pre>
+<p>It might be kinda hard to see, but this is replicating the structure of</p>
+<pre><code>X1 = F1 X1 X2
+   = F1 (F1 X1 X2) (F2 X1 X2)
+   ...
+X2 = F2 X1 X2
+   = F2 (F1 X1 X2) (F2 X1 X2)
+   ...</code></pre>
+<p>in a laborious way. Watch what happens if we say:</p>
+<pre><code>X1 = fst X
+X2 = snd X</code></pre>
+<p>which collapses the big complicated <code>G (G X)</code> expression down into:</p>
+<pre><code>G (G X) = [ F1 (F1 X1 X2) (F2 X1 X2)
+          , F2 (F1 X1 X2) (F2 X1 X2)
+          ]</code></pre>
+<p>In other words, <code>X</code> is just containing and computing our two fixed-points <code>X1</code> and <code>X2</code>:</p>
+<pre><code>X = [X1, X2]</code></pre>
+<p>Okay, so how does this generalize to <code>n</code> fixed points?</p>
+<pre><code>X1 = F1 X1                 ... Xn
+   = F1 (F1 X1 ... Xn)     ... (Fn X1 ... Xn)
+   = F1 (F1 (F1 X1 ... Xn) ... (Fn X1 ... Xn))
+...
+Xn = Fn X1                 ... Xn
+   = Fn (F1 X1 ... Xn)     ... (Fn X1 ... Xn)
+   = Fn (F1 (F1 X1 ... Xn) ... (Fn X1 ... Xn))
+        ...</code></pre>
+<p>We can use the same tuple construction that we did with <code>n = 2</code>:</p>
+<pre><code>X = [X1, ... , X2]
+G = \ x . [ F1 ((choose-of 1 n) x) ... ((choose-of n n) x)
+          , ...
+          , Fn ((choose-of 1 n) x) ... ((choose-of n n) x)
+          ]</code></pre>
+<h2 id="exercises">Exercises</h2>
+<h3 id="section">3.1</h3>
+<ul>
+<li><p>(i):</p>
+<pre><code>mult = \ n m t. (pairToChurch n) ((pairToChurch m) t)</code></pre></li>
+<li><p>(ii):</p>
+<pre><code>loop = \ test f next start. Y (\r s. test s ((f s) (r (next s)))) start
+fact = \ n . loop (\m. isZero m 1) mult pred n</code></pre>
+<p>see <a href="../../notes/tilc/05.html#division-of-positive-integers-recursively">Notes: Tutorial Introduction to Lambda Calculus by Raul Rojas, <em>Division of positive integers recursively</em></a></p></li>
+</ul>
+<h3 id="section-1">3.2</h3>
+<pre><code>ackermannGen = \ ack x y . isZero x (succ y)
+                             (isZero y (ack (pred x) 1)
+                               (ack (pred x) (ack x (pred y)))
+                             )
+
+ackermann = Y ackermannGen</code></pre>
+<p>Adapted from <a href="https://web.cecs.pdx.edu/~black/CS311/Lecture%20Notes/Lambda%20Calculus.pdf">Andrew Black’s <em>Church’s Lambda Calculus</em> presentation</a></p>
+<h3 id="section-2">3.3</h3>
+<pre><code>mGen = \ m x . isZero x ((m (succ x)) (m (pred x)))
+m = Y mGen
+M_n = m n</code></pre>
+<h3 id="section-3">3.4</h3>
+<p>see <a href="../../notes/tilc/03.html#the-predecessor-function">Notes: Tutorial Introduction to Lambda Calculus by Raul Rojas, <em>The predecessor function</em></a></p>
 
         </div>
         <div id="footer">

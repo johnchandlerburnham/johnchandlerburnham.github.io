@@ -49,7 +49,7 @@ class Eq a where
 <img src="https://wiki.haskell.org/wikiupload/d/df/Typeclassopedia-diagram.png" width="600px" alt="Typeclassopedia">
 </p>
 <h2 id="exercises-eq-instances">Exercises: Eq Instances</h2>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><pre><code>instance Eq TisAnInteger where (==) TisAn x TisAn y = (==) x y</code></pre></li>
 <li><pre><code>instance Eq TwoIntegers where Two x y == Two p q = (x, y) == (p, q)</code></pre></li>
 <li><p>String or Int:</p>
@@ -73,7 +73,7 @@ _ == _ = False</code></pre></li>
 <h2 id="exercises-tuple-experiment">Exercises: Tuple Experiment</h2>
 <p><code>quotRem</code> and <code>divMod</code> return a tuple with the values from <code>quot</code> and <code>rem</code> or <code>div</code> and <code>mod</code> respectively.</p>
 <h2 id="exercises-will-they-work">Exercises: Will They Work?</h2>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><code>5</code></li>
 <li><code>LT</code></li>
 <li>error, a string and a bool are not comparable</li>
@@ -81,7 +81,7 @@ _ == _ = False</code></pre></li>
 </ol>
 <h2 id="chapter-exercises">Chapter Exercises</h2>
 <h3 id="multiple-choice">Multiple choice</h3>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li>c</li>
 <li>b</li>
 <li>a</li>
@@ -89,10 +89,10 @@ _ == _ = False</code></pre></li>
 <li>a</li>
 </ol>
 <h3 id="does-it-typecheck">Does it typecheck?:</h3>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li>ch6/ex1.hs</li>
 <li><p>ch6/ex2.hs</p></li>
-<li><ol style="list-style-type: lower-alpha">
+<li><ol type="a">
 <li>any <code>Mood</code>, i.e. <code>Blah</code> or <code>Woot</code></li>
 <li>type error, <code>9</code> is not a <code>Mood</code></li>
 <li><code>Mood</code> does not derive <code>Ord</code></li>
@@ -101,7 +101,7 @@ _ == _ = False</code></pre></li>
 </ol>
 <h3 id="given-a-datatype-declaration-what-can-we-do">Given a datatype declaration, what can we do?</h3>
 <p>exdatatype.hs</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><code>&quot;chases&quot;</code> and <code>True</code> are a <code>String</code> and a <code>Bool</code>, not a <code>Rocks</code> and a <code>Yeah</code></li>
 <li>works</li>
 <li>works</li>
@@ -109,8 +109,8 @@ _ == _ = False</code></pre></li>
 </ol>
 <h3 id="match-the-types">Match the types:</h3>
 <p>exmatch1.hs and exmatch2.hs</p>
-<ol style="list-style-type: decimal">
-<li>Since <code>i = 1</code>, <code>i</code> has to be a <code>Num</code>, it can’t be a type that <code>1</code> isn’t, like e.g. a <code>String</code>. We can’t cast <code>i</code> upwards.</li>
+<ol type="1">
+<li>Since <code>i = 1</code>, <code>i</code> has to be a <code>Num</code>, it can’t be a type that <code>1</code> isn’t, like e.g. a <code>String</code>. We can’t cast <code>i</code> upwards.</li>
 <li><code>1.0</code> is not just any instance of <code>Num</code>, the syntax implies <code>Fractional</code>.</li>
 <li>works</li>
 <li>works</li>
@@ -123,12 +123,12 @@ _ == _ = False</code></pre></li>
 <li>Doesn’t work, <code>mySort</code> only sorts <code>Strings</code>, not any instance of <code>Ord</code></li>
 </ol>
 <h3 id="type-kwon-do-electric-typealoo">Type-Kwon-Do: Electric Typealoo</h3>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><code>chk f a b = f a == b</code></li>
 <li><code>arith f n a = (+ fromIntegral n) (f a)</code></li>
 </ol>
 <h2 id="follow-up-resources">6.17 Follow-up resources</h2>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><p>[P. Wadler and S. Blott. How to make ad-hoc polymorphism less ad hoc.] (http://www.cse.iitk.ac.in/users/karkare/courses/2010/cs653/Papers/ ad-hoc-polymorphism.pdf)</p></li>
 <li><p>[Cordelia V. Hall, Kevin Hammond, Simon L. Peyton Jones, and Philip L. Wadler. Typeclasses in Haskell.] (http://ropas.snu.ac.kr/lib/dock/HaHaJoWa1996.pdf)</p></li>
 </ol>

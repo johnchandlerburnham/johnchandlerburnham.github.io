@@ -70,7 +70,7 @@ div = \x d. (\x d . (and (gte x 0) (gte d 0) (divUnsafe x d) 0))
             (fst (simplify x))
             (fst (simplify d))</code></pre>
 <h2 id="factorial">5 Factorial</h2>
-<pre><code>factorial = \n . loop (\n. isZero n 1) (\n. multiply n) pred n</code></pre>
+<pre><code>factorial = \n . loop (\m. isZero m 1) mult pred n</code></pre>
 <h2 id="rational-numbers">6 Rational Numbers</h2>
 <p>Our rational number representation will be a pair of integers: a numerator <code>x</code> and a divisor <code>y</code>:</p>
 <pre><code>pair x y</code></pre>

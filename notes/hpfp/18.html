@@ -30,202 +30,202 @@
 <h1 id="monad">18 Monad</h1>
 <h2 id="sorry---a-monad-is-not-a-burrito">18.2 Sorry - a monad is not a burrito</h2>
 <h3 id="the-answer-is-the-exercise">The answer is the exercise</h3>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Bind</span> <span class="kw">where</span>
-
-<span class="kw">import </span><span class="dt">Control.Monad</span> (join)
-
-<span class="ot">bind ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> m b) <span class="ot">-&gt;</span> m a <span class="ot">-&gt;</span> m b
-bind f m <span class="fu">=</span> join <span class="fu">$</span> fmap f m</code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">module</span> <span class="dt">Bind</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Control.Monad</span> (join)</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="ot">bind ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> m b) <span class="ot">-&gt;</span> m a <span class="ot">-&gt;</span> m b</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">bind f m <span class="fu">=</span> join <span class="fu">$</span> fmap f m</a></code></pre></div>
 <h2 id="examples-of-monad-use">18.4 Examples of Monad use</h2>
 <h3 id="short-exercise-either-monad">Short Exercise: Either Monad</h3>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--18/EitherMonad.hs</span>
-<span class="kw">module</span> <span class="dt">EitherMonad</span> <span class="kw">where</span>
-
-<span class="kw">data</span> <span class="dt">Sum</span> a b <span class="fu">=</span> <span class="dt">First</span> a <span class="fu">|</span> <span class="dt">Second</span> b <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
-
-<span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Sum</span> a) <span class="kw">where</span>
-  fmap f (<span class="dt">Second</span> b) <span class="fu">=</span> <span class="dt">Second</span> (f b)
-  fmap _ (<span class="dt">First</span> a) <span class="fu">=</span> <span class="dt">First</span> a
-
-<span class="kw">instance</span> <span class="dt">Applicative</span> (<span class="dt">Sum</span> a) <span class="kw">where</span>
-  pure b <span class="fu">=</span> <span class="dt">Second</span> b
-  (<span class="fu">&lt;*&gt;</span>) _           (<span class="dt">First</span> e) <span class="fu">=</span> <span class="dt">First</span> e
-  (<span class="fu">&lt;*&gt;</span>) (<span class="dt">First</span> e) _           <span class="fu">=</span> <span class="dt">First</span> e
-  (<span class="fu">&lt;*&gt;</span>) (<span class="dt">Second</span> f) (<span class="dt">Second</span> b) <span class="fu">=</span> <span class="dt">Second</span> (f b)
-
-<span class="kw">instance</span> <span class="dt">Monad</span> (<span class="dt">Sum</span> a) <span class="kw">where</span>
-  return <span class="fu">=</span> pure
-  (<span class="fu">&gt;&gt;=</span>) (<span class="dt">Second</span> b) f <span class="fu">=</span> (f b)</code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co">--18/EitherMonad.hs</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">module</span> <span class="dt">EitherMonad</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="kw">data</span> <span class="dt">Sum</span> a b <span class="fu">=</span> <span class="dt">First</span> a <span class="fu">|</span> <span class="dt">Second</span> b <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Sum</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-7" data-line-number="7">  fmap f (<span class="dt">Second</span> b) <span class="fu">=</span> <span class="dt">Second</span> (f b)</a>
+<a class="sourceLine" id="cb2-8" data-line-number="8">  fmap _ (<span class="dt">First</span> a) <span class="fu">=</span> <span class="dt">First</span> a</a>
+<a class="sourceLine" id="cb2-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb2-10" data-line-number="10"><span class="kw">instance</span> <span class="dt">Applicative</span> (<span class="dt">Sum</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">  pure b <span class="fu">=</span> <span class="dt">Second</span> b</a>
+<a class="sourceLine" id="cb2-12" data-line-number="12">  (<span class="fu">&lt;*&gt;</span>) _           (<span class="dt">First</span> e) <span class="fu">=</span> <span class="dt">First</span> e</a>
+<a class="sourceLine" id="cb2-13" data-line-number="13">  (<span class="fu">&lt;*&gt;</span>) (<span class="dt">First</span> e) _           <span class="fu">=</span> <span class="dt">First</span> e</a>
+<a class="sourceLine" id="cb2-14" data-line-number="14">  (<span class="fu">&lt;*&gt;</span>) (<span class="dt">Second</span> f) (<span class="dt">Second</span> b) <span class="fu">=</span> <span class="dt">Second</span> (f b)</a>
+<a class="sourceLine" id="cb2-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb2-16" data-line-number="16"><span class="kw">instance</span> <span class="dt">Monad</span> (<span class="dt">Sum</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-17" data-line-number="17">  return <span class="fu">=</span> pure</a>
+<a class="sourceLine" id="cb2-18" data-line-number="18">  (<span class="fu">&gt;&gt;=</span>) (<span class="dt">Second</span> b) f <span class="fu">=</span> (f b)</a></code></pre></div>
 <h2 id="chapter-exercises">Chapter Exercises</h2>
 <p>monadexercises/src/ChapterExercises.hs</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--18/monadexercises/src/ChapterExercises.hs</span>
-<span class="kw">module</span> <span class="dt">ChapterExercises</span> <span class="kw">where</span>
-
-<span class="kw">import </span><span class="dt">Control.Monad</span>
-<span class="kw">import </span><span class="dt">Test.QuickCheck</span>
-<span class="kw">import </span><span class="dt">Test.QuickCheck.Checkers</span>
-<span class="kw">import </span><span class="dt">Test.QuickCheck.Classes</span>
-
-<span class="co">--1</span>
-<span class="kw">data</span> <span class="dt">Nope</span> a <span class="fu">=</span> <span class="dt">NopeDotJpg</span> <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
-
-<span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">Nope</span> <span class="kw">where</span>
-  fmap f <span class="dt">NopeDotJpg</span> <span class="fu">=</span> <span class="dt">NopeDotJpg</span>
-
-<span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">Nope</span> <span class="kw">where</span>
-  pure _ <span class="fu">=</span> <span class="dt">NopeDotJpg</span>
-  (<span class="fu">&lt;*&gt;</span>) _ _ <span class="fu">=</span> <span class="dt">NopeDotJpg</span>
-
-<span class="kw">instance</span> <span class="dt">Monad</span> <span class="dt">Nope</span> <span class="kw">where</span>
-  return _ <span class="fu">=</span> <span class="dt">NopeDotJpg</span>
-  (<span class="fu">&gt;&gt;=</span>) _ _ <span class="fu">=</span> <span class="dt">NopeDotJpg</span>
-
-<span class="kw">instance</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Nope</span> a) <span class="kw">where</span>
-  arbitrary <span class="fu">=</span> return <span class="dt">NopeDotJpg</span>
-
-<span class="kw">instance</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> <span class="dt">EqProp</span> (<span class="dt">Nope</span> a) <span class="kw">where</span>
-  (<span class="fu">=-=</span>) <span class="fu">=</span> eq
-
-<span class="co">-- 2</span>
-<span class="kw">data</span> <span class="dt">PhEither</span> b a <span class="fu">=</span> <span class="dt">Right'</span> b <span class="fu">|</span> <span class="dt">Left'</span> a <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
-
-<span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">PhEither</span> b) <span class="kw">where</span>
-  fmap f (<span class="dt">Left'</span> a) <span class="fu">=</span> <span class="dt">Left'</span> (f a)
-  fmap f (<span class="dt">Right'</span> b) <span class="fu">=</span> <span class="dt">Right'</span> b
-
-<span class="kw">instance</span> <span class="dt">Applicative</span> (<span class="dt">PhEither</span> b) <span class="kw">where</span>
-  pure a <span class="fu">=</span> <span class="dt">Left'</span> a
-  (<span class="fu">&lt;*&gt;</span>) (<span class="dt">Right'</span> b) _ <span class="fu">=</span> <span class="dt">Right'</span> b
-  (<span class="fu">&lt;*&gt;</span>) _ (<span class="dt">Right'</span> b) <span class="fu">=</span> <span class="dt">Right'</span> b
-  (<span class="fu">&lt;*&gt;</span>) (<span class="dt">Left'</span> f) (<span class="dt">Left'</span> a) <span class="fu">=</span> <span class="dt">Left'</span> (f a)
-
-<span class="kw">instance</span> <span class="dt">Monad</span> (<span class="dt">PhEither</span> b) <span class="kw">where</span>
-  return <span class="fu">=</span> pure
-  (<span class="fu">&gt;&gt;=</span>) (<span class="dt">Left'</span> a) f  <span class="fu">=</span> (f a)
-  (<span class="fu">&gt;&gt;=</span>) (<span class="dt">Right'</span> b) f  <span class="fu">=</span> <span class="dt">Right'</span> b
-
-<span class="kw">instance</span> (<span class="dt">Arbitrary</span> a, <span class="dt">Arbitrary</span> b) <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">PhEither</span> b a)  <span class="kw">where</span>
-  arbitrary <span class="fu">=</span> <span class="kw">do</span>
-    b' <span class="ot">&lt;-</span> arbitrary
-    a' <span class="ot">&lt;-</span> arbitrary
-    oneof [return (<span class="dt">Left'</span> b'), return (<span class="dt">Right'</span> a')]
-
-<span class="kw">instance</span> (<span class="dt">Eq</span> b, <span class="dt">Eq</span> a) <span class="ot">=&gt;</span> <span class="dt">EqProp</span> (<span class="dt">PhEither</span> b a) <span class="kw">where</span>
-  (<span class="fu">=-=</span>) <span class="fu">=</span> eq
-
-<span class="co">-- 3</span>
-<span class="kw">data</span> <span class="dt">Identity</span> a <span class="fu">=</span> <span class="dt">Identity</span> a <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Ord</span>, <span class="dt">Show</span>)
-
-<span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">Identity</span> <span class="kw">where</span>
-  fmap f (<span class="dt">Identity</span> a) <span class="fu">=</span> <span class="dt">Identity</span> (f a)
-
-<span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">Identity</span> <span class="kw">where</span>
-  pure a <span class="fu">=</span> <span class="dt">Identity</span> a
-  (<span class="fu">&lt;*&gt;</span>) (<span class="dt">Identity</span> f) (<span class="dt">Identity</span> a) <span class="fu">=</span> <span class="dt">Identity</span> (f a)
-
-<span class="kw">instance</span> <span class="dt">Monad</span> <span class="dt">Identity</span> <span class="kw">where</span>
-  return <span class="fu">=</span> pure
-  (<span class="fu">&gt;&gt;=</span>) (<span class="dt">Identity</span> a) f  <span class="fu">=</span> (f a)
-
-<span class="kw">instance</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Identity</span> a)  <span class="kw">where</span>
-  arbitrary <span class="fu">=</span> <span class="kw">do</span>
-    a <span class="ot">&lt;-</span> arbitrary
-    return (<span class="dt">Identity</span> a)
-
-<span class="kw">instance</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> <span class="dt">EqProp</span> (<span class="dt">Identity</span> a) <span class="kw">where</span>
-  (<span class="fu">=-=</span>) <span class="fu">=</span> eq
-
-<span class="co">-- 4</span>
-<span class="kw">data</span> <span class="dt">List</span> a <span class="fu">=</span> <span class="dt">Nil</span> <span class="fu">|</span> <span class="dt">Cons</span> a (<span class="dt">List</span> a) <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
-
-<span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">List</span> <span class="kw">where</span>
-  fmap f <span class="dt">Nil</span> <span class="fu">=</span> <span class="dt">Nil</span>
-  fmap f (<span class="dt">Cons</span> a as) <span class="fu">=</span> <span class="dt">Cons</span> (f a) (fmap f as)
-
-<span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">List</span> <span class="kw">where</span>
-  pure a <span class="fu">=</span> <span class="dt">Cons</span> a <span class="dt">Nil</span>
-  <span class="co">-- (&lt;*&gt;) fs as = toList $ [f a | f &lt;- (fromList fs), a &lt;- (fromList as)]</span>
-  (<span class="fu">&lt;*&gt;</span>) fs as <span class="fu">=</span> fold append <span class="dt">Nil</span> <span class="fu">$</span> fmap (\f <span class="ot">-&gt;</span> fmap f as) fs
-
-<span class="kw">instance</span> <span class="dt">Monad</span> <span class="dt">List</span> <span class="kw">where</span>
-  return <span class="fu">=</span> pure
-  <span class="co">-- (&lt;*&gt;) fs as = fold append Nil $ fmap (\f -&gt; fmap f as) fs</span>
-  <span class="co">--(&gt;&gt;=) as f = toList $ [b | a &lt;- (fromList as), b &lt;- (fromList $ f a)]</span>
-  (<span class="fu">&gt;&gt;=</span>) as f <span class="fu">=</span> fold append <span class="dt">Nil</span> <span class="fu">$</span> fmap f as
-
-<span class="ot">append ::</span> <span class="dt">List</span> a <span class="ot">-&gt;</span> <span class="dt">List</span> a <span class="ot">-&gt;</span> <span class="dt">List</span> a
-append <span class="dt">Nil</span> ys <span class="fu">=</span> ys
-append (<span class="dt">Cons</span> x xs) ys <span class="fu">=</span> <span class="dt">Cons</span> x (append xs ys)
-
-<span class="ot">fold ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> <span class="dt">List</span> a <span class="ot">-&gt;</span> b
-fold _ b <span class="dt">Nil</span> <span class="fu">=</span> b
-fold f b (<span class="dt">Cons</span> h t) <span class="fu">=</span> f h (fold f b t)
-
-<span class="ot">fromList ::</span> <span class="dt">List</span> a <span class="ot">-&gt;</span> [a]
-fromList <span class="dt">Nil</span> <span class="fu">=</span> []
-fromList (<span class="dt">Cons</span> a as) <span class="fu">=</span> a<span class="fu">:</span>(fromList as)
-
-<span class="ot">toList ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">List</span> a
-toList [] <span class="fu">=</span> <span class="dt">Nil</span>
-toList (x<span class="fu">:</span>xs) <span class="fu">=</span> <span class="dt">Cons</span> x (toList xs)
-
-
-<span class="kw">instance</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">List</span> a) <span class="kw">where</span>
-  arbitrary <span class="fu">=</span> <span class="kw">do</span>
-    as <span class="ot">&lt;-</span> arbitrary
-    return (toList as)
-
-<span class="kw">instance</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> <span class="dt">EqProp</span> (<span class="dt">List</span> a) <span class="kw">where</span>
-  (<span class="fu">=-=</span>) <span class="fu">=</span> eq
-
-<span class="co">-- Write functions</span>
-
-<span class="co">-- 1</span>
-<span class="ot">j ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> m (m a) <span class="ot">-&gt;</span> m a
-j x <span class="fu">=</span> x <span class="fu">&gt;&gt;=</span> id
-
-<span class="co">-- 2</span>
-<span class="ot">l1 ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> m a <span class="ot">-&gt;</span> m b
-l1 <span class="fu">=</span> fmap
-
-<span class="co">-- 3</span>
-<span class="ot">l2 ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> m a <span class="ot">-&gt;</span> m b <span class="ot">-&gt;</span> m c
-l2 f ma mb <span class="fu">=</span> f <span class="fu">&lt;$&gt;</span> ma <span class="fu">&lt;*&gt;</span> mb
-
-<span class="co">-- 4</span>
-<span class="ot">a ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> m a <span class="ot">-&gt;</span> m (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> m b
-a <span class="fu">=</span> flip (<span class="fu">&lt;*&gt;</span>)
-
-<span class="co">-- 5</span>
-<span class="ot">meh ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> m b) <span class="ot">-&gt;</span> m [b]
-meh [] f <span class="fu">=</span> return []
-meh (a<span class="fu">:</span>as) f <span class="fu">=</span> liftM2 (<span class="fu">:</span>) (f a) (meh as f)
-
-<span class="co">-- 6</span>
-<span class="ot">flipType ::</span> (<span class="dt">Monad</span> m) <span class="ot">=&gt;</span> [m a] <span class="ot">-&gt;</span> m [a]
-flipType xs <span class="fu">=</span> meh xs id
-
-
-<span class="co">-- Testing</span>
-
-<span class="co">-- type SSS = (String, String, String)</span>
-<span class="kw">type</span> <span class="dt">III</span> <span class="fu">=</span> (<span class="dt">Int</span>, <span class="dt">Int</span>, <span class="dt">Int</span>)
-
-main <span class="fu">=</span> <span class="kw">do</span>
-  quickBatch <span class="fu">$</span> functor (<span class="dt">NopeDotJpg</span><span class="ot"> ::</span> <span class="dt">Nope</span> <span class="dt">III</span>)
-  quickBatch <span class="fu">$</span> applicative (<span class="dt">NopeDotJpg</span><span class="ot"> ::</span> <span class="dt">Nope</span> <span class="dt">III</span>)
-  quickBatch <span class="fu">$</span> monad (<span class="dt">NopeDotJpg</span><span class="ot"> ::</span> <span class="dt">Nope</span> <span class="dt">III</span>)
-  quickBatch <span class="fu">$</span> functor (undefined<span class="ot"> ::</span> <span class="dt">PhEither</span> <span class="dt">III</span> <span class="dt">III</span>)
-  quickBatch <span class="fu">$</span> applicative (undefined<span class="ot"> ::</span> <span class="dt">PhEither</span> <span class="dt">III</span> <span class="dt">III</span>)
-  quickBatch <span class="fu">$</span> monad (undefined<span class="ot"> ::</span> <span class="dt">PhEither</span> <span class="dt">III</span> <span class="dt">III</span>)
-  quickBatch <span class="fu">$</span> functor (undefined<span class="ot"> ::</span> <span class="dt">Identity</span> <span class="dt">III</span>)
-  quickBatch <span class="fu">$</span> applicative (undefined<span class="ot"> ::</span> <span class="dt">Identity</span> <span class="dt">III</span>)
-  quickBatch <span class="fu">$</span> monad (undefined<span class="ot"> ::</span> <span class="dt">Identity</span> <span class="dt">III</span>)
-  quickBatch <span class="fu">$</span> functor (undefined<span class="ot"> ::</span> <span class="dt">List</span> <span class="dt">III</span>)
-  quickBatch <span class="fu">$</span> applicative (undefined<span class="ot"> ::</span> <span class="dt">List</span> <span class="dt">III</span>)
-  quickBatch <span class="fu">$</span> monad (undefined<span class="ot"> ::</span> <span class="dt">List</span> <span class="dt">III</span>)</code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co">--18/monadexercises/src/ChapterExercises.hs</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">module</span> <span class="dt">ChapterExercises</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="kw">import</span> <span class="dt">Control.Monad</span></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="kw">import</span> <span class="dt">Test.QuickCheck</span></a>
+<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="kw">import</span> <span class="dt">Test.QuickCheck.Checkers</span></a>
+<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="kw">import</span> <span class="dt">Test.QuickCheck.Classes</span></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="co">--1</span></a>
+<a class="sourceLine" id="cb3-10" data-line-number="10"><span class="kw">data</span> <span class="dt">Nope</span> a <span class="fu">=</span> <span class="dt">NopeDotJpg</span> <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</a>
+<a class="sourceLine" id="cb3-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb3-12" data-line-number="12"><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">Nope</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-13" data-line-number="13">  fmap f <span class="dt">NopeDotJpg</span> <span class="fu">=</span> <span class="dt">NopeDotJpg</span></a>
+<a class="sourceLine" id="cb3-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb3-15" data-line-number="15"><span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">Nope</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-16" data-line-number="16">  pure _ <span class="fu">=</span> <span class="dt">NopeDotJpg</span></a>
+<a class="sourceLine" id="cb3-17" data-line-number="17">  (<span class="fu">&lt;*&gt;</span>) _ _ <span class="fu">=</span> <span class="dt">NopeDotJpg</span></a>
+<a class="sourceLine" id="cb3-18" data-line-number="18"></a>
+<a class="sourceLine" id="cb3-19" data-line-number="19"><span class="kw">instance</span> <span class="dt">Monad</span> <span class="dt">Nope</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-20" data-line-number="20">  return _ <span class="fu">=</span> <span class="dt">NopeDotJpg</span></a>
+<a class="sourceLine" id="cb3-21" data-line-number="21">  (<span class="fu">&gt;&gt;=</span>) _ _ <span class="fu">=</span> <span class="dt">NopeDotJpg</span></a>
+<a class="sourceLine" id="cb3-22" data-line-number="22"></a>
+<a class="sourceLine" id="cb3-23" data-line-number="23"><span class="kw">instance</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Nope</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-24" data-line-number="24">  arbitrary <span class="fu">=</span> return <span class="dt">NopeDotJpg</span></a>
+<a class="sourceLine" id="cb3-25" data-line-number="25"></a>
+<a class="sourceLine" id="cb3-26" data-line-number="26"><span class="kw">instance</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> <span class="dt">EqProp</span> (<span class="dt">Nope</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-27" data-line-number="27">  (<span class="fu">=-=</span>) <span class="fu">=</span> eq</a>
+<a class="sourceLine" id="cb3-28" data-line-number="28"></a>
+<a class="sourceLine" id="cb3-29" data-line-number="29"><span class="co">-- 2</span></a>
+<a class="sourceLine" id="cb3-30" data-line-number="30"><span class="kw">data</span> <span class="dt">PhEither</span> b a <span class="fu">=</span> <span class="dt">Right'</span> b <span class="fu">|</span> <span class="dt">Left'</span> a <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</a>
+<a class="sourceLine" id="cb3-31" data-line-number="31"></a>
+<a class="sourceLine" id="cb3-32" data-line-number="32"><span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">PhEither</span> b) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-33" data-line-number="33">  fmap f (<span class="dt">Left'</span> a) <span class="fu">=</span> <span class="dt">Left'</span> (f a)</a>
+<a class="sourceLine" id="cb3-34" data-line-number="34">  fmap f (<span class="dt">Right'</span> b) <span class="fu">=</span> <span class="dt">Right'</span> b</a>
+<a class="sourceLine" id="cb3-35" data-line-number="35"></a>
+<a class="sourceLine" id="cb3-36" data-line-number="36"><span class="kw">instance</span> <span class="dt">Applicative</span> (<span class="dt">PhEither</span> b) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-37" data-line-number="37">  pure a <span class="fu">=</span> <span class="dt">Left'</span> a</a>
+<a class="sourceLine" id="cb3-38" data-line-number="38">  (<span class="fu">&lt;*&gt;</span>) (<span class="dt">Right'</span> b) _ <span class="fu">=</span> <span class="dt">Right'</span> b</a>
+<a class="sourceLine" id="cb3-39" data-line-number="39">  (<span class="fu">&lt;*&gt;</span>) _ (<span class="dt">Right'</span> b) <span class="fu">=</span> <span class="dt">Right'</span> b</a>
+<a class="sourceLine" id="cb3-40" data-line-number="40">  (<span class="fu">&lt;*&gt;</span>) (<span class="dt">Left'</span> f) (<span class="dt">Left'</span> a) <span class="fu">=</span> <span class="dt">Left'</span> (f a)</a>
+<a class="sourceLine" id="cb3-41" data-line-number="41"></a>
+<a class="sourceLine" id="cb3-42" data-line-number="42"><span class="kw">instance</span> <span class="dt">Monad</span> (<span class="dt">PhEither</span> b) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-43" data-line-number="43">  return <span class="fu">=</span> pure</a>
+<a class="sourceLine" id="cb3-44" data-line-number="44">  (<span class="fu">&gt;&gt;=</span>) (<span class="dt">Left'</span> a) f  <span class="fu">=</span> (f a)</a>
+<a class="sourceLine" id="cb3-45" data-line-number="45">  (<span class="fu">&gt;&gt;=</span>) (<span class="dt">Right'</span> b) f  <span class="fu">=</span> <span class="dt">Right'</span> b</a>
+<a class="sourceLine" id="cb3-46" data-line-number="46"></a>
+<a class="sourceLine" id="cb3-47" data-line-number="47"><span class="kw">instance</span> (<span class="dt">Arbitrary</span> a, <span class="dt">Arbitrary</span> b) <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">PhEither</span> b a)  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-48" data-line-number="48">  arbitrary <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb3-49" data-line-number="49">    b' <span class="ot">&lt;-</span> arbitrary</a>
+<a class="sourceLine" id="cb3-50" data-line-number="50">    a' <span class="ot">&lt;-</span> arbitrary</a>
+<a class="sourceLine" id="cb3-51" data-line-number="51">    oneof [return (<span class="dt">Left'</span> b'), return (<span class="dt">Right'</span> a')]</a>
+<a class="sourceLine" id="cb3-52" data-line-number="52"></a>
+<a class="sourceLine" id="cb3-53" data-line-number="53"><span class="kw">instance</span> (<span class="dt">Eq</span> b, <span class="dt">Eq</span> a) <span class="ot">=&gt;</span> <span class="dt">EqProp</span> (<span class="dt">PhEither</span> b a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-54" data-line-number="54">  (<span class="fu">=-=</span>) <span class="fu">=</span> eq</a>
+<a class="sourceLine" id="cb3-55" data-line-number="55"></a>
+<a class="sourceLine" id="cb3-56" data-line-number="56"><span class="co">-- 3</span></a>
+<a class="sourceLine" id="cb3-57" data-line-number="57"><span class="kw">data</span> <span class="dt">Identity</span> a <span class="fu">=</span> <span class="dt">Identity</span> a <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Ord</span>, <span class="dt">Show</span>)</a>
+<a class="sourceLine" id="cb3-58" data-line-number="58"></a>
+<a class="sourceLine" id="cb3-59" data-line-number="59"><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">Identity</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-60" data-line-number="60">  fmap f (<span class="dt">Identity</span> a) <span class="fu">=</span> <span class="dt">Identity</span> (f a)</a>
+<a class="sourceLine" id="cb3-61" data-line-number="61"></a>
+<a class="sourceLine" id="cb3-62" data-line-number="62"><span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">Identity</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-63" data-line-number="63">  pure a <span class="fu">=</span> <span class="dt">Identity</span> a</a>
+<a class="sourceLine" id="cb3-64" data-line-number="64">  (<span class="fu">&lt;*&gt;</span>) (<span class="dt">Identity</span> f) (<span class="dt">Identity</span> a) <span class="fu">=</span> <span class="dt">Identity</span> (f a)</a>
+<a class="sourceLine" id="cb3-65" data-line-number="65"></a>
+<a class="sourceLine" id="cb3-66" data-line-number="66"><span class="kw">instance</span> <span class="dt">Monad</span> <span class="dt">Identity</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-67" data-line-number="67">  return <span class="fu">=</span> pure</a>
+<a class="sourceLine" id="cb3-68" data-line-number="68">  (<span class="fu">&gt;&gt;=</span>) (<span class="dt">Identity</span> a) f  <span class="fu">=</span> (f a)</a>
+<a class="sourceLine" id="cb3-69" data-line-number="69"></a>
+<a class="sourceLine" id="cb3-70" data-line-number="70"><span class="kw">instance</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Identity</span> a)  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-71" data-line-number="71">  arbitrary <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb3-72" data-line-number="72">    a <span class="ot">&lt;-</span> arbitrary</a>
+<a class="sourceLine" id="cb3-73" data-line-number="73">    return (<span class="dt">Identity</span> a)</a>
+<a class="sourceLine" id="cb3-74" data-line-number="74"></a>
+<a class="sourceLine" id="cb3-75" data-line-number="75"><span class="kw">instance</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> <span class="dt">EqProp</span> (<span class="dt">Identity</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-76" data-line-number="76">  (<span class="fu">=-=</span>) <span class="fu">=</span> eq</a>
+<a class="sourceLine" id="cb3-77" data-line-number="77"></a>
+<a class="sourceLine" id="cb3-78" data-line-number="78"><span class="co">-- 4</span></a>
+<a class="sourceLine" id="cb3-79" data-line-number="79"><span class="kw">data</span> <span class="dt">List</span> a <span class="fu">=</span> <span class="dt">Nil</span> <span class="fu">|</span> <span class="dt">Cons</span> a (<span class="dt">List</span> a) <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</a>
+<a class="sourceLine" id="cb3-80" data-line-number="80"></a>
+<a class="sourceLine" id="cb3-81" data-line-number="81"><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">List</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-82" data-line-number="82">  fmap f <span class="dt">Nil</span> <span class="fu">=</span> <span class="dt">Nil</span></a>
+<a class="sourceLine" id="cb3-83" data-line-number="83">  fmap f (<span class="dt">Cons</span> a as) <span class="fu">=</span> <span class="dt">Cons</span> (f a) (fmap f as)</a>
+<a class="sourceLine" id="cb3-84" data-line-number="84"></a>
+<a class="sourceLine" id="cb3-85" data-line-number="85"><span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">List</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-86" data-line-number="86">  pure a <span class="fu">=</span> <span class="dt">Cons</span> a <span class="dt">Nil</span></a>
+<a class="sourceLine" id="cb3-87" data-line-number="87">  <span class="co">-- (&lt;*&gt;) fs as = toList $ [f a | f &lt;- (fromList fs), a &lt;- (fromList as)]</span></a>
+<a class="sourceLine" id="cb3-88" data-line-number="88">  (<span class="fu">&lt;*&gt;</span>) fs as <span class="fu">=</span> fold append <span class="dt">Nil</span> <span class="fu">$</span> fmap (\f <span class="ot">-&gt;</span> fmap f as) fs</a>
+<a class="sourceLine" id="cb3-89" data-line-number="89"></a>
+<a class="sourceLine" id="cb3-90" data-line-number="90"><span class="kw">instance</span> <span class="dt">Monad</span> <span class="dt">List</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-91" data-line-number="91">  return <span class="fu">=</span> pure</a>
+<a class="sourceLine" id="cb3-92" data-line-number="92">  <span class="co">-- (&lt;*&gt;) fs as = fold append Nil $ fmap (\f -&gt; fmap f as) fs</span></a>
+<a class="sourceLine" id="cb3-93" data-line-number="93">  <span class="co">--(&gt;&gt;=) as f = toList $ [b | a &lt;- (fromList as), b &lt;- (fromList $ f a)]</span></a>
+<a class="sourceLine" id="cb3-94" data-line-number="94">  (<span class="fu">&gt;&gt;=</span>) as f <span class="fu">=</span> fold append <span class="dt">Nil</span> <span class="fu">$</span> fmap f as</a>
+<a class="sourceLine" id="cb3-95" data-line-number="95"></a>
+<a class="sourceLine" id="cb3-96" data-line-number="96"><span class="ot">append ::</span> <span class="dt">List</span> a <span class="ot">-&gt;</span> <span class="dt">List</span> a <span class="ot">-&gt;</span> <span class="dt">List</span> a</a>
+<a class="sourceLine" id="cb3-97" data-line-number="97">append <span class="dt">Nil</span> ys <span class="fu">=</span> ys</a>
+<a class="sourceLine" id="cb3-98" data-line-number="98">append (<span class="dt">Cons</span> x xs) ys <span class="fu">=</span> <span class="dt">Cons</span> x (append xs ys)</a>
+<a class="sourceLine" id="cb3-99" data-line-number="99"></a>
+<a class="sourceLine" id="cb3-100" data-line-number="100"><span class="ot">fold ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> <span class="dt">List</span> a <span class="ot">-&gt;</span> b</a>
+<a class="sourceLine" id="cb3-101" data-line-number="101">fold _ b <span class="dt">Nil</span> <span class="fu">=</span> b</a>
+<a class="sourceLine" id="cb3-102" data-line-number="102">fold f b (<span class="dt">Cons</span> h t) <span class="fu">=</span> f h (fold f b t)</a>
+<a class="sourceLine" id="cb3-103" data-line-number="103"></a>
+<a class="sourceLine" id="cb3-104" data-line-number="104"><span class="ot">fromList ::</span> <span class="dt">List</span> a <span class="ot">-&gt;</span> [a]</a>
+<a class="sourceLine" id="cb3-105" data-line-number="105">fromList <span class="dt">Nil</span> <span class="fu">=</span> []</a>
+<a class="sourceLine" id="cb3-106" data-line-number="106">fromList (<span class="dt">Cons</span> a as) <span class="fu">=</span> a<span class="fu">:</span>(fromList as)</a>
+<a class="sourceLine" id="cb3-107" data-line-number="107"></a>
+<a class="sourceLine" id="cb3-108" data-line-number="108"><span class="ot">toList ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">List</span> a</a>
+<a class="sourceLine" id="cb3-109" data-line-number="109">toList [] <span class="fu">=</span> <span class="dt">Nil</span></a>
+<a class="sourceLine" id="cb3-110" data-line-number="110">toList (x<span class="fu">:</span>xs) <span class="fu">=</span> <span class="dt">Cons</span> x (toList xs)</a>
+<a class="sourceLine" id="cb3-111" data-line-number="111"></a>
+<a class="sourceLine" id="cb3-112" data-line-number="112"></a>
+<a class="sourceLine" id="cb3-113" data-line-number="113"><span class="kw">instance</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">List</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-114" data-line-number="114">  arbitrary <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb3-115" data-line-number="115">    as <span class="ot">&lt;-</span> arbitrary</a>
+<a class="sourceLine" id="cb3-116" data-line-number="116">    return (toList as)</a>
+<a class="sourceLine" id="cb3-117" data-line-number="117"></a>
+<a class="sourceLine" id="cb3-118" data-line-number="118"><span class="kw">instance</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> <span class="dt">EqProp</span> (<span class="dt">List</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-119" data-line-number="119">  (<span class="fu">=-=</span>) <span class="fu">=</span> eq</a>
+<a class="sourceLine" id="cb3-120" data-line-number="120"></a>
+<a class="sourceLine" id="cb3-121" data-line-number="121"><span class="co">-- Write functions</span></a>
+<a class="sourceLine" id="cb3-122" data-line-number="122"></a>
+<a class="sourceLine" id="cb3-123" data-line-number="123"><span class="co">-- 1</span></a>
+<a class="sourceLine" id="cb3-124" data-line-number="124"><span class="ot">j ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> m (m a) <span class="ot">-&gt;</span> m a</a>
+<a class="sourceLine" id="cb3-125" data-line-number="125">j x <span class="fu">=</span> x <span class="fu">&gt;&gt;=</span> id</a>
+<a class="sourceLine" id="cb3-126" data-line-number="126"></a>
+<a class="sourceLine" id="cb3-127" data-line-number="127"><span class="co">-- 2</span></a>
+<a class="sourceLine" id="cb3-128" data-line-number="128"><span class="ot">l1 ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> m a <span class="ot">-&gt;</span> m b</a>
+<a class="sourceLine" id="cb3-129" data-line-number="129">l1 <span class="fu">=</span> fmap</a>
+<a class="sourceLine" id="cb3-130" data-line-number="130"></a>
+<a class="sourceLine" id="cb3-131" data-line-number="131"><span class="co">-- 3</span></a>
+<a class="sourceLine" id="cb3-132" data-line-number="132"><span class="ot">l2 ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> m a <span class="ot">-&gt;</span> m b <span class="ot">-&gt;</span> m c</a>
+<a class="sourceLine" id="cb3-133" data-line-number="133">l2 f ma mb <span class="fu">=</span> f <span class="fu">&lt;$&gt;</span> ma <span class="fu">&lt;*&gt;</span> mb</a>
+<a class="sourceLine" id="cb3-134" data-line-number="134"></a>
+<a class="sourceLine" id="cb3-135" data-line-number="135"><span class="co">-- 4</span></a>
+<a class="sourceLine" id="cb3-136" data-line-number="136"><span class="ot">a ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> m a <span class="ot">-&gt;</span> m (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> m b</a>
+<a class="sourceLine" id="cb3-137" data-line-number="137">a <span class="fu">=</span> flip (<span class="fu">&lt;*&gt;</span>)</a>
+<a class="sourceLine" id="cb3-138" data-line-number="138"></a>
+<a class="sourceLine" id="cb3-139" data-line-number="139"><span class="co">-- 5</span></a>
+<a class="sourceLine" id="cb3-140" data-line-number="140"><span class="ot">meh ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> m b) <span class="ot">-&gt;</span> m [b]</a>
+<a class="sourceLine" id="cb3-141" data-line-number="141">meh [] f <span class="fu">=</span> return []</a>
+<a class="sourceLine" id="cb3-142" data-line-number="142">meh (a<span class="fu">:</span>as) f <span class="fu">=</span> liftM2 (<span class="fu">:</span>) (f a) (meh as f)</a>
+<a class="sourceLine" id="cb3-143" data-line-number="143"></a>
+<a class="sourceLine" id="cb3-144" data-line-number="144"><span class="co">-- 6</span></a>
+<a class="sourceLine" id="cb3-145" data-line-number="145"><span class="ot">flipType ::</span> (<span class="dt">Monad</span> m) <span class="ot">=&gt;</span> [m a] <span class="ot">-&gt;</span> m [a]</a>
+<a class="sourceLine" id="cb3-146" data-line-number="146">flipType xs <span class="fu">=</span> meh xs id</a>
+<a class="sourceLine" id="cb3-147" data-line-number="147"></a>
+<a class="sourceLine" id="cb3-148" data-line-number="148"></a>
+<a class="sourceLine" id="cb3-149" data-line-number="149"><span class="co">-- Testing</span></a>
+<a class="sourceLine" id="cb3-150" data-line-number="150"></a>
+<a class="sourceLine" id="cb3-151" data-line-number="151"><span class="co">-- type SSS = (String, String, String)</span></a>
+<a class="sourceLine" id="cb3-152" data-line-number="152"><span class="kw">type</span> <span class="dt">III</span> <span class="fu">=</span> (<span class="dt">Int</span>, <span class="dt">Int</span>, <span class="dt">Int</span>)</a>
+<a class="sourceLine" id="cb3-153" data-line-number="153"></a>
+<a class="sourceLine" id="cb3-154" data-line-number="154">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb3-155" data-line-number="155">  quickBatch <span class="fu">$</span> functor (<span class="dt">NopeDotJpg</span><span class="ot"> ::</span> <span class="dt">Nope</span> <span class="dt">III</span>)</a>
+<a class="sourceLine" id="cb3-156" data-line-number="156">  quickBatch <span class="fu">$</span> applicative (<span class="dt">NopeDotJpg</span><span class="ot"> ::</span> <span class="dt">Nope</span> <span class="dt">III</span>)</a>
+<a class="sourceLine" id="cb3-157" data-line-number="157">  quickBatch <span class="fu">$</span> monad (<span class="dt">NopeDotJpg</span><span class="ot"> ::</span> <span class="dt">Nope</span> <span class="dt">III</span>)</a>
+<a class="sourceLine" id="cb3-158" data-line-number="158">  quickBatch <span class="fu">$</span> functor (undefined<span class="ot"> ::</span> <span class="dt">PhEither</span> <span class="dt">III</span> <span class="dt">III</span>)</a>
+<a class="sourceLine" id="cb3-159" data-line-number="159">  quickBatch <span class="fu">$</span> applicative (undefined<span class="ot"> ::</span> <span class="dt">PhEither</span> <span class="dt">III</span> <span class="dt">III</span>)</a>
+<a class="sourceLine" id="cb3-160" data-line-number="160">  quickBatch <span class="fu">$</span> monad (undefined<span class="ot"> ::</span> <span class="dt">PhEither</span> <span class="dt">III</span> <span class="dt">III</span>)</a>
+<a class="sourceLine" id="cb3-161" data-line-number="161">  quickBatch <span class="fu">$</span> functor (undefined<span class="ot"> ::</span> <span class="dt">Identity</span> <span class="dt">III</span>)</a>
+<a class="sourceLine" id="cb3-162" data-line-number="162">  quickBatch <span class="fu">$</span> applicative (undefined<span class="ot"> ::</span> <span class="dt">Identity</span> <span class="dt">III</span>)</a>
+<a class="sourceLine" id="cb3-163" data-line-number="163">  quickBatch <span class="fu">$</span> monad (undefined<span class="ot"> ::</span> <span class="dt">Identity</span> <span class="dt">III</span>)</a>
+<a class="sourceLine" id="cb3-164" data-line-number="164">  quickBatch <span class="fu">$</span> functor (undefined<span class="ot"> ::</span> <span class="dt">List</span> <span class="dt">III</span>)</a>
+<a class="sourceLine" id="cb3-165" data-line-number="165">  quickBatch <span class="fu">$</span> applicative (undefined<span class="ot"> ::</span> <span class="dt">List</span> <span class="dt">III</span>)</a>
+<a class="sourceLine" id="cb3-166" data-line-number="166">  quickBatch <span class="fu">$</span> monad (undefined<span class="ot"> ::</span> <span class="dt">List</span> <span class="dt">III</span>)</a></code></pre></div>
 <h2 id="follow-up-resources">18.9 Follow-up resources</h2>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><p><a href="https://wiki.haskell.org/What_a_Monad_is_not">What a Monad is not</a></p></li>
 <li><p>Gabriel Gonzalez; How to desugar Haskell code</p></li>
 <li><p><a href="http://dev.stephendiehl.com/hask/#monads">Stephen Diehl; What I wish I knew when Learning Haskell</a></p></li>

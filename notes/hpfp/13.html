@@ -30,20 +30,20 @@
 <h1 id="building-projects">13 Building Projects</h1>
 <h2 id="more-on-importing-modules">13.6 More on importing modules</h2>
 <h2 id="imtermission-check-your-understanding">Imtermission: Check your understanding</h2>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><code>forever</code>, <code>when</code></li>
 <li><code>Data.Bits</code>, <code>Database.Blacktip.Types</code></li>
 <li>Types for <code>blacktip</code>’s database</li>
 <li></li>
 </ol>
 <ul>
-<li><ol style="list-style-type: lower-alpha">
+<li><ol type="a">
 <li><code>MV</code> is <code>Control.Concurrent.MVar</code>, <code>FPC</code> is <code>Filesystem.Path.CurrentOS</code>, <code>CC</code> is <code>Control.Concurrent</code></li>
 </ol></li>
-<li><ol start="2" style="list-style-type: lower-alpha">
+<li><ol start="2" type="a">
 <li><code>Filesystem</code></li>
 </ol></li>
-<li><ol start="3" style="list-style-type: lower-alpha">
+<li><ol start="3" type="a">
 <li><code>Control.Monad</code></li>
 </ol></li>
 </ul>
@@ -52,103 +52,103 @@
 <p>See my <a href="https://github.com/johnchandlerburnham/haskellbook/tree/master/13/hangman">hangman project on GitHub</a></p>
 <p>I debated whether or not to include code snippets of full-fledged stack projects in this document. I’ve decided against it. It’s one thing to include self-contained modules as question answers, but if I were to, for example, include the <code>Main.hs</code> file for the hangman project here, there’d be some implicit dependencies like dict.txt and hangman.cabal, and if the past 524 pages of this book have taught me anything, implicit dependencies are bad news.</p>
 <h3 id="modifying-code">Modifying code</h3>
-<ol style="list-style-type: decimal">
-<li><div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--13/CipherIO.hs</span>
-<span class="kw">module</span> <span class="dt">CipherIO</span> <span class="kw">where</span>
-
-<span class="kw">import </span><span class="dt">Data.Char</span>
-<span class="kw">import </span><span class="dt">System.Exit</span> (exitSuccess)
-
-<span class="ot">caesar ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
-caesar key string <span class="fu">=</span> go key <span class="fu">$</span> (map toLower <span class="fu">.</span> filter isAlpha) string
-  <span class="kw">where</span> go _ <span class="st">&quot;&quot;</span> <span class="fu">=</span> <span class="st">&quot;&quot;</span>
-        go n (c<span class="fu">:</span>cs) <span class="fu">=</span> chr ((ord c <span class="fu">+</span> n <span class="fu">-</span> ord <span class="ch">'a'</span>) <span class="ot">`mod`</span> <span class="dv">26</span> <span class="fu">+</span> ord <span class="ch">'a'</span>) <span class="fu">:</span> go n cs
-
-<span class="ot">unCaesar ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
-unCaesar key string <span class="fu">=</span> caesar (negate key) string
-
-<span class="ot">vignere ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
-vignere key cleartext <span class="fu">=</span> map caeserHelper <span class="fu">$</span> zip key' clr' <span class="kw">where</span>
-    pre <span class="fu">=</span> (map toLower <span class="fu">.</span> filter isAlpha)
-    clr' <span class="fu">=</span> (pre cleartext)
-    key' <span class="fu">=</span> take (length clr') <span class="fu">$</span> cycle (pre key)
-    caeserHelper (a, b) <span class="fu">=</span> chr ((ord a <span class="fu">+</span> ord b <span class="fu">-</span> <span class="dv">2</span><span class="fu">*</span>ord <span class="ch">'a'</span>) <span class="ot">`mod`</span> <span class="dv">26</span> <span class="fu">+</span> ord <span class="ch">'a'</span>)
-
-<span class="ot">unVignere ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
-unVignere key ciphertext <span class="fu">=</span> map caeserHelper <span class="fu">$</span> zip key' ciphertext <span class="kw">where</span>
-    pre <span class="fu">=</span> (map toLower <span class="fu">.</span> filter isAlpha)
-    key' <span class="fu">=</span> take (length ciphertext) <span class="fu">$</span> cycle (pre key)
-    caeserHelper (a, b) <span class="fu">=</span> chr ((ord b <span class="fu">-</span> ord a) <span class="ot">`mod`</span> <span class="dv">26</span> <span class="fu">+</span> ord <span class="ch">'a'</span>)
-
-<span class="ot">testCaesar ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
-testCaesar n s <span class="fu">=</span> (map toLower <span class="fu">.</span> filter isAlpha) s <span class="fu">==</span> (unCaesar n <span class="fu">.</span> caesar n) s
-
-<span class="ot">testVignere ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
-testVignere key s <span class="fu">=</span>
-  (map toLower <span class="fu">.</span> filter isAlpha) s <span class="fu">==</span> (unVignere key <span class="fu">.</span> vignere key) s
-
-<span class="ot">encrypt ::</span> <span class="dt">IO</span> ()
-encrypt <span class="fu">=</span> <span class="kw">do</span>
-  putStrLn <span class="st">&quot;Cleartext:&quot;</span>
-  clearText <span class="ot">&lt;-</span> getLine
-  putStrLn <span class="st">&quot;Caeser Key: &quot;</span>
-  cKey <span class="ot">&lt;-</span> getLine
-  putStrLn <span class="st">&quot;Vignere Key: &quot;</span>
-  vKey <span class="ot">&lt;-</span> getLine
-  putStrLn <span class="st">&quot;Caesar Ciphertext is: &quot;</span>
-  print (caesar (read cKey) clearText)
-  putStrLn <span class="st">&quot;Vignere Ciphertext is: &quot;</span>
-  print (vignere vKey clearText)</code></pre></div></li>
-<li><div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--13/ExitSuccess.hs</span>
-<span class="kw">module</span> <span class="dt">ExitSuccess</span> <span class="kw">where</span>
-
-<span class="kw">import </span><span class="dt">Data.Char</span>
-<span class="kw">import </span><span class="dt">Control.Monad</span>
-<span class="kw">import </span><span class="dt">System.Exit</span> (exitSuccess)
-
-<span class="ot">palindrome ::</span> <span class="dt">IO</span> ()
-palindrome <span class="fu">=</span> forever <span class="fu">$</span> <span class="kw">do</span>
-  line1 <span class="ot">&lt;-</span> getLine
-  <span class="kw">if</span> isPalindrome line1
-  <span class="kw">then</span> putStrLn <span class="st">&quot;It's a palindrome!&quot;</span>
-  <span class="kw">else</span> <span class="kw">do</span> putStrLn <span class="st">&quot;nope&quot;</span>
-          exitSuccess
-
-<span class="ot">isPalindrome ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
-isPalindrome str <span class="fu">=</span> (str' <span class="fu">==</span> reverse str')
-  <span class="kw">where</span> str' <span class="fu">=</span> filter isAlpha <span class="fu">$</span> map toLower str</code></pre></div></li>
-<li><div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--13/Person.hs</span>
-<span class="kw">module</span> <span class="dt">Person</span> <span class="kw">where</span>
-
-<span class="kw">type</span> <span class="dt">Name</span> <span class="fu">=</span> <span class="dt">String</span>
-<span class="kw">type</span> <span class="dt">Age</span> <span class="fu">=</span> <span class="dt">Integer</span>
-
-<span class="kw">data</span> <span class="dt">Person</span> <span class="fu">=</span> <span class="dt">Person</span> <span class="dt">Name</span> <span class="dt">Age</span> <span class="kw">deriving</span> <span class="dt">Show</span>
-<span class="kw">data</span> <span class="dt">PersonInvalid</span> <span class="fu">=</span> <span class="dt">NameEmpty</span> <span class="fu">|</span> <span class="dt">AgeTooLow</span> <span class="fu">|</span> <span class="dt">Unknown</span> <span class="dt">String</span> <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
-
-<span class="ot">mkPerson ::</span> <span class="dt">Name</span> <span class="ot">-&gt;</span> <span class="dt">Age</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">PersonInvalid</span> <span class="dt">Person</span>
-mkPerson name age
-  <span class="fu">|</span> name <span class="fu">/=</span> <span class="st">&quot;&quot;</span> <span class="fu">&amp;&amp;</span> age <span class="fu">&gt;</span> <span class="dv">0</span> <span class="fu">=</span> <span class="dt">Right</span> <span class="fu">$</span> <span class="dt">Person</span> name age
-  <span class="fu">|</span> name <span class="fu">==</span> <span class="st">&quot;&quot;</span>            <span class="fu">=</span> <span class="dt">Left</span> <span class="dt">NameEmpty</span>
-  <span class="fu">|</span> not (age <span class="fu">&gt;</span> <span class="dv">0</span>)         <span class="fu">=</span> <span class="dt">Left</span> <span class="dt">AgeTooLow</span>
-  <span class="fu">|</span> otherwise             <span class="fu">=</span> <span class="dt">Left</span> <span class="fu">$</span> <span class="dt">Unknown</span> <span class="fu">$</span> <span class="st">&quot;Name was: &quot;</span> <span class="fu">++</span> show name
-                                         <span class="fu">++</span> <span class="st">&quot; Age was: &quot;</span>  <span class="fu">++</span> show age
-
-<span class="ot">gimmePerson ::</span> <span class="dt">IO</span> ()
-gimmePerson <span class="fu">=</span> <span class="kw">do</span>
-  putStrLn <span class="st">&quot;Name: &quot;</span>
-  name <span class="ot">&lt;-</span> getLine
-  putStrLn <span class="st">&quot;Age: &quot;</span>
-  age <span class="ot">&lt;-</span> getLine
-  <span class="kw">let</span> person <span class="fu">=</span> mkPerson name (read age) <span class="kw">in</span>
-    <span class="kw">case</span> person <span class="kw">of</span>
-      (<span class="dt">Left</span> _)  <span class="ot">-&gt;</span> putStrLn (<span class="st">&quot;Invalid person: &quot;</span> <span class="fu">++</span> (show person))
-      (<span class="dt">Right</span> _) <span class="ot">-&gt;</span> putStrLn (<span class="st">&quot;Valid person: &quot;</span> <span class="fu">++</span> (show person))
-
-<span class="co">-- best way to handle parse error for read is to change mkPerson</span></code></pre></div></li>
+<ol type="1">
+<li><div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co">--13/CipherIO.hs</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">module</span> <span class="dt">CipherIO</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">import</span> <span class="dt">Data.Char</span></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">import</span> <span class="dt">System.Exit</span> (exitSuccess)</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="ot">caesar ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">caesar key string <span class="fu">=</span> go key <span class="fu">$</span> (map toLower <span class="fu">.</span> filter isAlpha) string</a>
+<a class="sourceLine" id="cb1-9" data-line-number="9">  <span class="kw">where</span> go _ <span class="st">&quot;&quot;</span> <span class="fu">=</span> <span class="st">&quot;&quot;</span></a>
+<a class="sourceLine" id="cb1-10" data-line-number="10">        go n (c<span class="fu">:</span>cs) <span class="fu">=</span> chr ((ord c <span class="fu">+</span> n <span class="fu">-</span> ord <span class="ch">'a'</span>) <span class="ot">`mod`</span> <span class="dv">26</span> <span class="fu">+</span> ord <span class="ch">'a'</span>) <span class="fu">:</span> go n cs</a>
+<a class="sourceLine" id="cb1-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb1-12" data-line-number="12"><span class="ot">unCaesar ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb1-13" data-line-number="13">unCaesar key string <span class="fu">=</span> caesar (negate key) string</a>
+<a class="sourceLine" id="cb1-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb1-15" data-line-number="15"><span class="ot">vignere ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb1-16" data-line-number="16">vignere key cleartext <span class="fu">=</span> map caeserHelper <span class="fu">$</span> zip key' clr' <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-17" data-line-number="17">    pre <span class="fu">=</span> (map toLower <span class="fu">.</span> filter isAlpha)</a>
+<a class="sourceLine" id="cb1-18" data-line-number="18">    clr' <span class="fu">=</span> (pre cleartext)</a>
+<a class="sourceLine" id="cb1-19" data-line-number="19">    key' <span class="fu">=</span> take (length clr') <span class="fu">$</span> cycle (pre key)</a>
+<a class="sourceLine" id="cb1-20" data-line-number="20">    caeserHelper (a, b) <span class="fu">=</span> chr ((ord a <span class="fu">+</span> ord b <span class="fu">-</span> <span class="dv">2</span><span class="fu">*</span>ord <span class="ch">'a'</span>) <span class="ot">`mod`</span> <span class="dv">26</span> <span class="fu">+</span> ord <span class="ch">'a'</span>)</a>
+<a class="sourceLine" id="cb1-21" data-line-number="21"></a>
+<a class="sourceLine" id="cb1-22" data-line-number="22"><span class="ot">unVignere ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb1-23" data-line-number="23">unVignere key ciphertext <span class="fu">=</span> map caeserHelper <span class="fu">$</span> zip key' ciphertext <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-24" data-line-number="24">    pre <span class="fu">=</span> (map toLower <span class="fu">.</span> filter isAlpha)</a>
+<a class="sourceLine" id="cb1-25" data-line-number="25">    key' <span class="fu">=</span> take (length ciphertext) <span class="fu">$</span> cycle (pre key)</a>
+<a class="sourceLine" id="cb1-26" data-line-number="26">    caeserHelper (a, b) <span class="fu">=</span> chr ((ord b <span class="fu">-</span> ord a) <span class="ot">`mod`</span> <span class="dv">26</span> <span class="fu">+</span> ord <span class="ch">'a'</span>)</a>
+<a class="sourceLine" id="cb1-27" data-line-number="27"></a>
+<a class="sourceLine" id="cb1-28" data-line-number="28"><span class="ot">testCaesar ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb1-29" data-line-number="29">testCaesar n s <span class="fu">=</span> (map toLower <span class="fu">.</span> filter isAlpha) s <span class="fu">==</span> (unCaesar n <span class="fu">.</span> caesar n) s</a>
+<a class="sourceLine" id="cb1-30" data-line-number="30"></a>
+<a class="sourceLine" id="cb1-31" data-line-number="31"><span class="ot">testVignere ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb1-32" data-line-number="32">testVignere key s <span class="fu">=</span></a>
+<a class="sourceLine" id="cb1-33" data-line-number="33">  (map toLower <span class="fu">.</span> filter isAlpha) s <span class="fu">==</span> (unVignere key <span class="fu">.</span> vignere key) s</a>
+<a class="sourceLine" id="cb1-34" data-line-number="34"></a>
+<a class="sourceLine" id="cb1-35" data-line-number="35"><span class="ot">encrypt ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb1-36" data-line-number="36">encrypt <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-37" data-line-number="37">  putStrLn <span class="st">&quot;Cleartext:&quot;</span></a>
+<a class="sourceLine" id="cb1-38" data-line-number="38">  clearText <span class="ot">&lt;-</span> getLine</a>
+<a class="sourceLine" id="cb1-39" data-line-number="39">  putStrLn <span class="st">&quot;Caeser Key: &quot;</span></a>
+<a class="sourceLine" id="cb1-40" data-line-number="40">  cKey <span class="ot">&lt;-</span> getLine</a>
+<a class="sourceLine" id="cb1-41" data-line-number="41">  putStrLn <span class="st">&quot;Vignere Key: &quot;</span></a>
+<a class="sourceLine" id="cb1-42" data-line-number="42">  vKey <span class="ot">&lt;-</span> getLine</a>
+<a class="sourceLine" id="cb1-43" data-line-number="43">  putStrLn <span class="st">&quot;Caesar Ciphertext is: &quot;</span></a>
+<a class="sourceLine" id="cb1-44" data-line-number="44">  print (caesar (read cKey) clearText)</a>
+<a class="sourceLine" id="cb1-45" data-line-number="45">  putStrLn <span class="st">&quot;Vignere Ciphertext is: &quot;</span></a>
+<a class="sourceLine" id="cb1-46" data-line-number="46">  print (vignere vKey clearText)</a></code></pre></div></li>
+<li><div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co">--13/ExitSuccess.hs</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">module</span> <span class="dt">ExitSuccess</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="kw">import</span> <span class="dt">Data.Char</span></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="kw">import</span> <span class="dt">Control.Monad</span></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="kw">import</span> <span class="dt">System.Exit</span> (exitSuccess)</a>
+<a class="sourceLine" id="cb2-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="ot">palindrome ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb2-9" data-line-number="9">palindrome <span class="fu">=</span> forever <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-10" data-line-number="10">  line1 <span class="ot">&lt;-</span> getLine</a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">  <span class="kw">if</span> isPalindrome line1</a>
+<a class="sourceLine" id="cb2-12" data-line-number="12">  <span class="kw">then</span> putStrLn <span class="st">&quot;It's a palindrome!&quot;</span></a>
+<a class="sourceLine" id="cb2-13" data-line-number="13">  <span class="kw">else</span> <span class="kw">do</span> putStrLn <span class="st">&quot;nope&quot;</span></a>
+<a class="sourceLine" id="cb2-14" data-line-number="14">          exitSuccess</a>
+<a class="sourceLine" id="cb2-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb2-16" data-line-number="16"><span class="ot">isPalindrome ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb2-17" data-line-number="17">isPalindrome str <span class="fu">=</span> (str' <span class="fu">==</span> reverse str')</a>
+<a class="sourceLine" id="cb2-18" data-line-number="18">  <span class="kw">where</span> str' <span class="fu">=</span> filter isAlpha <span class="fu">$</span> map toLower str</a></code></pre></div></li>
+<li><div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co">--13/Person.hs</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">module</span> <span class="dt">Person</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="kw">type</span> <span class="dt">Name</span> <span class="fu">=</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="kw">type</span> <span class="dt">Age</span> <span class="fu">=</span> <span class="dt">Integer</span></a>
+<a class="sourceLine" id="cb3-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="kw">data</span> <span class="dt">Person</span> <span class="fu">=</span> <span class="dt">Person</span> <span class="dt">Name</span> <span class="dt">Age</span> <span class="kw">deriving</span> <span class="dt">Show</span></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="kw">data</span> <span class="dt">PersonInvalid</span> <span class="fu">=</span> <span class="dt">NameEmpty</span> <span class="fu">|</span> <span class="dt">AgeTooLow</span> <span class="fu">|</span> <span class="dt">Unknown</span> <span class="dt">String</span> <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</a>
+<a class="sourceLine" id="cb3-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb3-10" data-line-number="10"><span class="ot">mkPerson ::</span> <span class="dt">Name</span> <span class="ot">-&gt;</span> <span class="dt">Age</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">PersonInvalid</span> <span class="dt">Person</span></a>
+<a class="sourceLine" id="cb3-11" data-line-number="11">mkPerson name age</a>
+<a class="sourceLine" id="cb3-12" data-line-number="12">  <span class="fu">|</span> name <span class="fu">/=</span> <span class="st">&quot;&quot;</span> <span class="fu">&amp;&amp;</span> age <span class="fu">&gt;</span> <span class="dv">0</span> <span class="fu">=</span> <span class="dt">Right</span> <span class="fu">$</span> <span class="dt">Person</span> name age</a>
+<a class="sourceLine" id="cb3-13" data-line-number="13">  <span class="fu">|</span> name <span class="fu">==</span> <span class="st">&quot;&quot;</span>            <span class="fu">=</span> <span class="dt">Left</span> <span class="dt">NameEmpty</span></a>
+<a class="sourceLine" id="cb3-14" data-line-number="14">  <span class="fu">|</span> not (age <span class="fu">&gt;</span> <span class="dv">0</span>)         <span class="fu">=</span> <span class="dt">Left</span> <span class="dt">AgeTooLow</span></a>
+<a class="sourceLine" id="cb3-15" data-line-number="15">  <span class="fu">|</span> otherwise             <span class="fu">=</span> <span class="dt">Left</span> <span class="fu">$</span> <span class="dt">Unknown</span> <span class="fu">$</span> <span class="st">&quot;Name was: &quot;</span> <span class="fu">++</span> show name</a>
+<a class="sourceLine" id="cb3-16" data-line-number="16">                                         <span class="fu">++</span> <span class="st">&quot; Age was: &quot;</span>  <span class="fu">++</span> show age</a>
+<a class="sourceLine" id="cb3-17" data-line-number="17"></a>
+<a class="sourceLine" id="cb3-18" data-line-number="18"><span class="ot">gimmePerson ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb3-19" data-line-number="19">gimmePerson <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb3-20" data-line-number="20">  putStrLn <span class="st">&quot;Name: &quot;</span></a>
+<a class="sourceLine" id="cb3-21" data-line-number="21">  name <span class="ot">&lt;-</span> getLine</a>
+<a class="sourceLine" id="cb3-22" data-line-number="22">  putStrLn <span class="st">&quot;Age: &quot;</span></a>
+<a class="sourceLine" id="cb3-23" data-line-number="23">  age <span class="ot">&lt;-</span> getLine</a>
+<a class="sourceLine" id="cb3-24" data-line-number="24">  <span class="kw">let</span> person <span class="fu">=</span> mkPerson name (read age) <span class="kw">in</span></a>
+<a class="sourceLine" id="cb3-25" data-line-number="25">    <span class="kw">case</span> person <span class="kw">of</span></a>
+<a class="sourceLine" id="cb3-26" data-line-number="26">      (<span class="dt">Left</span> _)  <span class="ot">-&gt;</span> putStrLn (<span class="st">&quot;Invalid person: &quot;</span> <span class="fu">++</span> (show person))</a>
+<a class="sourceLine" id="cb3-27" data-line-number="27">      (<span class="dt">Right</span> _) <span class="ot">-&gt;</span> putStrLn (<span class="st">&quot;Valid person: &quot;</span> <span class="fu">++</span> (show person))</a>
+<a class="sourceLine" id="cb3-28" data-line-number="28"></a>
+<a class="sourceLine" id="cb3-29" data-line-number="29"><span class="co">-- best way to handle parse error for read is to change mkPerson</span></a></code></pre></div></li>
 </ol>
 <h2 id="follow-up-resources">13.15 Follow-up resources</h2>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><a href="https://github.com/commercialhaskell/stack">Stack</a></li>
 <li><a href="http://bitemyapp.com/posts/2014-11-18-how-i-start-haskell.html">How I Start: Haskell</a></li>
 <li><a href="https://www.haskell.org/cabal/FAQ.html">Cabal FAQ</a></li>
