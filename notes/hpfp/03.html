@@ -76,7 +76,7 @@
 <h3 id="char">Char</h3>
 <p>A <code>Char</code> is an ASCII character (<a href="https://en.wikipedia.org/wiki/ASCII">American Standard Code for Information Interchange</a>).</p>
 <p>[NB. <code>Char</code> actually represents Unicode characters in general, but I don’t want to bring in Unicode as a conceptual dependency here]</p>
-<p>Ascii is a way to represent text characters as numbers. Here’s a table of all 128 ascii characters:</p>
+<p>ASCII is a way to represent text characters as numbers. Here’s a table of all 128 ASCII characters:</p>
 <pre><code>Dec  Char                           Dec  Char     Dec  Char     Dec  Char
 ---------                           ---------     ---------     ----------
   0  NUL (null)                      32  SPACE     64  @         96  `
@@ -111,7 +111,7 @@
  29  GS  (group separator)           61  =         93  ]        125  }
  30  RS  (record separator)          62  &gt;         94  ^        126  ~
  31  US  (unit separator)            63  ?         95  _        127  DEL</code></pre>
-<p>Most of the first 32 are control characters intended for use by teletype machines and magnetic tape readers, so you don’t have to worry about them. A few are still used though, <code>\n</code> in Haskell means newline and is the same as Ascii 10 <code>\LF</code>.</p>
+<p>Most of the first 32 are control characters intended for use by teletype machines and magnetic tape readers, so you don’t have to worry about them. A few are still used though, <code>\n</code> in Haskell means newline and is the same as ASCII 10 <code>\LF</code>.</p>
 <p>We can see the correspondence at the REPL:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="kw">import</span> <span class="dt">Data.Char</span></a>
 <a class="sourceLine" id="cb10-2" data-line-number="2"><span class="dt">Prelude</span> <span class="dt">Data.Char</span><span class="fu">&gt;</span> ord <span class="ch">'a'</span></a>
@@ -162,7 +162,6 @@
 <li>correct</li>
 </ol></li>
 <li><ol type="a">
-<li>d</li>
 <li>c</li>
 <li>e</li>
 <li>a</li>

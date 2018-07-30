@@ -33,15 +33,15 @@
 <p>Sentences like these frustrate me. You can say nearly anything is the case “in a sense:”</p>
 <p>“In a sense, the Moon really is made of cheese.” In the sense of poetic whimsy.</p>
 <p>“In a sense, Johnny is at the top of his class.” In unexcused absences and missed assignments.</p>
-<p>This is just some plain old fashioned jesuitical casuistry. Annoying.</p>
+<p>This is just some plain old fashioned Jesuitical casuistry. Annoying.</p>
 <p>“In a sense, typeclasses and types are the same.” In the sense that they both specify and constrain the properties of expressions.</p>
 <p>If an expression’s type is an instance of <code>Eq</code> it means there’s a way to define to define and equals function <code>(==)</code> to check if two expressions of that type are equal:</p>
-<pre><code>Prelude&gt; :info Eq
-class Eq a where
-  (==) :: a -&gt; a -&gt; Bool
-  (/=) :: a -&gt; a -&gt; Bool
-  {-# MINIMAL (==) | (/=) #-}
-  	-- Defined in ‘GHC.Classes’</code></pre>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="fu">:</span>info <span class="dt">Eq</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">class</span> <span class="dt">Eq</span> a <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="ot">  (==) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="ot">  (/=) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">  <span class="ot">{-# MINIMAL (==) | (/=) #-}</span></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">    <span class="co">-- Defined in ‘GHC.Classes’</span></a></code></pre></div>
 <p>But there are types that it is impossible to define <code>(==)</code> for! The function constructor <code>(-&gt;)</code>, for example, cannot be an instance of <code>Eq</code>. Why? The Halting Problem! If there’s no general way to test whether a function will halt on a given input, there’s certainly no general way to determine whether two functions will do the same thing (run forever or return the same value) for a given input.</p>
 <p>So typeclasses constrains the potential things types can be by specifying what they can do.</p>
 <p>Some typeclasses and their relationships:</p>
@@ -50,25 +50,25 @@ class Eq a where
 </p>
 <h2 id="exercises-eq-instances">Exercises: Eq Instances</h2>
 <ol type="1">
-<li><pre><code>instance Eq TisAnInteger where (==) TisAn x TisAn y = (==) x y</code></pre></li>
-<li><pre><code>instance Eq TwoIntegers where Two x y == Two p q = (x, y) == (p, q)</code></pre></li>
+<li><div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">instance</span> <span class="dt">Eq</span> <span class="dt">TisAnInteger</span> <span class="kw">where</span> (<span class="fu">==</span>) <span class="dt">TisAn</span> x <span class="dt">TisAn</span> y <span class="fu">=</span> (<span class="fu">==</span>) x y</a></code></pre></div></li>
+<li><div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">instance</span> <span class="dt">Eq</span> <span class="dt">TwoIntegers</span> <span class="kw">where</span> <span class="dt">Two</span> x y <span class="fu">==</span> <span class="dt">Two</span> p q <span class="fu">=</span> (x, y) <span class="fu">==</span> (p, q)</a></code></pre></div></li>
 <li><p>String or Int:</p>
-<pre><code>instance Eq StringOrInt where
-TisAnInt x == TisAnInt y = x == y
-TisAString x == TisAString y = x == y
-_ == _ = False</code></pre></li>
-<li><pre><code>instance Eq Pair where Pair a b == Pair x y = (a, b) == (x, y)</code></pre></li>
-<li><pre><code>instance Eq Tuple where Tuple a b == Tuple x y = (a, b) == (x, y)</code></pre></li>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">instance</span> <span class="dt">Eq</span> <span class="dt">StringOrInt</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="dt">TisAnInt</span> x <span class="fu">==</span> <span class="dt">TisAnInt</span> y <span class="fu">=</span> x <span class="fu">==</span> y</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="dt">TisAString</span> x <span class="fu">==</span> <span class="dt">TisAString</span> y <span class="fu">=</span> x <span class="fu">==</span> y</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">_ <span class="fu">==</span> _ <span class="fu">=</span> <span class="dt">False</span></a></code></pre></div></li>
+<li><div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">instance</span> <span class="dt">Eq</span> <span class="dt">Pair</span> <span class="kw">where</span> <span class="dt">Pair</span> a b <span class="fu">==</span> <span class="dt">Pair</span> x y <span class="fu">=</span> (a, b) <span class="fu">==</span> (x, y)</a></code></pre></div></li>
+<li><div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">instance</span> <span class="dt">Eq</span> <span class="dt">Tuple</span> <span class="kw">where</span> <span class="dt">Tuple</span> a b <span class="fu">==</span> <span class="dt">Tuple</span> x y <span class="fu">=</span> (a, b) <span class="fu">==</span> (x, y)</a></code></pre></div></li>
 <li><p>Which</p>
-<pre><code>instance Eq a =&gt; Eq (Which a) where
-ThisOne x == ThisOne y = x == y
-ThatOne x == ThatOne y = x == y
-_ == _ = False</code></pre></li>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">instance</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> <span class="dt">Eq</span> (<span class="dt">Which</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="dt">ThisOne</span> x <span class="fu">==</span> <span class="dt">ThisOne</span> y <span class="fu">=</span> x <span class="fu">==</span> y</a>
+<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="dt">ThatOne</span> x <span class="fu">==</span> <span class="dt">ThatOne</span> y <span class="fu">=</span> x <span class="fu">==</span> y</a>
+<a class="sourceLine" id="cb7-4" data-line-number="4">_ <span class="fu">==</span> _ <span class="fu">=</span> <span class="dt">False</span></a></code></pre></div></li>
 <li><p>EitherOr</p>
-<pre><code>instance (Eq a, Eq b) =&gt; Eq (EitherOr a b) where
-Hello x == Hello y = x == y
-Goodbye x == Goodbye y = x == y
-_ == _ = False</code></pre></li>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw">instance</span> (<span class="dt">Eq</span> a, <span class="dt">Eq</span> b) <span class="ot">=&gt;</span> <span class="dt">Eq</span> (<span class="dt">EitherOr</span> a b) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="dt">Hello</span> x <span class="fu">==</span> <span class="dt">Hello</span> y <span class="fu">=</span> x <span class="fu">==</span> y</a>
+<a class="sourceLine" id="cb8-3" data-line-number="3"><span class="dt">Goodbye</span> x <span class="fu">==</span> <span class="dt">Goodbye</span> y <span class="fu">=</span> x <span class="fu">==</span> y</a>
+<a class="sourceLine" id="cb8-4" data-line-number="4">_ <span class="fu">==</span> _ <span class="fu">=</span> <span class="dt">False</span></a></code></pre></div></li>
 </ol>
 <h2 id="exercises-tuple-experiment">Exercises: Tuple Experiment</h2>
 <p><code>quotRem</code> and <code>divMod</code> return a tuple with the values from <code>quot</code> and <code>rem</code> or <code>div</code> and <code>mod</code> respectively.</p>
@@ -129,8 +129,8 @@ _ == _ = False</code></pre></li>
 </ol>
 <h2 id="follow-up-resources">6.17 Follow-up resources</h2>
 <ol type="1">
-<li><p>[P. Wadler and S. Blott. How to make ad-hoc polymorphism less ad hoc.] (http://www.cse.iitk.ac.in/users/karkare/courses/2010/cs653/Papers/ ad-hoc-polymorphism.pdf)</p></li>
-<li><p>[Cordelia V. Hall, Kevin Hammond, Simon L. Peyton Jones, and Philip L. Wadler. Typeclasses in Haskell.] (http://ropas.snu.ac.kr/lib/dock/HaHaJoWa1996.pdf)</p></li>
+<li><p><a href="https://github.com/johnchandlerburnham/hpffp-resources/blob/master/Chapter-06/How%20to%20make%20ad-hoc%20polymorphism%20less%20ad%20hoc.pdfk">P. Wadler and S. Blott. How to make ad-hoc polymorphism less ad hoc.</a></p></li>
+<li><p><a href="https://github.com/johnchandlerburnham/hpffp-resources/blob/master/Chapter-06/Type%20Classes%20in%20Haskell.pdf">Cordelia V. Hall, Kevin Hammond, Simon L. Peyton Jones, and Philip L. Wadler. Typeclasses in Haskell.</a></p></li>
 </ol>
 <hr />
 

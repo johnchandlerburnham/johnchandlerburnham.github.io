@@ -32,13 +32,13 @@
 <h2 id="how-to-read-type-signatures">5.3 How to read type signatures</h2>
 <p>The type constructor for function <code>(-&gt;)</code> isn’t magic. It’s exactly like any other type constructor. Recall how previously with lists the type constructor was <code>[]</code>:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="fu">:</span>i []</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">data</span> [] a <span class="fu">=</span> [] <span class="fu">|</span> a <span class="fu">:</span> [a] 	<span class="co">-- Defined in ‘GHC.Types’</span></a></code></pre></div>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">data</span> [] a <span class="fu">=</span> [] <span class="fu">|</span> a <span class="fu">:</span> [a]  <span class="co">-- Defined in ‘GHC.Types’</span></a></code></pre></div>
 <p>There isn’t any reason other than cleaner syntax that <code>[] a</code> or <code>[a]</code> couldn’t be <code>List a</code>.</p>
 <p>Well the function type is almost exactly the same. There isn’t any reason why <code>a -&gt; b</code>, which is <code>(-&gt;) a b</code>, couldn’t be <code>Fun a b</code>. It’s just more syntactic sugar (Haskell is a very sugary language. That’s why it’s so sweet!)</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="fu">:</span>i (<span class="ot">-&gt;</span>)</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">data</span> (<span class="ot">-&gt;</span>) t1 t2 	<span class="co">-- Defined in ‘GHC.Prim’</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">data</span> (<span class="ot">-&gt;</span>) t1 t2   <span class="co">-- Defined in ‘GHC.Prim’</span></a>
 <a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">infixr</span> <span class="dv">0</span> <span class="ot">`(-&gt;)`</span></a></code></pre></div>
-<p>There isn’t any definiiton for the function type though because it’s a primitive (hence the <code>GHC.Prim</code>).</p>
+<p>There isn’t any definition for the function type though because it’s a primitive (hence the <code>GHC.Prim</code>).</p>
 <h3 id="exercises-type-matching">Exercises: Type Matching</h3>
 <ol type="1">
 <li><ol type="a">
@@ -100,7 +100,7 @@ epi:  upon
 meta: beyond, with
 para: beside
 meter: measure</code></pre>
-<p>So when you read “parameteric polymorphism”, fear not, you are really reading “beside-measure many-form-thing.” The latter doesn’t sound nearly as clever at cocktail parties, but that’s actually what the words mean, and knowing the meanings of the words you use helps you remember the concepts they describe.</p>
+<p>So when you read “parametric polymorphism”, fear not, you are really reading “beside-measure many-form-thing.” The latter doesn’t sound nearly as clever at cocktail parties, but that’s actually what the words mean, and knowing the meanings of the words you use helps you remember the concepts they describe.</p>
 <p>A parameter is quite literally a “side measure.” When we measure a thing by looking at it next to something else, we’re using a parameter. Ever ask whether something was bigger than a breadbox? That’s measuring size in terms of breadboxes. It’s a side measures. It’s a parameter.</p>
 <h2 id="exercises-parametricity">Exercises: Parametricity</h2>
 <ol type="1">
@@ -243,8 +243,8 @@ meter: measure</code></pre>
 </ol>
 <h2 id="follow-up-resources">5.10 Follow-up resources</h2>
 <ol type="1">
-<li><p>Luis Damas; Robin Milner. Principal type-schemes for func- tional programs</p></li>
-<li><p>Christopher Strachey. Fundamental Concepts in Programming Languages Popular origin of the parametric/ad-hoc polymorphism dis- tinction.</p></li>
+<li><p><a href="https://github.com/johnchandlerburnham/hpffp-resources/blob/master/Chapter-05/Principal%20type-schemes%20for%20functional%20programs.pdf">Luis Damas; Robin Milner. Principal type-schemes for functional programs</a></p></li>
+<li><p><a href="https://github.com/johnchandlerburnham/hpffp-resources/blob/master/Chapter-05/Fundamental%20Concepts%20in%20Programming%20Languages.pdf">Christopher Strachey. Fundamental Concepts in Programming Languages</a> Popular origin of the parametric/ad-hoc polymorphism distinction.</p></li>
 </ol>
 <hr />
 

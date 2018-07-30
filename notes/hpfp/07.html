@@ -77,18 +77,18 @@
 <h2 id="case-expressions">7.5 Case expressions</h2>
 <h3 id="exercises-case-practice">Exercises: Case Practice</h3>
 <ol type="1">
-<li><pre><code>functionC x y = case (x &gt; y) of
-  True -&gt; x
-  False -&gt; y</code></pre></li>
-<li><pre><code>ifEvenAdd2 n =
-  case even n
-    True -&gt; (n + 2)
-    False -&gt; n</code></pre></li>
-<li><pre><code>nums x =
-  case compare x 0 of
-    LT -&gt; -1
-    GT -&gt; 1
-    EQ -&gt; 0</code></pre></li>
+<li><div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1">functionC x y <span class="fu">=</span> <span class="kw">case</span> (x <span class="fu">&gt;</span> y) <span class="kw">of</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">  <span class="dt">True</span> <span class="ot">-&gt;</span> x</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">  <span class="dt">False</span> <span class="ot">-&gt;</span> y</a></code></pre></div></li>
+<li><div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1">ifEvenAdd2 n <span class="fu">=</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">  <span class="kw">case</span> even n</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">    <span class="dt">True</span> <span class="ot">-&gt;</span> (n <span class="fu">+</span> <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">    <span class="dt">False</span> <span class="ot">-&gt;</span> n</a></code></pre></div></li>
+<li><div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1">nums x <span class="fu">=</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">  <span class="kw">case</span> compare x <span class="dv">0</span> <span class="kw">of</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">    <span class="dt">LT</span> <span class="ot">-&gt;</span> <span class="fu">-</span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">    <span class="dt">GT</span> <span class="ot">-&gt;</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">    <span class="dt">EQ</span> <span class="ot">-&gt;</span> <span class="dv">0</span></a></code></pre></div></li>
 </ol>
 <h2 id="higher-order-functions">7.6 Higher-order functions</h2>
 <h3 id="exercises-artful-dodgy">Exercises: Artful Dodgy</h3>
@@ -191,11 +191,11 @@
 </ol>
 <h2 id="follow-up-resources">7.13 Follow-up resources</h2>
 <ol type="1">
-<li><p><a href="https://www.haskell.org/tutorial/patterns.html">Paul Hudak; John Peterson; Joseph Fasel. A Gentle Introduction to Haskell, chapter on case expressions and pattern matching.</a></p></li>
-<li><p><a href="http://research.microsoft.com/en-us/um/people/simonpj/papers/slpj-book-1987/index.htm">Simon Peyton Jones. The Implementation of Functional Pro- gramming Languages, pages 53-103.</a></p></li>
-<li><a href="http://www.cs.cmu.edu/~crary/819-f09/Strachey67.pdf">Christopher Strachey. Fundamental Concepts in Programming Languages, page 11 for explanation of currying.</a></li>
+<li><p><a href="https://github.com/johnchandlerburnham/hpffp-resources/blob/master/Chapter-07/Case%20Expressions%20and%20Pattern%20Matching.pdf">Paul Hudak; John Peterson; Joseph Fasel. A Gentle Introduction to Haskell, chapter on case expressions and pattern matching.</a></p></li>
+<li><p><a href="https://github.com/johnchandlerburnham/hpffp-resources/blob/master/Chapter-07/The%20Implementation%20of%20Functional%20Programming%20Languages.pdf">Simon Peyton Jones. The Implementation of Functional Programming Languages, pages 53-103.</a></p></li>
+<li><a href="https://github.com/johnchandlerburnham/hpffp-resources/blob/master/Chapter-07/Fundamental%20Concepts%20in%20Programming%20Languages.pdf">Christopher Strachey. Fundamental Concepts in Programming Languages, page 11 for explanation of currying.</a></li>
 <li><a href="http://www.di.uminho.pt/~jno/ps/iscalc_1.ps.gz">J.N. Oliveira. An introduction to pointfree programming.</a></li>
-<li><p><a href="http://www4.di.uminho.pt/~mac/Publications/phd.pdf">Manuel Alcino Pereira da Cunha. Point-free Program Calculation.</a></p></li>
+<li><p><a href="https://github.com/johnchandlerburnham/hpffp-resources/blob/master/Chapter-07/Point-free%20Program%20Calculation.pdf">Manuel Alcino Pereira da Cunha. Point-free Program Calculation.</a></p></li>
 </ol>
 <hr />
 
