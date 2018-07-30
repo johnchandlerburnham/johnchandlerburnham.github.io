@@ -53,7 +53,7 @@ title: Projects
 - [Purescript by Example (Freeman)](/notes/psbe/00.html)
 - [Type Driven Development in Idris (Brady)](/notes/tddi/00.html)
 
-### Crypto
+### Cryptography
 
 - [Cryptography Engineering: Design Principles and Practical Applications (Ferguson, Schneier, Kohno)](/notes/cedp/00.html)
 - [Applied Cryptography (Schneier)](/notes/apcr/00.html)
