@@ -23,7 +23,6 @@ git checkout hakyll
 COMMIT=$(git log -1 HEAD --pretty=format:%H)
 
 # Build _site
-stack build
 stack exec site clean
 stack exec site build
 
