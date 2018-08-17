@@ -10,7 +10,7 @@ info() {
 fail() {
   printf "  \033[0;31m-\033[0m $1\n"
   exit
-} 
+}
 
 #Check git repo
 if [[ $(git remote get-url origin) != $REMOTE ]];

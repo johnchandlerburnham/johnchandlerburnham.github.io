@@ -46,12 +46,12 @@ title: Projects
 ### Languages
 
 - *[Haskell Programming from First Principles (Allen, Moronuki)](/notes/hpfp/00.html)*
+- *[Type Driven Development in Idris (Brady)](/notes/tddi/00.html)*
 
 ----
 
 - [The Rust Programming Language (Klabnik, Nichols)](/notes/trpl/00.html)
 - [Purescript by Example (Freeman)](/notes/psbe/00.html)
-- [Type Driven Development in Idris (Brady)](/notes/tddi/00.html)
 
 ### Cryptography
 
