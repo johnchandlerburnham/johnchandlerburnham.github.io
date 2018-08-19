@@ -1,0 +1,3 @@
+[submodule "submodules/hpfp"]
+	path = submodules/hpfp
+	url = https://github.com/johnchandlerburnham/hpfp
