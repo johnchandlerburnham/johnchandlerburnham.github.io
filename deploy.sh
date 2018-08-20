@@ -27,6 +27,7 @@ stack exec site clean
 stack exec site build
 
 git fetch --all
+git submodule deinit
 git checkout master
 
 # Overwrite existing files with new files
