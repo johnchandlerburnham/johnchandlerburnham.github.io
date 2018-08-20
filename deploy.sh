@@ -38,7 +38,6 @@ rsync -a --filter='P _site/'      \
          --filter='P CNAME'       \
          --filter='P README.md'   \
          --filter='P .stack-work' \
-         --filter='P projects/'   \
          --delete-excluded        \
          _site/ .
 
