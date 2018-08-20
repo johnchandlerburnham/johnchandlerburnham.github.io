@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (HPFP 02/31): Hello Haskell</title>
+        <link rel="stylesheet" type="text/css" href="../../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../../">jcb</a>
+                <a href="../../../posts.html">posts</a>
+                <a href="../../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+            </div>
+        </div>
+        <div id="content">
+            <h1>Notes (HPFP 02/31): Hello Haskell</h1>
+          <h1 id="hello-haskell">2 Hello Haskell!</h1>
+<h2 id="hello-haskell-1">2.1 Hello, Haskell</h2>
+<p><strong>GHC</strong>: The Glasgow Haskell Compiler is a program (written in Haskell and C) turns Haskell code into x86 or ARM executables. There are <a href="https://wiki.haskell.org/Implementations">many other Haskell compilers</a>, but GHC is the de facto standard. Some Haskell compilers, such as Hugs, UHC and Yhc are no longer actively developed, but are notable for historic reasons, others, such as ghcjs and Frege (technically a separate dialect) are also important, since they target different platforms than GHC (Javascript and the JVM, respectively).</p>
+<p><strong>GHCi</strong>: GHC’s interactive mode, or <a href="https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop">REPL</a>. A REPL, or read-eval-print-loop, reads code that you type into a command line shell, evaluates it, prints the results, and then loops so you can type in more code.</p>
+<p><strong>Cabal</strong>: Haskell’s Common Architecture for Building Applications and Libraries. When we write software, we often want to include external libraries, Cabal is a tool that enables us to easily include those libraries in our own software, as well as to publish libraries that can be used by others.</p>
+<p><strong>Hackage</strong>: A central package archive which contains most of the Haskell libraries you’re ever going to want to use. Cabal installs packages from Hackage by default.</p>
+<p><strong>Cabal hell</strong>: When we install external libraries using cabal, those libraries are installed globally on our machine by default. This means that if we want to build two different projects that depend upon the same external library, the naive way to do so is to install that library on our machine with cabal and then include it in our projects. This seems innocuous, but is actually very bad, because it creates a hidden interdependence between our two projects.</p>
+<p>Suppose the library author added some new features in the library that we want to use in one of our projects. It seems obvious that we could just update the library and modify our project to use the new features, right? Except if we do that, we might break every other project on our machine that depends on that library, if the updated version wasn’t backwards compatible. And if the project that we’re currently working on itself depends on one of the other now-broken projects, we have to dive into a tangled web of hidden interdependencies to get anything working. This pattern, is called <strong>dependency hell</strong>, in general and is certainly not unique to cabal. There are a number of different ways to manage this problem, but the general approach is to use some other tool that allows you to install multiple copies of the same library on a per project basis so that changes in one project don’t propagate to other projects. Cabal itself provides a mechanism for doing this which allows you to install packages into self-contained “sandboxes,” but there are other tools, such as Stack (see below), which is what HPFP uses.</p>
+<p>One extremely interesting way to solve the problem of dependency management that I should note is to use a system package manager like Nix or Guix that supports this type of package sandboxing and referentially transparent builds for anything you install on your machine, not just Haskell packages (which is all Cabal or Stack deals with). And you can even extend this to running an entire OS, like NixOs or GuixSD that manages the whole OS this way. That is, you can install the Nix package manager on e.g. macOS, but macOS packages or applications won’t be self-contained. In NixOs however, everything, including OS libraries have isolated dependencies, which makes it radically more difficult to break things when you, for example, update your operating system.</p>
+<p><strong>Stack</strong>: A tool for building Haskell projects and manage dependencies. I like to think of Stack as a really nice user interface over a lot of common Haskell development functionality like installing packages with cabal, or managing different versions of GHC. Stack also installs packages from Stackage which is a mirror of Hackage that makes some guarantees about packages being compatible. Libraries on Hackage are more like nightly or unstable builds, up to date, but possibly brittle. Libraries on Stackage are farther behind, but stable.</p>
+<p><strong>Installing Stack</strong>:</p>
+<p>I started the book with <a href="archlinux.org">Arch Linux</a> as my operating system, but I switched to <a href="nixos.org">NixOS</a> part of the way through. Setting up Stack on Arch was really easy, but maintaining it proved fairly nontrivial. Apparently, just naively updating GHC and Stack with pacman (Arch’s package manager) can result in some epic dependency hell.</p>
+<p>When I investigated, I found a post somewhere (which I can’t seem to find now) that proposed the following:</p>
+<ol type="1">
+<li>Install stack with pacman</li>
+<li>Install stack again with stack.</li>
+<li>Use pacman to remove the system package of stack that you installed with pacman.</li>
+<li>Use the stack that stack installed</li>
+</ol>
+<p>This was too silly for me to even try, but the fact that it seemed almost plausible told me that I should probably do my Haskell work on a different OS. So I added a NixOS partition on my machine on the theory that it’s better to have a system that’s difficult to learn and easy to debug than the other way round.</p>
+<p>Accordingly, installing Stack on NixOS in a way that things seem to mostly behave was non-trivial. But it’s been pretty smooth sailing ever since (knock on wood). Here’s a rough outline of what I did:</p>
+<ol type="1">
+<li>Installed Stack by adding stack to my system packages in my configuration.nix</li>
+<li><p>Enabled Stack’s Nix integration by adding</p>
+<pre><code>nix:
+  enable: true
+  shell-file: shell.nix</code></pre>
+<p>to the stack.yaml of any project I’m using stack with. You can also add</p>
+<pre><code>nix:
+  enable: true</code></pre>
+<p>to your <code>.stack/config.yaml</code> if you want to globally enable stack’s nix integration.</p></li>
+<li><p>Add the following shell.nix file to my project’s root directory:</p>
+<pre><code># shell.nix
+
+{ghc}:
+with (import &lt;nixpkgs&gt; {});
+
+haskell.lib.buildStackProject {
+  inherit ghc;
+  name = &quot;myEnv&quot;;
+  buildInputs = [ zlib ];
+  buildPhase = ''
+    export LANG=en_US.UTF-8
+  '';
+}</code></pre>
+<p>The main thing this does is it allows stack to use the versions of GHC installed via nix from the nixpkgs repository. It also brings the <code>zlib</code> libray into scope and fixes an environment bug that prevents programs run by stack (like GHCi) from correctly displaying Unicode. There’s a lot of ways to extend this on a per-project basis, but I’ve found the above to be a good framework.</p></li>
+</ol>
+<p>This is a pretty boilerplatey solution, but considering this book really depends on Stack I thought it better to stick to the text rather going the <a href="https://github.com/NixOS/cabal2nix">cabal2nix</a> route and having a more idiosyncratic build process.</p>
+<h2 id="understanding-expressions">2.5 Understanding expressions</h2>
+<p>There’s a lot of inferential distance between the previous chapter and this one. I think it’s important to point out that even though Haskell is based on the lambda calculus, they are by no means the same thing. Lambda Calculus is the theoretical foundation of a lot of languages, Haskell being only one of them. But even if the foundations are the same, the structure of the languages might be very different, based on the decisions of its designers. Start with Lambda Calculus, build one kind of structure, and you get Haskell, but start over and build a different kind of structure and you get Lisp.</p>
+<p>The book skips over a lot of those design decisions and rightly so. Better to get started playing with the language as soon as possible. But you should at least be aware that there is some hidden complexity here. And if you find yourself stuck on some concept, it’s probably because some implicit detail, which the author knows but you don’t, is blocking you.</p>
+<p>This happens to everyone. Just remember that every big complicated concept in computer science is made up of little obvious steps. Computers can only do little obvious steps, but they do very many of them very very fast. Whenever you’re stuck, go back to the last step that was obvious to you, and try to figure out what the next obvious step is.</p>
+<p>In this case, I highly recommend the follow-up resources in the previous chapter, which are a great place to start at trying to close the complexity gap between Haskell and the lambda calculus.</p>
+<h3 id="exercises-comprehension-check">Exercises: Comprehension Check</h3>
+<ol type="1">
+<li><p><code>let half x = x /2</code> <code>let square x = x * x</code></p></li>
+<li><code>let area x = 3.14 * (square x)</code></li>
+<li><p><code>let area x = pi * (square x)</code></p></li>
+</ol>
+<h2 id="infix-operators">2.6 Infix Operators</h2>
+<p>It may be helpful to point out that all infix operators are just syntactic sugar over functions.</p>
+<p><strong>syntactic sugar</strong>: Syntax within a programming language that is designed to make things easier to read or to express. It makes the language “sweeter” for human use: things can be expressed more clearly, more concisely, or in an alternative style that some may prefer. (from <a href="https://en.wikipedia.org/wiki/Syntactic_sugar">Wikipedia</a>)</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="dt">Prelude</span><span class="fu">&gt;</span> add <span class="fu">=</span> (<span class="fu">+</span>)</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="dt">Prelude</span><span class="fu">&gt;</span> add <span class="dv">2</span> <span class="dv">2</span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="dv">4</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="dt">Prelude</span><span class="fu">&gt;</span></a></code></pre></div>
+<h3 id="exercises-parentheses-and-association">Exercises: Parentheses and Association</h3>
+<p><strong>Precedence</strong>: Where the implicit parentheses are. Precedence of operators is only relevant if you leave out parentheses. If you can explicitly mark what operations you want evaluated in what order, precedence doesn’t matter. Or, in other words, parentheses have the highest precedence, just like in grade school (the P in PEMDAS stands for parentheses).</p>
+<ol type="1">
+<li><ol type="a">
+<li><code>8 + 7 * 9</code></li>
+<li><code>(8 + 7) * 9</code></li>
+</ol>
+<p>a and b are different, <code>(*)</code> has a higher precedence than <code>(+)</code></p></li>
+<li><ol type="a">
+<li><code>perimeter x y = (x * 2) + (y * 2)</code></li>
+<li><code>perimeter x y = x * 2 + y * 2</code></li>
+</ol>
+<p>a and b are the same, <code>(*)</code> has a higher precedence than <code>(+)</code></p></li>
+<li><ol type="a">
+<li><code>f x = x / 2 + 9</code></li>
+<li><code>f x = x / (2 + 9)</code></li>
+</ol>
+<p>a and b are different <code>(/)</code> has a higher precedence than <code>(+)</code></p></li>
+</ol>
+<h2 id="declaring-values">2.7 Declaring values</h2>
+<p>Look at the following sequence of expressions in GHCi:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="kw">let</span> x <span class="fu">=</span> <span class="dv">3</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="kw">let</span> y <span class="fu">=</span> x <span class="fu">+</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="dt">Prelude</span><span class="fu">&gt;</span> y</a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="dv">4</span></a>
+<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="kw">let</span> x <span class="fu">=</span> <span class="dv">7</span></a>
+<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="dt">Prelude</span><span class="fu">&gt;</span> x</a>
+<a class="sourceLine" id="cb5-7" data-line-number="7"><span class="dv">7</span></a>
+<a class="sourceLine" id="cb5-8" data-line-number="8"><span class="dt">Prelude</span><span class="fu">&gt;</span> y</a>
+<a class="sourceLine" id="cb5-9" data-line-number="9"><span class="dv">4</span></a></code></pre></div>
+<p>You may have been expecting that last <code>y</code> to be <code>8</code> instead of <code>4</code>, which is how it would work in an imperative language like C or Python.</p>
+<p>What’s curious about Haskell though is why the above sequence works at all. Look what happens if we try to replicate similar looking expressions in a source file:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co">--- SevenIsNotThree.hs</span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb6-3" data-line-number="3"><span class="kw">module</span> <span class="dt">SevenIsNotThree</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb6-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb6-5" data-line-number="5">x <span class="fu">=</span> <span class="dv">3</span></a>
+<a class="sourceLine" id="cb6-6" data-line-number="6">y <span class="fu">=</span> x <span class="fu">+</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb6-7" data-line-number="7">x <span class="fu">=</span> <span class="dv">7</span></a></code></pre></div>
+<p>If you try loading this into GHCi:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="fu">:</span>l SevenIsNotThree.hs</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2">[<span class="dv">1</span> <span class="kw">of</span> <span class="dv">1</span>] <span class="dt">Compiling</span> <span class="dt">SevenIsNotThree</span>  ( SevenIsNotThree.hs, interpreted )</a>
+<a class="sourceLine" id="cb7-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb7-4" data-line-number="4">SevenIsNotThree.hs<span class="fu">:</span><span class="dv">7</span><span class="fu">:</span><span class="dv">1</span><span class="fu">:</span> error<span class="fu">:</span></a>
+<a class="sourceLine" id="cb7-5" data-line-number="5">    <span class="dt">Multiple</span> declarations <span class="kw">of</span> ‘x’</a>
+<a class="sourceLine" id="cb7-6" data-line-number="6">    <span class="dt">Declared</span> at<span class="fu">:</span> SevenIsNotThree.hs<span class="fu">:</span><span class="dv">5</span><span class="fu">:</span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb7-7" data-line-number="7">                 SevenIsNotThree.hs<span class="fu">:</span><span class="dv">7</span><span class="fu">:</span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb7-8" data-line-number="8"><span class="dt">Failed</span>, modules loaded<span class="fu">:</span> none<span class="fu">.</span></a></code></pre></div>
+<p>Haskell’s error messages take a little getting used to, so I’ll translate:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="dt">Dear</span> <span class="dt">Sir</span> or <span class="dt">Madam</span>,</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb8-3" data-line-number="3"><span class="dt">While</span> the <span class="dt">Prelude</span> <span class="kw">module</span> was loaded, you, the <span class="dt">Programmer</span>, instructed</a>
+<a class="sourceLine" id="cb8-4" data-line-number="4">us to load the <span class="kw">module</span> found <span class="kw">in</span> the file SevenIsNotThree.hs<span class="fu">.</span></a>
+<a class="sourceLine" id="cb8-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb8-6" data-line-number="6"><span class="dt">We</span> located the aforementioned file, SevenIsNotThree.hs and attempted to load</a>
+<a class="sourceLine" id="cb8-7" data-line-number="7">the <span class="kw">module</span> <span class="dt">SevenIsNotThree</span> we found therein<span class="fu">.</span></a>
+<a class="sourceLine" id="cb8-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb8-9" data-line-number="9"><span class="dt">At</span> line <span class="dv">7</span>, column <span class="dv">1</span>, <span class="kw">in</span> file SevenIsNotThree.hs, we encountered an error<span class="fu">:</span></a>
+<a class="sourceLine" id="cb8-10" data-line-number="10">  <span class="dt">You</span> tried to declare the expression <span class="ch">'x'</span> mulitple times<span class="fu">.</span></a>
+<a class="sourceLine" id="cb8-11" data-line-number="11">  <span class="dt">You</span> declared <span class="ch">'x'</span> at  line <span class="dv">5</span>, column <span class="dv">1</span> <span class="kw">of</span> file SevenIsNotThree.hs</a>
+<a class="sourceLine" id="cb8-12" data-line-number="12">  <span class="dt">You</span> declared <span class="ch">'x'</span> at  line <span class="dv">7</span>, column <span class="dv">1</span> <span class="kw">of</span> file SevenIsNotThree.hs</a>
+<a class="sourceLine" id="cb8-13" data-line-number="13"></a>
+<a class="sourceLine" id="cb8-14" data-line-number="14"><span class="dt">Declaring</span> an expression multiple times is forbidden<span class="fu">.</span></a>
+<a class="sourceLine" id="cb8-15" data-line-number="15">  <span class="dt">Either</span> the declarations are the same</a>
+<a class="sourceLine" id="cb8-16" data-line-number="16">    and thus redundant,</a>
+<a class="sourceLine" id="cb8-17" data-line-number="17">  <span class="dt">Or</span> the declarations are different</a>
+<a class="sourceLine" id="cb8-18" data-line-number="18">    and thus contradictory<span class="fu">.</span></a>
+<a class="sourceLine" id="cb8-19" data-line-number="19"></a>
+<a class="sourceLine" id="cb8-20" data-line-number="20"><span class="dt">We</span> have no desire to load redundant and contradictory code<span class="fu">.</span> <span class="dt">Therefore</span>, your</a>
+<a class="sourceLine" id="cb8-21" data-line-number="21">request is denied and no modules were loaded<span class="fu">.</span></a>
+<a class="sourceLine" id="cb8-22" data-line-number="22"></a>
+<a class="sourceLine" id="cb8-23" data-line-number="23"><span class="dt">Sincerely</span>,</a>
+<a class="sourceLine" id="cb8-24" data-line-number="24"><span class="dt">The</span> <span class="dt">Glorious</span> <span class="dt">Glasgow</span> <span class="dt">Haskell</span> <span class="dt">Compiler</span> (interactive mode)<span class="fu">.</span></a></code></pre></div>
+<p>Don’t worry, GHC isn’t scolding you (much). You shouldn’t want to run redundant or contradictory code either. Much better to find out that your code is broken in a message from the compiler than, for example, when your Mars Lander crashes into the surface because your code had a type error and mixed up feet and meters (this actually <a href="https://en.wikipedia.org/wiki/Mars_Climate_Orbiter#Cause_of_failure">happened</a>).</p>
+<p>As for why GHC is perfectly happy to accept contradictory declarations in GHCi let expressions but not in a source file, this is because everything in GHCi happens inside the <code>IO ()</code> type (IO meaning input/output). <code>IO</code> let expressions have different scope than declarations in a source file.</p>
+<p>This seems mysterious, but will make sense in later chapters.</p>
+<h3 id="exercises-heal-the-sick">Exercises: Heal the Sick</h3>
+<p>see <code>02/HealTheSick.hs</code></p>
+<h2 id="arithmetic-functions-in-haskell">2.8 Arithmetic functions in Haskell</h2>
+<p>Oh, gosh. Modular arithmetic.</p>
+<p>My recommendation is to read the chapter and read this Wikipedia page on the <a href="https://en.wikipedia.org/wiki/Modulo_operation">Modulo operation</a>. You’ll see there that pretty much every programming language has its own idiosyncratic way of doing the modulo operation, and there isn’t a lot of consistency between them.</p>
+<p>By the way, <code>divMod</code> and <code>quotRem</code> are two useful functions which return pairs of <code>div</code> and <code>mod</code>, and <code>quot</code> and <code>rem</code>, respectively, applied to the same arguments:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" data-line-number="1">divMod x y <span class="fu">=</span> (div x y, mod x y)</a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">quotRem x y <span class="fu">=</span> (quot x y, rem x y)</a></code></pre></div>
+<p>In my opinion I wouldn’t stress too much about all the detail here. In practice, <code>div</code> and <code>mod</code> are almost always what you need, and that the distinction between <code>divMod</code> and <code>quotRem</code> only appears when you’re dealing with negative integers. Really the difference is just what “round down” means.</p>
+<p>Let’s look at a few examples of how <code>divMod</code> and <code>quotRem</code> differ:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="dt">Prelude</span><span class="fu">&gt;</span> divMod <span class="dv">13</span> <span class="dv">4</span></a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">(<span class="dv">3</span>,<span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb10-3" data-line-number="3"><span class="dt">Prelude</span><span class="fu">&gt;</span> quotRem <span class="dv">13</span> <span class="dv">4</span></a>
+<a class="sourceLine" id="cb10-4" data-line-number="4">(<span class="dv">3</span>,<span class="dv">1</span>)</a></code></pre></div>
+<p>Both arguments are positive, so there is no difference. <code>13</code> divided by <code>4</code> the ordinary way is three and a fourth, <code>3.25</code>. But since this is integer division we round down to <code>3</code>. Since <code>3 * 4</code> is <code>12</code> the remainder is one (<code>13 - 12 = 1</code>).</p>
+<p>But what if we do <code>(-13)</code> divided by <code>4</code>. If we were doing ordinary division we would get negative <code>(-3.25)</code>.</p>
+<p>Now this is the question: What does it mean to “round down” <code>(-3.25)</code>?</p>
+<p>The two possible options are <code>(-3)</code> and <code>(-4)</code>.</p>
+<p>If we say that <code>(-3.25)</code> rounded down is <code>(-3)</code>, then we run into the difficulty that <code>(-3)</code> is actually greater than <code>(-3.25)</code>:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="dt">Prelude</span><span class="fu">&gt;</span> (<span class="fu">-</span><span class="dv">3</span>) <span class="fu">&gt;</span> (<span class="fu">-</span><span class="fl">3.25</span>)</a>
+<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="dt">True</span></a></code></pre></div>
+<p>On the other hand, if we say that <code>(-3.25)</code> rounded down is <code>(-4)</code> then it’s the absolute value which is greater:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="dt">Prelude</span><span class="fu">&gt;</span> abs (<span class="fu">-</span><span class="dv">4</span>) <span class="fu">&gt;</span> abs (<span class="fu">-</span><span class="fl">3.25</span>)</a>
+<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="dt">True</span></a></code></pre></div>
+<p>So we have a choice to make. We want integer division to “round down”, but when one of the arguments is negative, “down” can mean two different things. We have to decide if we want “down” to be toward <code>0</code>, in which case we’ll choose <code>(-3)</code> in the above example, or towards <span class="math inline">\(-\infty\)</span>, negative infinity, in which case we choose <code>(-4)</code>.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="dt">Prelude</span><span class="fu">&gt;</span> divMod (<span class="fu">-</span><span class="dv">13</span>) <span class="dv">4</span></a>
+<a class="sourceLine" id="cb13-2" data-line-number="2">(<span class="fu">-</span><span class="dv">4</span>,<span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb13-3" data-line-number="3"><span class="dt">Prelude</span><span class="fu">&gt;</span> quotRem (<span class="fu">-</span><span class="dv">13</span>) <span class="dv">4</span></a>
+<a class="sourceLine" id="cb13-4" data-line-number="4">(<span class="fu">-</span><span class="dv">3</span>,<span class="fu">-</span><span class="dv">1</span>)</a></code></pre></div>
+<p>As we can see, <code>divMod</code> sets down as <span class="math inline">\(-\infty\)</span> and <code>quotRem</code> sets down as <code>0</code>.</p>
+<p>The values for <code>mod</code> and <code>rem</code>, are just consequences of that choice, since:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb14-1" data-line-number="1">mod (<span class="fu">-</span><span class="dv">13</span>) <span class="dv">4</span> <span class="fu">=</span> (<span class="fu">-</span><span class="dv">13</span>) <span class="fu">-</span> <span class="dv">4</span> <span class="fu">*</span> (div <span class="dv">13</span> <span class="dv">4</span>) <span class="fu">=</span> (<span class="fu">-</span><span class="dv">13</span>) <span class="fu">-</span> <span class="dv">4</span> <span class="fu">*</span> (<span class="fu">-</span><span class="dv">4</span>) <span class="fu">=</span></a>
+<a class="sourceLine" id="cb14-2" data-line-number="2"><span class="fu">-</span><span class="dv">13</span> <span class="fu">+</span> <span class="dv">16</span> <span class="fu">=</span> <span class="dv">3</span></a>
+<a class="sourceLine" id="cb14-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb14-4" data-line-number="4">rem (<span class="fu">-</span><span class="dv">13</span>) <span class="dv">4</span> <span class="fu">=</span> (<span class="fu">-</span><span class="dv">13</span>) <span class="fu">-</span> <span class="dv">4</span> <span class="fu">*</span> (quot <span class="dv">13</span> <span class="dv">4</span>) <span class="fu">=</span> (<span class="fu">-</span><span class="dv">13</span>) <span class="fu">-</span> <span class="dv">4</span> <span class="fu">*</span> (<span class="fu">-</span><span class="dv">3</span>) <span class="fu">=</span></a>
+<a class="sourceLine" id="cb14-5" data-line-number="5"><span class="fu">-</span><span class="dv">13</span> <span class="fu">+</span> <span class="dv">12</span> <span class="fu">=</span> <span class="fu">-</span><span class="dv">1</span></a></code></pre></div>
+<p>Everything is just a consequence of what we want “down” to mean.</p>
+<p>If we flip the signs of the arguments:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="dt">Prelude</span><span class="fu">&gt;</span> divMod <span class="dv">13</span> (<span class="fu">-</span><span class="dv">4</span>)</a>
+<a class="sourceLine" id="cb15-2" data-line-number="2">(<span class="fu">-</span><span class="dv">4</span>,<span class="fu">-</span><span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb15-3" data-line-number="3"><span class="dt">Prelude</span><span class="fu">&gt;</span> quotRem <span class="dv">13</span> (<span class="fu">-</span><span class="dv">4</span>)</a>
+<a class="sourceLine" id="cb15-4" data-line-number="4">(<span class="fu">-</span><span class="dv">3</span>,<span class="dv">1</span>)</a></code></pre></div>
+<p><code>div</code> and <code>quot</code> are the same, because <code>13</code> divided by <code>(-4)</code> is still <code>(-3.25)</code> and the decision about “down” is the same.</p>
+<p><code>mod</code> and <code>rem</code> are different though, because:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb16-1" data-line-number="1">mod <span class="dv">13</span> (<span class="fu">-</span><span class="dv">4</span>) <span class="fu">=</span> <span class="dv">13</span> <span class="fu">-</span> (<span class="fu">-</span><span class="dv">4</span>) <span class="fu">*</span> (div <span class="dv">13</span> <span class="dv">4</span>) <span class="fu">=</span> <span class="dv">13</span> <span class="fu">+</span> <span class="dv">4</span> <span class="fu">*</span> (<span class="fu">-</span><span class="dv">4</span>) <span class="fu">=</span></a>
+<a class="sourceLine" id="cb16-2" data-line-number="2"><span class="dv">13</span> <span class="fu">-</span> <span class="dv">16</span> <span class="fu">=</span> <span class="fu">-</span><span class="dv">3</span></a>
+<a class="sourceLine" id="cb16-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb16-4" data-line-number="4">rem <span class="dv">13</span> (<span class="fu">-</span><span class="dv">4</span>) <span class="fu">=</span> <span class="dv">13</span> <span class="fu">-</span> (<span class="fu">-</span><span class="dv">4</span>) <span class="fu">*</span> (quot <span class="dv">13</span> <span class="dv">4</span>) <span class="fu">=</span> <span class="dv">13</span> <span class="fu">+</span> <span class="dv">4</span> <span class="fu">*</span> (<span class="fu">-</span><span class="dv">3</span>) <span class="fu">=</span></a>
+<a class="sourceLine" id="cb16-5" data-line-number="5"><span class="dv">13</span> <span class="fu">-</span> <span class="dv">12</span> <span class="fu">=</span> <span class="dv">1</span></a></code></pre></div>
+<p>Lastly, if we set the signs of both arguments negative:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="ot">`(-13)`</span> <span class="fu">/</span> <span class="ot">`(-4)`</span> <span class="fu">=</span> <span class="dv">13</span> <span class="fu">/</span> <span class="dv">4</span> <span class="fu">=</span> <span class="fl">3.25</span></a></code></pre></div>
+<p>and we’re back to “down” being unambiguous, so <code>divMod</code> and <code>quotRem</code> are the same again.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="dt">Prelude</span><span class="fu">&gt;</span> divMod (<span class="fu">-</span><span class="dv">13</span>) (<span class="fu">-</span><span class="dv">4</span>)</a>
+<a class="sourceLine" id="cb18-2" data-line-number="2">(<span class="dv">3</span>,<span class="fu">-</span><span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb18-3" data-line-number="3"><span class="dt">Prelude</span><span class="fu">&gt;</span> quotRem (<span class="fu">-</span><span class="dv">13</span>) (<span class="fu">-</span><span class="dv">4</span>)</a>
+<a class="sourceLine" id="cb18-4" data-line-number="4">(<span class="dv">3</span>,<span class="fu">-</span><span class="dv">1</span>)</a></code></pre></div>
+<p>But really. Just use <code>divMod</code>. You almost always want “down” to be towards negative infinity.</p>
+<p>I would almost rather manually recreate <code>quot</code> out of <code>div</code> wherever I needed it:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb19-1" data-line-number="1">quot x y <span class="fu">=</span> (sign x) <span class="fu">*</span> (sign y) <span class="fu">*</span> (div (abs x) (abs y)) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb19-2" data-line-number="2">  sign x <span class="fu">=</span> div (abs x) x</a></code></pre></div>
+<p>Just so that it’s perfectly clear that I’m really interested in rounding absolute values.</p>
+<h2 id="parenthesization">2.9 Parenthesization</h2>
+<p><code>$</code>, or “apply”, is a great help in making Haskell code legible.</p>
+<p>Look at the difference between</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb20-1" data-line-number="1">fun x <span class="fu">=</span> (foo (bar (baz x)))</a>
+<a class="sourceLine" id="cb20-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb20-3" data-line-number="3">fun' x <span class="fu">=</span> foo <span class="fu">$</span> bar <span class="fu">$</span> baz x</a></code></pre></div>
+<p>I think the latter is a lot nicer. But the difference gets even starker when you have a more complicated syntax structure:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb21-1" data-line-number="1">lessFun x <span class="fu">=</span> (qux (baz (bar x)) (foo (bar x)) (baz (quux (foo (bar x)) (foo x))))</a></code></pre></div>
+<p>My eyes glaze over after the first bar.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb22-1" data-line-number="1">moreFun x <span class="fu">=</span> qux (baz <span class="fu">$</span> bar x) (foo <span class="fu">$</span> bar x) (baz <span class="fu">$</span> quux (foo <span class="fu">$</span> bar x) (foo x))</a></code></pre></div>
+<p>Now it’s a lot easier to tell that qux takes three arguments.</p>
+<p>We could also do:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb23-1" data-line-number="1">moreFun x <span class="fu">=</span> qux (baz <span class="fu">$</span> bar x) (foo <span class="fu">$</span> bar x) <span class="fu">$</span> baz <span class="fu">$</span> quux (foo <span class="fu">$</span> bar x) <span class="fu">$</span> foo x</a></code></pre></div>
+<p>But I think this is less clear. In general I like to use parentheses and <code>$</code> to better illuminate the structure of whatever the expression is, which depending, on the specific expression that might require slightly different styles. <code>let</code> and <code>where</code> expressions can also be a great help.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb24-1" data-line-number="1">moreFun' x <span class="fu">=</span> qux (baz <span class="fu">$</span> bar x) fbx (baz <span class="fu">$</span> quux fbx <span class="fu">$</span> foo x) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb24-2" data-line-number="2">  fbx <span class="fu">=</span> foo <span class="fu">$</span> bar x</a></code></pre></div>
+<h3 id="exercises-a-head-code">Exercises: A Head Code</h3>
+<ol type="1">
+<li><p><code>let x = 5 in x</code></p>
+<p>returns 5</p></li>
+<li><p><code>let x = 5 in x * x</code></p>
+<p>returns 25</p></li>
+<li><p><code>let x = 5; y = 6 in x * y</code></p>
+<p>returns 30</p></li>
+<li><p><code>let x = 3; y = 1000 in x + 3</code></p>
+<p>returns 6</p></li>
+</ol>
+<p><strong>Rewrite with where clauses</strong>:</p>
+<ol type="1">
+<li><code>x * 3 + y where x = 3; y = 1000</code></li>
+<li><code>x * 5 where y = 10; x = 10 * 5 + y</code></li>
+<li><code>z / x + y where x = 7; y = negate x; z = y * 10</code></li>
+</ol>
+<h2 id="chapter-exercises">2.11 Chapter Exercises</h2>
+<h3 id="parenthesization-1">Parenthesization</h3>
+<ol type="1">
+<li><code>2 + (2 * 3) - 1</code></li>
+<li><code>(^) 10 $ (1 + 1)</code></li>
+<li><code>(2^2) * (4^5) + 1</code></li>
+</ol>
+<h3 id="equivalent-expressions">Equivalent expressions</h3>
+<ol type="1">
+<li><p><code>1 + 1</code> returns the same as <code>2</code></p></li>
+<li><p><code>10^2</code> returns the same as <code>10+9*10</code></p></li>
+<li><p><code>400 - 37</code> is not the same as <code>(-) 37 400</code>, different argument order.</p></li>
+<li><p><code>100 `div` 3</code> is not the same as <code>100 / 3</code>, former is integer division vs fractional division for the latter.</p></li>
+<li><p><code>2 * 5 + 18</code> is not the same as <code>2 * (5 + 18)</code>, operator precedence</p></li>
+</ol>
+<h3 id="more-fun-with-functions">More fun with functions</h3>
+<ol type="1">
+<li><p><code>10 + waxOn</code> will return 1135</p>
+<p><code>(+10) waxOn</code> will return 1135</p>
+<p><code>(-) 15 waxOn</code> will return -1110</p>
+<p><code>(-) waxOn 15</code> will return 1110</p></li>
+<li><p>Nothing to do for this exercise</p></li>
+<li><p>3375</p></li>
+<li><p>see <code>MoreFun.hs</code></p></li>
+<li><p>see <code>MoreFun.hs</code></p></li>
+<li><p>see <code>MoreFun.hs</code></p></li>
+<li><p><code>waxOff 10</code> returns <code>30</code></p>
+<p><code>waxOff (-50)</code> returns <code>(-150)</code></p></li>
+</ol>
+<h2 id="follow-up-resources">2.13 Follow-up resources</h2>
+<ol type="1">
+<li><p><a href="https://wiki.haskell.org/Let_vs._Where">Haskell wiki article on Let vs Where</a></p></li>
+<li><p><a href="https://github.com/johnchandlerburnham/hpffp-resources/blob/master/Chapter-02/How%20to%20desugar%20Haskell%20code.pdf">How to desugar Haskell code; Gabriel Gonzalez</a></p></li>
+</ol>
+<hr />
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>

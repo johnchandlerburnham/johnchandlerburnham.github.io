@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (HPFP 03/31): Strings</title>
+        <link rel="stylesheet" type="text/css" href="../../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../../">jcb</a>
+                <a href="../../../posts.html">posts</a>
+                <a href="../../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+            </div>
+        </div>
+        <div id="content">
+            <h1>Notes (HPFP 03/31): Strings</h1>
+          <h1 id="strings">3 Strings</h1>
+<p><strong>string</strong>: a sequence of characters, usually representing text. The words you are reading now are strings.</p>
+<p><strong>Haskell’s <code>String</code> type</strong>: A particular way of representing strings as lists of <code>Char</code> types. It is very important to notice that even though the name of this type is <code>String</code>, it is not the only, or even the best way to represent sequences of characters and text. (see <a href="https://hackage.haskell.org/package/text-1.2.2.2/docs/Data-Text.html">Data.Text</a> and <a href="https://hackage.haskell.org/package/bytestring-0.10.8.2/docs/Data-ByteString.html">Data.ByteString</a></p>
+<p>The main advantage of <code>String</code> is that it is conceptually very simple: a <code>String</code> is a <code>List</code> of <code>Char</code> (in the abstract, that is. The acutual implementation of <code>String</code> is a linked list of <code>Char</code>, which is sometimes not that simple from a performance perspective.)</p>
+<h3 id="lists">Lists</h3>
+<p>A list (with a lowercase l) is some ordered collection of information. The order may not be important, but if there is no order, it’s not a list, it’s a set (“unordered list” is a bit of a misnomer).</p>
+<p>Suppose you buy groceries for your family every week. You want to know what everyone else wants from the store without having to talk to them each individually, so you put a piece of paper on the fridge and tell everyone to write down what they want you to get. This is an everyday example of a list: A grocery list.</p>
+<pre><code>Grocery List
+------------
+- Milk
+- Eggs
+- Flour
+- Chicken Noodle Soup
+- Mushrooms
+- Beef tenderloin
+- Puff pastry</code></pre>
+<p>A grocery list is an everyday example of a list. The order of your grocery list probably isn’t important but there definitely is an order: The groceries aren’t written randomly all over the page, but in parallel lines starting from the top of the page downward.</p>
+<p>The order of the list could indicate the chronological order in which people added their requests. That’s probably not important information most of the time, but occasionally it might be.</p>
+<p>In the above example, notice that the first item on the list is <code>Milk</code>. If the list is chronological, it means that <code>Milk</code> was the first thing added since you went to the store last week. If you know you bought a half-gallon of <code>Milk</code> last week, that probably means your family drank all the <code>Milk</code> right after you bought it. And that might make you decide to buy a whole gallon this time.</p>
+<p>Another interesting thing you can see in the ordering of a grocery list is that items that are next to each other are likely to be connected to each other conceptually. The last three items: <code>mushrooms, Beef tenderloin, Puff pastry</code> are all ingredients for a Beef Wellington recipe. If the store happens to be all out of puff pastry, it might make sense to skip the mushrooms and the beef, since you can’t make the recipe.</p>
+<p>Okay, so a grocery list has an ordering that’s sometimes relevant.</p>
+<p>Here’s a slightly philosophical question: Was the grocery list a list before someone added the first item (<code>Milk</code>) to it?</p>
+<p>In common language, we probably wouldn’t call a blank piece of paper a list. But we could perhaps call a piece of paper with the title <code>Grocery List</code> at the top a “blank grocery list”, or an “empty grocery list”, although that might sound strange.</p>
+<p>In Haskell-land (and CS-country in general), an empty list is definitely a list. <code>List</code> in Haskell is defined as follows:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">data</span> <span class="dt">List</span> a <span class="fu">=</span> <span class="dt">Nil</span> <span class="fu">|</span> <span class="dt">Cons</span> a (<span class="dt">List</span> a)</a></code></pre></div>
+<p><code>Nil</code> is the empty list. We build lists by connecting the items in the list to each other and ultimately to the empty list. So the above definition says roughly: “A list of <code>a</code> is either an empty list, or is the connection of an <code>a</code> to a <code>List</code> of <code>a</code>.</p>
+<p>Since <code>a</code> is just a stand-in for some type of thing, a list of groceries in Haskell would be:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">data</span> <span class="dt">List</span> <span class="dt">Grocery</span> <span class="fu">=</span> <span class="dt">Nil</span> <span class="fu">|</span> <span class="dt">Cons</span> <span class="dt">Grocery</span> (<span class="dt">List</span> <span class="dt">Grocery</span>)</a></code></pre></div>
+<p>“A list of groceries is either an empty list, or is the connection of a grocery item to a list of groceries.”</p>
+<p>If <code>Milk</code>, <code>Eggs</code> and <code>Flour</code> are all of the type <code>Grocery</code>, then we can make the following Grocery list:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1">aGroceryList <span class="fu">=</span> <span class="dt">Cons</span> <span class="dt">Milk</span> (<span class="dt">Cons</span> <span class="dt">Eggs</span> (<span class="dt">Cons</span> <span class="dt">Flour</span> <span class="dt">Nil</span>))</a></code></pre></div>
+<p>This looks a little complicated though, so in Haskell, <code>Cons</code> represented as the <code>:</code> operator and <code>Nil</code> is <code>[]</code>.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1">aNicerGroceryList <span class="fu">=</span> <span class="dt">Milk</span><span class="fu">:</span><span class="dt">Eggs</span><span class="fu">:</span><span class="dt">Flour</span><span class="fu">:</span>[]</a></code></pre></div>
+<p>But the syntactic sugar goes even a step further.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" data-line-number="1">theNicestGroceryList <span class="fu">=</span> [<span class="dt">Milk</span>, <span class="dt">Eggs</span>, <span class="dt">Flour</span>]</a></code></pre></div>
+<p>At the REPL:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="kw">data</span> <span class="dt">Grocery</span> <span class="fu">=</span> <span class="dt">Milk</span> <span class="fu">|</span> <span class="dt">Eggs</span> <span class="fu">|</span> <span class="dt">Flour</span> <span class="kw">deriving</span> <span class="dt">Show</span></a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="dt">Milk</span><span class="fu">:</span><span class="dt">Eggs</span><span class="fu">:</span><span class="dt">Flour</span><span class="fu">:</span>[]</a>
+<a class="sourceLine" id="cb7-3" data-line-number="3">[<span class="dt">Milk</span>,<span class="dt">Eggs</span>,<span class="dt">Flour</span>]</a>
+<a class="sourceLine" id="cb7-4" data-line-number="4"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="fu">:</span><span class="kw">type</span> [<span class="dt">Milk</span>,<span class="dt">Eggs</span>,<span class="dt">Flour</span>]</a>
+<a class="sourceLine" id="cb7-5" data-line-number="5">[<span class="dt">Milk</span>,<span class="dt">Eggs</span>,<span class="dt">Flour</span>]<span class="ot"> ::</span> [<span class="dt">Grocery</span>]</a></code></pre></div>
+<p>That last line means that the type of <code>[Milk,Eggs,Flour]</code> is a <code>[Grocery]</code>, which means the same as <code>List Grocery</code>.</p>
+<p><code>[]</code> is the list constructor in Haskell, which we can see at the REPL</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="fu">:</span>info []</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="kw">data</span> [] a <span class="fu">=</span> [] <span class="fu">|</span> a <span class="fu">:</span> [a] 	<span class="co">-- Defined in ‘GHC.Types’</span></a></code></pre></div>
+<p>There’s some overloading of <code>[]</code> here, since <code>[]</code> is representing both <code>List</code> and <code>Nil</code>, but in practice this is nice since you build a list of <code>a</code>, <code>[a]</code>, by consing <code>a</code> to <code>nil</code>, <code>a:[]</code>.</p>
+<h3 id="char">Char</h3>
+<p>A <code>Char</code> is an ASCII character (<a href="https://en.wikipedia.org/wiki/ASCII">American Standard Code for Information Interchange</a>).</p>
+<p>[NB. <code>Char</code> actually represents Unicode characters in general, but I don’t want to bring in Unicode as a conceptual dependency here]</p>
+<p>ASCII is a way to represent text characters as numbers. Here’s a table of all 128 ASCII characters:</p>
+<pre><code>Dec  Char                           Dec  Char     Dec  Char     Dec  Char
+---------                           ---------     ---------     ----------
+  0  NUL (null)                      32  SPACE     64  @         96  `
+  1  SOH (start of heading)          33  !         65  A         97  a
+  2  STX (start of text)             34  &quot;         66  B         98  b
+  3  ETX (end of text)               35  #         67  C         99  c
+  4  EOT (end of transmission)       36  $         68  D        100  d
+  5  ENQ (enquiry)                   37  %         69  E        101  e
+  6  ACK (acknowledge)               38  &amp;         70  F        102  f
+  7  BEL (bell)                      39  '         71  G        103  g
+  8  BS  (backspace)                 40  (         72  H        104  h
+  9  TAB (horizontal tab)            41  )         73  I        105  i
+ 10  LF  (NL line feed, new line)    42  *         74  J        106  j
+ 11  VT  (vertical tab)              43  +         75  K        107  k
+ 12  FF  (NP form feed, new page)    44  ,         76  L        108  l
+ 13  CR  (carriage return)           45  -         77  M        109  m
+ 14  SO  (shift out)                 46  .         78  N        110  n
+ 15  SI  (shift in)                  47  /         79  O        111  o
+ 16  DLE (data link escape)          48  0         80  P        112  p
+ 17  DC1 (device control 1)          49  1         81  Q        113  q
+ 18  DC2 (device control 2)          50  2         82  R        114  r
+ 19  DC3 (device control 3)          51  3         83  S        115  s
+ 20  DC4 (device control 4)          52  4         84  T        116  t
+ 21  NAK (negative acknowledge)      53  5         85  U        117  u
+ 22  SYN (synchronous idle)          54  6         86  V        118  v
+ 23  ETB (end of trans. block)       55  7         87  W        119  w
+ 24  CAN (cancel)                    56  8         88  X        120  x
+ 25  EM  (end of medium)             57  9         89  Y        121  y
+ 26  SUB (substitute)                58  :         90  Z        122  z
+ 27  ESC (escape)                    59  ;         91  [        123  {
+ 28  FS  (file separator)            60  &lt;         92  \        124  |
+ 29  GS  (group separator)           61  =         93  ]        125  }
+ 30  RS  (record separator)          62  &gt;         94  ^        126  ~
+ 31  US  (unit separator)            63  ?         95  _        127  DEL</code></pre>
+<p>Most of the first 32 are control characters intended for use by teletype machines and magnetic tape readers, so you don’t have to worry about them. A few are still used though, <code>\n</code> in Haskell means newline and is the same as ASCII 10 <code>\LF</code>.</p>
+<p>We can see the correspondence at the REPL:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="kw">import</span> <span class="dt">Data.Char</span></a>
+<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="dt">Prelude</span> <span class="dt">Data.Char</span><span class="fu">&gt;</span> ord <span class="ch">'a'</span></a>
+<a class="sourceLine" id="cb10-3" data-line-number="3"><span class="dv">97</span></a>
+<a class="sourceLine" id="cb10-4" data-line-number="4"><span class="dt">Prelude</span> <span class="dt">Data.Char</span><span class="fu">&gt;</span> chr <span class="dv">97</span></a>
+<a class="sourceLine" id="cb10-5" data-line-number="5"><span class="ch">'a'</span></a>
+<a class="sourceLine" id="cb10-6" data-line-number="6"><span class="dt">Prelude</span> <span class="dt">Data.Char</span><span class="fu">&gt;</span> <span class="fu">:</span><span class="kw">type</span> ord</a>
+<a class="sourceLine" id="cb10-7" data-line-number="7">ord<span class="ot"> ::</span> <span class="dt">Char</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb10-8" data-line-number="8"><span class="dt">Prelude</span> <span class="dt">Data.Char</span><span class="fu">&gt;</span> <span class="fu">:</span><span class="kw">type</span> chr</a>
+<a class="sourceLine" id="cb10-9" data-line-number="9">chr<span class="ot"> ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Char</span></a>
+<a class="sourceLine" id="cb10-10" data-line-number="10"><span class="dt">Prelude</span> <span class="dt">Data.Char</span><span class="fu">&gt;</span> map ord <span class="st">&quot;foobar&quot;</span></a>
+<a class="sourceLine" id="cb10-11" data-line-number="11">[<span class="dv">102</span>,<span class="dv">111</span>,<span class="dv">111</span>,<span class="dv">98</span>,<span class="dv">97</span>,<span class="dv">114</span>]</a>
+<a class="sourceLine" id="cb10-12" data-line-number="12"><span class="dt">Prelude</span> <span class="dt">Data.Char</span><span class="fu">&gt;</span> map chr [<span class="dv">102</span>,<span class="dv">111</span>,<span class="dv">111</span>,<span class="dv">98</span>,<span class="dv">97</span>,<span class="dv">114</span>]</a>
+<a class="sourceLine" id="cb10-13" data-line-number="13"><span class="st">&quot;foobar&quot;</span></a></code></pre></div>
+<h3 id="strings-ii">Strings II</h3>
+<p>A String is just a list of <code>Char</code>, or <code>[Char]</code>:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="fu">:</span>info <span class="dt">String</span></a>
+<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="kw">type</span> <span class="dt">String</span> <span class="fu">=</span> [<span class="dt">Char</span>] 	<span class="co">-- Defined in ‘GHC.Base’</span></a></code></pre></div>
+<p>The double quotes in “foobar” are just syntactic sugar for:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="dt">Prelude</span><span class="fu">&gt;</span> [<span class="ch">'f'</span>,<span class="ch">'o'</span>,<span class="ch">'o'</span>,<span class="ch">'b'</span>,<span class="ch">'a'</span>,<span class="ch">'r'</span>]</a>
+<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="st">&quot;foobar&quot;</span></a></code></pre></div>
+<h2 id="top-level-versus-local-definitions">3.4 Top-level versus local definitions</h2>
+<h3 id="exercises-scope">Exercises: Scope</h3>
+<ol type="1">
+<li><code>y</code> is in scope for <code>z</code></li>
+<li><code>h</code> is not in scope for <code>g</code></li>
+<li><code>pi</code> is in scope, since it’s in Prelude, but <code>d</code> is not in scope for the definition of <code>r</code>. <code>d</code> is an argument in <code>area</code> but <code>r</code> can’t see into <code>area</code>’s definition.</li>
+<li>This fixes what was wrong in the previous question. The <code>where</code> clause means that <code>r</code> can access <code>area</code>’s arguments. However, <code>r</code> is now locally defined to <code>area</code>, so another top level function wouldn’t be able to see it.</li>
+</ol>
+<h2 id="types-of-concatenation-functions">3.5 Types of concatenation functions</h2>
+<h3 id="exercises-syntax-errors">Exercises: Syntax Errors</h3>
+<ol type="1">
+<li>Need <code>(++)</code> not <code>++</code></li>
+<li>Single quotes are type <code>Char</code> not type <code>String</code></li>
+<li>This one works.</li>
+</ol>
+<h2 id="chapter-exercises">Chapter Exercises</h2>
+<h3 id="reading-syntax">Reading syntax:</h3>
+<ol type="1">
+<li><ol type="a">
+<li>correct</li>
+<li>not correct, need <code>(++)</code> not <code>++</code></li>
+<li>correct</li>
+<li>incorrect, string not closed</li>
+<li>incorrect, wrong arg order</li>
+<li>correct</li>
+<li>incorrect, no integer argument</li>
+<li>correct</li>
+</ol></li>
+<li><ol type="a">
+<li>c</li>
+<li>e</li>
+<li>a</li>
+<li>b</li>
+</ol></li>
+</ol>
+<h3 id="building-functions">Building Functions:</h3>
+<ol type="1">
+<li><ol type="a">
+<li><code>(++ &quot;!&quot;)</code></li>
+<li><code>(!! 4)</code></li>
+<li><code>(drop 6)</code></li>
+</ol></li>
+<li>see <code>Exercise2.hs</code></li>
+<li>see <code>Exercise3.hs</code></li>
+<li>see <code>Exercise4.hs</code></li>
+<li>see <code>Exercise5.hs</code></li>
+<li>see <code>Exercise5.hs</code></li>
+</ol>
+<hr />
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (HPFP 06/31): Typeclasses</title>
+        <link rel="stylesheet" type="text/css" href="../../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../../">jcb</a>
+                <a href="../../../posts.html">posts</a>
+                <a href="../../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+            </div>
+        </div>
+        <div id="content">
+            <h1>Notes (HPFP 06/31): Typeclasses</h1>
+          <h1 id="typeclasses">6 Typeclasses</h1>
+<h2 id="what-are-typeclasses">6.2 What are typeclasses?</h2>
+<p>“Typeclasses and types in Haskell are, in a sense, opposites”.</p>
+<p>Sentences like these frustrate me. You can say nearly anything is the case “in a sense:”</p>
+<p>“In a sense, the Moon really is made of cheese.” In the sense of poetic whimsy.</p>
+<p>“In a sense, Johnny is at the top of his class.” In the sense of unexcused absences and missed assignments.</p>
+<p>“In a sense, types and typeclasses are the same.” In the sense that they both specify and constrain the properties of expressions.</p>
+<p>“In a sense, types and typeclasses are opposites.” In the sense that generation is opposed to consumption. The type definition is where you figure out how to make values; the typeclass definition is where you write interfaces that can use those values.</p>
+<p>If an expression’s type is an instance of <code>Eq</code> it means there’s a way to define to define and equals function <code>(==)</code> to check if two expressions of that type are equal:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="fu">:</span>info <span class="dt">Eq</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">class</span> <span class="dt">Eq</span> a <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="ot">  (==) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="ot">  (/=) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">  <span class="ot">{-# MINIMAL (==) | (/=) #-}</span></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">    <span class="co">-- Defined in ‘GHC.Classes’</span></a></code></pre></div>
+<p>But there are types that it is impossible to define <code>(==)</code> for! The function constructor <code>(-&gt;)</code>, for example, cannot be an instance of <code>Eq</code>. Why? The Halting Problem! If there’s no general way to test whether a function will halt on a given input, there’s certainly no general way to determine whether two functions will do the same thing (run forever or return the same value) for a given input.</p>
+<p>So typeclasses constrains the potential things types can be by specifying what they can do.</p>
+<p>Some typeclasses and their relationships:</p>
+<p align="center">
+<img src="https://wiki.haskell.org/wikiupload/d/df/Typeclassopedia-diagram.png" width="600px" alt="Typeclassopedia">
+</p>
+<h2 id="writing-typeclass-instances">6.5 Writing typeclass instances</h2>
+<p>The thing about writing your own instances vs deriving them automagically is that when you write your own you have control over what the instance does, whereas GHC can only derive them in one way.</p>
+<p>For example, if I using the automatic deriving for the typeclass <code>Show</code>:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="fu">&gt;</span> <span class="kw">data</span> <span class="dt">Foo</span> <span class="fu">=</span> <span class="dt">Foo</span> <span class="kw">deriving</span> <span class="dt">Show</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="fu">&gt;</span> show <span class="dt">Foo</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="st">&quot;Foo&quot;</span></a></code></pre></div>
+<p>GHC derives the show function so that the output string is just whatever the data constructor is.</p>
+<p>But it doesn’t have to be! We could manually write a perfectly valid <code>Show</code> instance for <code>Foo</code> like so:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="fu">&gt;</span> <span class="kw">data</span> <span class="dt">Foo</span> <span class="fu">=</span> <span class="dt">Foo</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="fu">&gt;</span> <span class="kw">instance</span> <span class="dt">Show</span> <span class="dt">Foo</span> <span class="kw">where</span> show <span class="dt">Foo</span> <span class="fu">=</span> <span class="st">&quot;Bar&quot;</span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="fu">&gt;</span> show <span class="dt">Foo</span></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="fu">&gt;</span> <span class="st">&quot;Bar&quot;</span></a></code></pre></div>
+<p>All we need for a <code>Show</code>, is a <code>show :: a -&gt; String</code> function, but there are no promises as to what <code>String</code> is shown!</p>
+<h3 id="partial-functions">Partial functions</h3>
+<p><strong>total function</strong>: a functional that is defined for all inputs in its domain. <strong>partial function</strong>: a function that is undefined for some inputs in its domain.</p>
+<p>The <code>-Wall</code> compiler flag means “Warnings, all”. It’s a common pattern for compiler flags that deal with warnings to begin with “W”.</p>
+<h2 id="exercises-eq-instances">Exercises: Eq Instances</h2>
+<p>see <code>EqInstances.hs</code></p>
+<h2 id="exercises-tuple-experiment">Exercises: Tuple Experiment</h2>
+<p><code>quotRem</code> and <code>divMod</code> return a tuple with the values from <code>quot</code> and <code>rem</code> or <code>div</code> and <code>mod</code> respectively.</p>
+<h2 id="exercises-will-they-work">Exercises: Will They Work?</h2>
+<ol type="1">
+<li><code>5</code></li>
+<li><code>LT</code></li>
+<li>error, a string and a bool are not comparable</li>
+<li><code>False</code></li>
+</ol>
+<h2 id="chapter-exercises">Chapter Exercises</h2>
+<h3 id="multiple-choice">Multiple choice</h3>
+<ol type="1">
+<li>c</li>
+<li>b</li>
+<li>a</li>
+<li>c</li>
+<li>a</li>
+</ol>
+<h3 id="does-it-typecheck">Does it typecheck?:</h3>
+<p>see <code>Exercises.hs</code></p>
+<h3 id="given-a-datatype-declaration-what-can-we-do">Given a datatype declaration, what can we do?</h3>
+<p>see <code>Datatype.hs</code></p>
+<h3 id="match-the-types">Match the types:</h3>
+<ol type="1">
+<li>Since <code>i = 1</code>, <code>i</code> has to be a <code>Num</code>, it can’t be a type that <code>1</code> isn’t, like e.g. a <code>String</code>. We can’t cast <code>i</code> upwards.</li>
+<li><code>1.0</code> is not just any instance of <code>Num</code>, the syntax implies <code>Fractional</code>.</li>
+<li>works</li>
+<li>works</li>
+<li>works, we can always cast downwards</li>
+<li>works</li>
+<li>Doesn’t work, <code>sigmund</code> returns <code>myX</code> which is an <code>Int</code></li>
+<li>Doesn’t work, <code>sigmund'</code> returns an <code>Int</code> not any instance of <code>Num</code></li>
+<li>Works, restricts <code>jung</code> to a list of <code>Ints</code> rather than any list</li>
+<li>Works, restricts input to <code>String</code></li>
+<li>Doesn’t work, <code>mySort</code> only sorts <code>Strings</code>, not any instance of <code>Ord</code></li>
+</ol>
+<h3 id="type-kwon-do-electric-typealoo">Type-Kwon-Do: Electric Typealoo</h3>
+<p>see <code>TypeKwonDo.hs</code></p>
+<h2 id="follow-up-resources">6.17 Follow-up resources</h2>
+<ol type="1">
+<li><p><a href="https://github.com/johnchandlerburnham/hpffp-resources/blob/master/Chapter-06/How%20to%20make%20ad-hoc%20polymorphism%20less%20ad%20hoc.pdfk">P. Wadler and S. Blott. How to make ad-hoc polymorphism less ad hoc.</a></p></li>
+<li><p><a href="https://github.com/johnchandlerburnham/hpffp-resources/blob/master/Chapter-06/Type%20Classes%20in%20Haskell.pdf">Cordelia V. Hall, Kevin Hammond, Simon L. Peyton Jones, and Philip L. Wadler. Typeclasses in Haskell.</a></p></li>
+</ol>
+<hr />
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>

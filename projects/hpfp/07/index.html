@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (HPFP 07/31): More functional patterns</title>
+        <link rel="stylesheet" type="text/css" href="../../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../../">jcb</a>
+                <a href="../../../posts.html">posts</a>
+                <a href="../../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+            </div>
+        </div>
+        <div id="content">
+            <h1>Notes (HPFP 07/31): More functional patterns</h1>
+          <h1 id="more-functional-patterns">7 More functional patterns</h1>
+<h2 id="make-it-func-y">7.1 Make it func-y</h2>
+<p>Functions aren’t just transformations of values; functions are themselves values that can be used, manipulated and transformed like other values.</p>
+<h2 id="arguments-and-parameters">7.2 Arguments and parameters</h2>
+<p>There’s a subtle distinction between an <em>argument</em> to a function and a <em>parameter</em> of a function.</p>
+<p>Let’s consider the function</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">increment ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">increment x <span class="fu">=</span> x <span class="fu">+</span> <span class="dv">1</span></a></code></pre></div>
+<p>and when we apply it:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="fu">&gt;</span> increment <span class="dv">1</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="dv">2</span></a></code></pre></div>
+<p>The <code>x</code> in <code>increment x</code> is a parameter. The <code>1</code> in <code>increment 1</code> is an argument. Parameters are like variables that represent arguments, whereas arguments are actual values that are passed in to the function.</p>
+<p>In a way, parameters are potential arguments, and arguments are actualized parameters. In common language however, sometimes the distinction between act and potency - whether something really is a thing, or whether it merely could become that thing - is often very murky, so sometimes you’ll read people using the word <em>parameter</em> where they really mean <em>argument</em> and vice-versa.</p>
+<p>For a clearer understanding of the distinction between act and potency, I recommend this <a href="https://edwardfeser.blogspot.com/2009/05/act-and-potency.html">post by Ed Feser</a> and this chapter from <a href="http://www.thesumma.info/reality/reality6.php">Reginald Garrigou-Lagrange’s Reality: A Synthesis of Thomistic Thought</a>.</p>
+<p>The concepts of <em>scoping</em> and <em>name-shadowing</em> are best understood in the context of the lambda calculus. I recommend reading at least chapter 1 of my <a href="../../../posts/workthrough-lambda-calculus-rojas.html#definition">notes on Rojas’ Introduction to the Lambda Calculus</a>.</p>
+<h2 id="anonymous-functions">7.3 Anonymous functions</h2>
+<p>Anonymous functions are lambda expressions. The following are equivalent:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1">anon y <span class="fu">=</span> y</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">anon <span class="fu">=</span> \y <span class="ot">-&gt;</span> y</a></code></pre></div>
+<p>Why are anonymous functions useful? Because they’re more fundamental! The name of a function is an extra detail, that sometimes we want and sometimes we don’t.</p>
+<p>Take the two functions:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1">f x <span class="fu">=</span> x</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">g x <span class="fu">=</span> x</a></code></pre></div>
+<p>Are <code>f</code> and <code>g</code> the same function? Yes and no! Yes, because they do the same thing, but no, because the have different names!</p>
+<p>We can make the distinction explicit by writing out the anonymous function that <code>f</code> and <code>g</code> wrap their names around:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1">f <span class="fu">=</span> \x <span class="ot">-&gt;</span> x</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">g <span class="fu">=</span> \x <span class="ot">-&gt;</span> x</a></code></pre></div>
+<h3 id="exercises-grab-bag">Exercises: Grab bag</h3>
+<ol type="1">
+<li>They are all equivalent</li>
+<li>c, because <code>mTh 3</code> is like <code>\y z -&gt; 3 * y * z</code></li>
+<li><ol type="a">
+<li><code>f = \x -&gt; x + 1</code></li>
+<li><code>addFive = \x -&gt; \y -&gt; (min x y) + 5</code></li>
+<li><code>mflip f x y = f y x</code></li>
+</ol></li>
+</ol>
+<h2 id="pattern-matching">7.4 Pattern matching</h2>
+<p>Pattern matching is just case expressions under the hood:</p>
+<p>From <a href="https://github.com/johnchandlerburnham/hpffp-resources/blob/master/Chapter-02/How%20to%20desugar%20Haskell%20code.pdf">Gonzalez’s “How to Desugar Haskell Code”</a></p>
+<blockquote>
+<p>Pattern matching on constructors desugars to case statements:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" data-line-number="1">f (<span class="dt">Left</span>  l) <span class="fu">=</span> eL</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">f (<span class="dt">Right</span> r) <span class="fu">=</span> eR</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="co">-- ... desugars to:</span></a>
+<a class="sourceLine" id="cb6-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb6-6" data-line-number="6">f x <span class="fu">=</span> <span class="kw">case</span> x <span class="kw">of</span></a>
+<a class="sourceLine" id="cb6-7" data-line-number="7">    <span class="dt">Left</span>  l <span class="ot">-&gt;</span> eL</a>
+<a class="sourceLine" id="cb6-8" data-line-number="8">    <span class="dt">Right</span> r <span class="ot">-&gt;</span> eR</a></code></pre></div>
+<p>Pattern matching on numeric or string literals desugars to equality tests:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1">f <span class="dv">0</span> <span class="fu">=</span> e0</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2">f _ <span class="fu">=</span> e1</a>
+<a class="sourceLine" id="cb7-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb7-4" data-line-number="4"><span class="co">-- ... desugars to:</span></a>
+<a class="sourceLine" id="cb7-5" data-line-number="5">f x <span class="fu">=</span> <span class="kw">if</span> x <span class="fu">==</span> <span class="dv">0</span> <span class="kw">then</span> e0 <span class="kw">else</span> e1</a>
+<a class="sourceLine" id="cb7-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb7-7" data-line-number="7"><span class="co">-- ... desugars to:</span></a>
+<a class="sourceLine" id="cb7-8" data-line-number="8">f x <span class="fu">=</span> <span class="kw">case</span> x <span class="fu">==</span> <span class="dv">0</span> <span class="kw">of</span></a>
+<a class="sourceLine" id="cb7-9" data-line-number="9">    <span class="dt">True</span>  <span class="ot">-&gt;</span> e0</a>
+<a class="sourceLine" id="cb7-10" data-line-number="10">    <span class="dt">False</span> <span class="ot">-&gt;</span> e1</a></code></pre></div>
+</blockquote>
+<h3 id="exercises-variety-pack">Exercises: Variety Pack</h3>
+<p>see <code>VarietyPack.hs</code></p>
+<p>One important thing to remember about tuple syntax in Haskell is that the type constructor and data constructor syntax for tuples is exactly the same, and has the same syntactic sugar that makes <code>(a,b)</code> just a prettified <code>(,) a b</code>:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="fu">&gt;</span> <span class="fu">:</span>i (,)</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="kw">data</span> (,) a b <span class="fu">=</span> (,) a b</a>
+<a class="sourceLine" id="cb8-3" data-line-number="3"><span class="fu">&gt;</span> (,) <span class="dv">1</span> <span class="dv">2</span></a>
+<a class="sourceLine" id="cb8-4" data-line-number="4">(<span class="dv">1</span>,<span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb8-5" data-line-number="5"><span class="fu">&gt;</span> <span class="fu">:</span>t (,) <span class="dv">1</span> <span class="dv">2</span></a>
+<a class="sourceLine" id="cb8-6" data-line-number="6">(,) <span class="dv">1</span> <span class="dv">2</span><span class="ot"> ::</span> (<span class="dt">Num</span> b, <span class="dt">Num</span> a) <span class="ot">=&gt;</span> (a, b)</a></code></pre></div>
+<p>Also, the different sizes of n-tuples are defined “by hand” in GHC essentially independently from one another. There isn’t some complicate meta n-tuple generating logic; they’re literally just defined as separate types.</p>
+<pre><code>&gt; :i (,,)
+data (,,) a b c = (,,) a b c
+&gt; (,) 1 2 3
+(1,2,3)
+&gt; :i (,,,)
+data (,,,) a b c d = (,,,) a b c d</code></pre>
+<p>Seriously, take a look at <a href="https://hackage.haskell.org/package/ghc-prim-0.5.0.0/docs/GHC-Tuple.html">the source</a></p>
+<p>In fact, if we try to write a 63-tuple, we get the following error:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="fu">&gt;</span> <span class="fu">:</span>t (,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,)</a>
+<a class="sourceLine" id="cb10-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb10-3" data-line-number="3"><span class="fu">&lt;</span>interactive<span class="fu">&gt;:</span><span class="dv">1</span><span class="fu">:</span><span class="dv">1</span><span class="fu">:</span> error<span class="fu">:</span></a>
+<a class="sourceLine" id="cb10-4" data-line-number="4">    <span class="dt">A</span> <span class="dv">63</span><span class="fu">-</span>tuple is too large for <span class="dt">GHC</span></a>
+<a class="sourceLine" id="cb10-5" data-line-number="5">      (max size is <span class="dv">62</span>)</a>
+<a class="sourceLine" id="cb10-6" data-line-number="6">      <span class="dt">Workaround</span><span class="fu">:</span> use nested tuples or define a <span class="kw">data</span> <span class="kw">type</span></a></code></pre></div>
+<p>One of the amusing idiosyncracies of GHC.</p>
+<h2 id="case-expressions">7.5 Case expressions</h2>
+<p>Pattern matching, if-then-else, guards: they all desugar to case expressions.</p>
+<h3 id="exercises-case-practice">Exercises: Case Practice</h3>
+<p>see <code>CasePractice.hs</code></p>
+<h2 id="higher-order-functions">7.6 Higher-order functions</h2>
+<p>The reason why a function that acts on other functions is called a “higher-order function” is that expressions can be organized by how many layers of functions there are.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Order</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>value, or literal</td>
+<td>“foobar”, <code>3</code></td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>function</td>
+<td><code>((+) 3 4)</code></td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>function on functions</td>
+<td><code>map (+1) [1..10]</code></td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>f on f on f</td>
+<td><code>iterate (map (+1)) [1..10]</code></td>
+</tr>
+</tbody>
+</table>
+<p>It turns out though, that all expression with order two or greater are essentially equivalent (especially if we have currying), so we can really just collapse the above chart into <em>values</em>, <em>first-order functions</em>, and <em>higher-order functions</em>.</p>
+<h3 id="exercises-artful-dodgy">Exercises: Artful Dodgy</h3>
+<ol start="2" type="1">
+<li><code>11</code></li>
+<li><code>22</code></li>
+<li><code>21</code></li>
+<li><code>12</code></li>
+<li><code>11</code></li>
+<li><code>21</code></li>
+<li><code>21</code></li>
+<li><code>22</code></li>
+<li><code>31</code></li>
+<li><code>23</code></li>
+</ol>
+<h2 id="guards">7.7 Guards</h2>
+<h3 id="exercises-guard-duty">Exercises: Guard Duty</h3>
+<p>see <code>AvgGrade.hs</code></p>
+<ol type="1">
+<li>Can’t do otherwise if theres no wise to other.</li>
+<li>No, because the conditions are not exclusive.</li>
+<li>b</li>
+<li>anything reversible, so lists</li>
+<li><code>[a] -&gt; Bool</code></li>
+<li>c</li>
+<li><code>(Ord a, Num a) =&gt; a</code></li>
+<li><code>(Ord a, Num a) =&gt; a -&gt; Bool</code></li>
+</ol>
+<h2 id="function-composition">7.8 Function Composition</h2>
+<p>The important thing to remember about composing functions is that they’re a lot like Legos; the shapes have to fit together. So when you compose functions <code>f</code> and <code>g</code> as <code>f . g</code>, the output of <code>g</code> has to fit the input of <code>f</code>.</p>
+<h2 id="pointfree-style">7.9 Pointfree style</h2>
+<p>Sometimes writing a pointfree style function is easier to read, sometimes its not. In the vast majority of cases, code will behave exactly the same whether it’s pointfree or “point-full.” GHC is super smart and usually doesn’t really care about this kind of stylistic detail.</p>
+<p>The primary consideration of writing pointfree code should be whether it is more legible to another human being. Pointfree style code is easily abused to create impenetrable code. Think about whether a good parameter name might make it easier for another person to understand the function you’re writing.</p>
+<h2 id="chapter-exercises">7.11 Chapter Exercises</h2>
+<h3 id="multiple-choice">Multiple Choice</h3>
+<ol type="1">
+<li>d</li>
+<li>b</li>
+<li>d</li>
+<li>b</li>
+<li>a</li>
+</ol>
+<h3 id="lets-write-code">Let’s write code</h3>
+<p>see <code>LetsWriteCode.hs</code></p>
+<p>see <code>Arith4.hs</code></p>
+<h2 id="follow-up-resources">7.13 Follow-up resources</h2>
+<ol type="1">
+<li><a href="https://github.com/johnchandlerburnham/hpffp-resources/blob/master/Chapter-07/Case%20Expressions%20and%20Pattern%20Matching.pdf">Paul Hudak; John Peterson; Joseph Fasel. A Gentle Introduction to Haskell, chapter on case expressions and pattern matching.</a></li>
+<li><a href="https://github.com/johnchandlerburnham/hpffp-resources/blob/master/Chapter-07/The%20Implementation%20of%20Functional%20Programming%20Languages.pdf">Simon Peyton Jones. The Implementation of Functional Programming Languages, pages 53-103.</a></li>
+<li><a href="https://github.com/johnchandlerburnham/hpffp-resources/blob/master/Chapter-07/Fundamental%20Concepts%20in%20Programming%20Languages.pdf">Christopher Strachey. Fundamental Concepts in Programming Languages, page 11 for explanation of currying.</a></li>
+<li><a href="http://www.di.uminho.pt/~jno/ps/iscalc_1.ps.gz">J.N. Oliveira. An introduction to pointfree programming.</a></li>
+<li><a href="https://github.com/johnchandlerburnham/hpffp-resources/blob/master/Chapter-07/Point-free%20Program%20Calculation.pdf">Manuel Alcino Pereira da Cunha. Point-free Program Calculation.</a></li>
+</ol>
+<hr />
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>
