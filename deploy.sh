@@ -21,6 +21,7 @@ fi
 git stash --include-untracked
 git checkout hakyll
 COMMIT=$(git log -1 HEAD --pretty=format:%H)
+git submodule update --init
 
 # Build _site
 stack exec site clean
