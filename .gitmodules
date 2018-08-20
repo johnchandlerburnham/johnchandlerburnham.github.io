@@ -4,3 +4,15 @@
 [submodule "projects/pvim"]
 	path = projects/pvim
 	url = git@github.com:johnchandlerburnham/pvim.git
+[submodule "projects/ctfp"]
+	path = projects/ctfp
+	url = git@github.com:johnchandlerburnham/ctfp.git
+[submodule "projects/tilc"]
+	path = projects/tilc
+	url = git@github.com:johnchandlerburnham/tilc.git
+[submodule "projects/tecp"]
+	path = projects/tecp
+	url = git@github.com:johnchandlerburnham/tecp.git
+[submodule "projects/lcbb"]
+	path = projects/lcbb
+	url = git@github.com:johnchandlerburnham/lcbb.git

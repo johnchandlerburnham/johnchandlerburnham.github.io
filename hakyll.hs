@@ -13,9 +13,9 @@ config = defaultConfiguration { destinationDirectory = "_site"
 
 main :: IO ()
 main = hakyllWith config $ do
-  let postPattern       = "posts/*" .||. "notes/*/*"
-  let projPostPattern   = "projects/**.md"
-  let projSourcePattern = "projects/**" .&&. (complement projPostPattern)
+  let postPattern       = "posts/*" .||. "notes/*" .||. "**/00/index.md"
+  let projectPostPattern   = "projects/**.md"
+  let projectSourcePattern = "projects/**" .&&. (complement projectPostPattern)
 
   match "images/*" $ do
     route idRoute
@@ -56,14 +56,14 @@ main = hakyllWith config $ do
       >>= loadAndApplyTemplate "templates/default.html" (postCtxWithTags tags)
       >>= relativizeUrls
 
-  match projPostPattern $ do
+  match projectPostPattern $ do
     route $ setExtension "html"
     compile
       $   pandocMathCompiler
       >>= loadAndApplyTemplate "templates/default.html" defaultContext
       >>= relativizeUrls
 
-  match projSourcePattern $ do
+  match projectSourcePattern $ do
     route idRoute
     compile copyFileCompiler
 
