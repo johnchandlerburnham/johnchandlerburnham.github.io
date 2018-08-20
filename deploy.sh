@@ -55,3 +55,4 @@ info "Pushed"
 git checkout hakyll
 stack exec site clean
 git stash pop
+git submodule update --init
