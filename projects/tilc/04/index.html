@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (TILC 04/05): Recursion</title>
+        <link rel="stylesheet" type="text/css" href="../../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../../">jcb</a>
+                <a href="../../../posts.html">posts</a>
+                <a href="../../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+            </div>
+        </div>
+        <div id="content">
+            <h1>Notes (TILC 04/05): Recursion</h1>
+          <h1 id="recursion">4 Recursion</h1>
+<p><strong>recursion</strong>: A pattern where a function calls itself.</p>
+<p>The basic idea behind recursion in lambda calculus is that we want to build an expression that regenerates itself as we reduce it. What I mean by that is if a function <code>F</code> is going to apply itself inside itself, it’s reduction needs to somehow build a new copy of <code>F</code>. We’re going to want to end up with some function that transforms <code>F</code> into a sequence of repeated applications of <code>F</code>:</p>
+<pre><code>F (F (F ....)))</code></pre>
+<p>Imagine we want to apply an expression <code>F</code> to itself once. If <code>F</code> is the identity function <code>id</code>:</p>
+<pre><code>id id =&gt; (\x.x) (\x.x) =&gt; \x.x</code></pre>
+<p>Let’s say we want a function that does this self-application, that we’ll call <code>M</code>:</p>
+<pre><code>M = \f. f f</code></pre>
+<p>Now supppose we apply <code>M</code> to <code>M</code>:</p>
+<pre><code>M(M) = (\f. f f) (\f. f f) =&gt;
+(\f. f f) (\f. f f) =&gt; \dots</code></pre>
+<p>This is an infinite loop! <code>M(M)</code> regenerates itself perfectly, so that any reduction just goes <code>M(M) =&gt; M(M) ...</code> . <code>M(M)</code> is in fact the classic case of a non-terminating lambda expression, and is usually called Ω).</p>
+<p>Infinite loops are cool, but what we really want is to modify <code>M(M)</code> so that we add an application of a function <code>R</code> at every loop:</p>
+<pre><code>M (\f. R (f f)) = (\f. f f) (\f. R (f f)) =&gt;
+(\f. R (f f)) (\f. R (f f)) =&gt;
+R ((\f. R (f f)) (\f. R (f f)) =&gt;
+R ( R ((\f. R (f f)) (\f. R (f f)))) =&gt;
+...</code></pre>
+<p>When we abstract over <code>R</code>, this becomes the famous <code>Y</code> combinator:</p>
+<pre><code>Y = \r. (\f. f f) (\f. r (f f)) =&gt; \r. (\f. r (f f)) (\f. r (f f))</code></pre>
+<p><strong>combinator</strong>: A lambda abstraction with no free variables.</p>
+<hr />
+<p>Another way to think about the <code>Y</code> combinator is as a <em>fixed-point</em> combinator.</p>
+<p><strong>fixed-point</strong>. If <code>x = (f x)</code>, <code>x</code> is a <em>fixed-point</em> of the function <code>f</code>.</p>
+<p>Suppose we have a function <code>fix</code> such that<code>(fix f)</code> that returns a fixed-point of <code>f</code>. Then, by the definition of a fixed-point,</p>
+<pre><code>(fix f) = f (fix f)</code></pre>
+<p>This can be expanded indefinitely as</p>
+<pre><code>fix f =&gt; f (fix f) =&gt; f (f (fix f)) =&gt; ...</code></pre>
+<p>Which is precisely the same as the <code>Y</code> combinator:</p>
+<pre><code>Y f =&gt; f (Y f) = f (f (Y f))</code></pre>
+<p>so we can say that <code>Y</code> is the lambda expression that implements the function <code>fix</code> for lambda functions.</p>
+<hr />
+<p>We know know how to recurse a function <code>R</code> an infinite number of times:</p>
+<pre><code>Y R =&gt; R (Y R) =&gt; R (R (Y R)) =&gt; ...</code></pre>
+<p>But suppose we want to only recurse <code>R</code> a finite number of times:</p>
+<pre><code>Y R =&gt; R (Y R) =&gt; R (R (Y R)) =&gt; R ( R ( ... (R B)) ...)</code></pre>
+<p>We’re going to have to bottom-out at some base-case <code>B</code>.</p>
+<p>But how do we structure our function <code>R</code> so that it generates a base case, if <code>YR =&gt; R(Y R)</code>? Won’t that generate more copies of <code>R</code> no matter what we do?</p>
+<p>Watch what happens if we apply <code>Y</code> to <code>0_</code>:</p>
+<pre><code>Y 0_ =&gt; Y (\s z. z) -&gt; (\s z. z) Y (\s z. z) -&gt; (\s z. z) -&gt; 0_</code></pre>
+<p><code>0_</code> throws away its first argument, and because it throws away the <code>Y</code>, the recursion stops. So we if build an <code>R</code> that at some point throws away the <code>Y</code> combinator, we’ll lose our means of producing new copies of <code>R</code>.</p>
+<p>Let’s look at the example in the text, which is supposed to sum all the integers between <code>n</code> and <code>0_</code>:</p>
+<pre><code>R = (\r n. isZero n 0_ (n succ (r (pred n))) )
+sum n = Y R n</code></pre>
+<p>Let’s do some reductions on this, starting with <code>sum 0_</code>:</p>
+<pre><code>sum n = Y R 0_ =&gt;
+Y (\r n. isZero n 0_ (n succ (r (pred n)))) 0_ =&gt;
+(\rn.isZero n 0_ (n succ (r (pred n)))) (Y R) 0_ =&gt;
+(isZero 0_ 0_ (0_ succ ((Y R) (pred 0_)))) =&gt;
+true 0_ (0_ succ ((Y R) (pred 0_)))) =&gt;
+0_</code></pre>
+<p>Now <code>sum 1</code>:</p>
+<pre><code>Y R 1 =&gt;
+Y (\rn.isZero n 0_ (n succ (r (pred n)))) 1_ =&gt;
+(\rn.isZero n 0_ (n succ (r (pred n)))) (Y R) 1_ =&gt;
+(isZero 1_ 0_ (1_ succ ((Y R) (pred 1)))) =&gt;
+false 0_ (1_ succ ((Y R) (pred 1)))) =&gt;
+1_ succ ((Y R) (pred 1))) =&gt;
+1_ succ (Y R 0) =&gt;
+1_ succ 0 =&gt;
+1_</code></pre>
+<p>And <code>sum 2_</code> for good measure:</p>
+<pre><code>Y R 2_ =&gt;
+Y (\rn.isZero n 0_ (n succ (r (pred n)))) 2_ =&gt;
+(\rn.isZero n 0_ (n succ (r (pred n)))) (Y R) 2_ =&gt;
+(isZero 2_ 0_ (2_ succ ((Y R) (pred 2_)))) =&gt;
+false 0_ (2_ succ ((Y R) (pred 2_)))) =&gt;
+2_ succ ((Y R) (pred 2_))) =&gt;
+2_ succ (Y R 1_) =&gt;
+2_ succ (1_ succ 0_) =&gt;
+3_</code></pre>
+<p>Let’s break this down into the general case:</p>
+<pre><code>loop = \ test f next start. Y (\r s. test s (f (r (next s)))) start</code></pre>
+<p>First we <code>test</code> our state <code>s</code> and return either <code>true</code> or <code>false</code>. In the example in the text, <code>test</code> is <code>isZero</code> and <code>s</code> is a number <code>n</code>.</p>
+<p>If our test returns <code>true</code> we terminate by returning our <code>base</code>, (<code>0_</code> in the above example) otherwise we recurse and return <code>f (r (next s))</code>. The function <code>f</code> is what we’re actually interested in evaluating over our recursion. In the above the function <code>f</code> is <code>add n</code> or <code>(n succ m)</code>. The <code>r</code> is the stand-in for the rest of the recursion that will be generated with a <code>Y R</code> application. And the <code>next</code> is <code>pred</code> in the above example, because we want to count down from <code>n</code> to <code>0_</code> by 1s.</p>
+<p>Supposing we want to loop a function <code>f</code> over the numbers from <code>m_</code> to <code>0_</code> (technically the term is <em>fold</em> <code>f</code> over the numbers <code>m_</code> to <code>0_</code>, but I don’t want to get into folds just now).</p>
+<p>All we have to do is fill apply to loop to the corresponding variables:</p>
+<pre><code>loop (\n. isZero n base) f pred m_ =&gt;
+  Y (\r n. isZero n base
+          (f (r (pred n)))
+    )
+  m_
+=&gt;
+  (\r n. isZero n base (f (r (pred n))))
+  ( Y (\r n. isZero base
+            (f (r (pred n)))
+      )
+  )
+  m_
+=&gt;
+(\r n. isZero base
+  ( f
+    ( (Y (\r n. isZero base (f (r (pred n)))))
+      (pred m_))
+  )
+)
+=&gt;
+...</code></pre>
+<p>In this way we can build a wide range of finite recursive structures.</p>
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>

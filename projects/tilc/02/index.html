@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (TILC 02/05): Arithmetic</title>
+        <link rel="stylesheet" type="text/css" href="../../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../../">jcb</a>
+                <a href="../../../posts.html">posts</a>
+                <a href="../../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+            </div>
+        </div>
+        <div id="content">
+            <h1>Notes (TILC 02/05): Arithmetic</h1>
+          <h1 id="arithmetic">2 Arithmetic</h1>
+<p>Thus far, everything we’ve seen with lambda calculus has been a symbol manipulation game, and not obviously meaningful. So we’re going to put some meaning into it by coming up with a way to do arithmetic.</p>
+<p>First, we’re going to need numbers. Specifically, we’re going to need to find a coherent way to represent the natural numbers</p>
+<pre><code>0, 1, 2, 3, ...</code></pre>
+<p>as lambda expressions. The way we’re going to do this is by implementing of Peano numbers in lambda calculus.</p>
+<p>[N.B. I will find/write a good explanation of Peano numbers, link it here, and rework this to be clearer]</p>
+<p>First, we’re going to pick an expression for <code>0</code>, which we’ll call <code>Zero</code>, and then a successor function <code>succ</code>, so that</p>
+<pre><code>0 = Zero
+1 = succ Zero
+2 = succ (succ Zero)
+...</code></pre>
+<p>and so on. This is the standard Peano definition of the natural numbers.</p>
+<p>But there’s a neat trick we can do in our lambda calculus implementation of Peano numbers. Notice how the Peano numbers are defined as a zero and then layers of a succesor function on top of zero. We know how to express functions in lambda calculus, so what if we rewrote the above definition of Peano numbers as functions of two parameters <code>s</code> and <code>z</code>, which will stand in for whatever expressions we pick for the successor function and the zero, respectively. We’ll call these lambda functions that return numbers <code>n_</code>, where <code>n</code> is the number they return:</p>
+<p>Let’s start with <code>0_</code>. We know that all the <code>n_</code> functions are functions of <code>s</code>, (<code>succ</code>) and <code>z</code> (<code>Zero</code>), so the heads of all our <code>n_</code> will be the same: <code>\s z</code>.</p>
+<p>For <code>0_</code> we throw away the successor and just return the zero:</p>
+<pre><code>0_ = \s z. z</code></pre>
+<p>For <code>1_</code> we apply the successor once:</p>
+<pre><code>1_ = \s z. s z</code></pre>
+<p>For <code>2_</code> we apply the succesor twice:</p>
+<pre><code>2_ = \s z. s (s z)</code></pre>
+<p>And so on, giving us the following functions:</p>
+<pre><code>0_ = \s z. z
+1_ = \s z. s z
+2_ = \s z. s (s z)
+3_ = \s z. s (s (s z))
+...</code></pre>
+<p>Now here’s the trick. The above functions are already lambda expressions. So while we could find other expressions that would work as numbers, we can just use the above <code>n_</code> functions as numbers directly.</p>
+<p>If we do that then we already found an expression for our zero: <code>\sz.z</code>. Which is just a function that throws away its argument and returns our old friend the identity function.</p>
+<p>One way to visualize this structure is to imagine <code>n_</code> as the set of functions that apply another function to an argument <code>n</code> times. <code>Zero</code> is “apply zero times” or “don’t apply”, one is “apply once”, two is “apply twice” and so on.</p>
+<p>Now we just need a <code>succ</code> function. <code>succ</code> takes a number and returns that number plus one. But if our numbers are functions that apply another function to an argument some number of times, then <code>succ</code> takes a number <code>n</code>, a function <code>f</code> and an argument <code>x</code> then applies <code>f</code> to x an <code>(n+1)</code> number of times. In other words, <code>succ</code> is like an “apply once more”function.</p>
+<p>Here’s what that function looks like:</p>
+<pre><code>succ = \n f x. f (n f x)</code></pre>
+<p>Let’s see what happens when we apply <code>succ</code> to a number:</p>
+<pre><code>succ 0_ = (\n f x. f (n f x)) (\s z. z) =&gt;
+\f x. f ((\s z.z) f x) =&gt;
+\f x. f x</code></pre>
+<p>Through alpha equivalence <code>\f x. f x</code> is the same as <code>\s z. s z</code> which is <code>1_</code>.</p>
+<p>Applying <code>succ</code> to <code>1_</code></p>
+<pre><code>succ 1_ = (\n f x. f (n f x)) (\s z. s z) =&gt;
+\fx. f ((\s z. s z) f x) =&gt;
+\f x. f (f x) =&gt;
+2_</code></pre>
+<h2 id="addition">2.1 Addition</h2>
+<p>Once we understand <code>succ</code>, <code>add</code> is pretty easy . Whereas <code>succ</code> is “apply <code>f</code> to <code>x</code>, <code>n</code>-times”, <code>add</code> is “apply <code>f</code> to <code>x</code>, <code>n</code>-times, then <code>m</code>-times, for a total of <code>(n + m)</code> applications.”</p>
+<pre><code>add = \m n f x. m f (n f x)</code></pre>
+<p>Let’s see this in action:</p>
+<pre><code>add 1_ 2_ = (\n m f x. m f (n f x)) (\s z. s z) (\s z. s (s z)) =&gt;
+\f x. (\s z. s z) f ((\s z. s (s z)) f x) =&gt;
+\f x. (\z. f z) ((\s z. s (s z)) f x) =&gt;
+\f x. f (\s z. s (s z) f x) =&gt;
+\f x. f (f (f x)) =&gt;
+3_</code></pre>
+<p>A useful pattern we can notice is that <code>add</code> can also be expressed as:</p>
+<pre><code>add = \m n f x. m f (n f x) =&gt; \m n. \f x.  m f (n f x) =&gt;
+\m n. m (\f x. n f x) =&gt; \m n. m (\n f x. n f x) n =&gt;
+\m n. m succ n</code></pre>
+<p>This might seem less mysterious if we do the equivalence in reverse.</p>
+<pre><code>\m n. m succ n =&gt; \m n. m (\n f x. f (n f x)) n =&gt;
+\m n. m (\f x. f (n f x)) =&gt; \m n. \f x. m f (n f x) =&gt;
+\m n f x. m f (n f x)
+=&gt; add</code></pre>
+<h2 id="multiplication">2.2 Multiplication</h2>
+<p><code>multiply</code> is even easier, we just feed one number into another:</p>
+<pre><code>multiply n m = \n m t. n (m t)</code></pre>
+<p>If we multiply <code>2_</code> by <code>2_</code>:</p>
+<pre><code>multiply 2_ 2_ =&gt;
+(\n m t. n (m t)) (\s z.s (s z)) (\s z. s (s z)) =&gt;
+\t. (\s z. s (s z)) (\s z. s (s z) t) =&gt;
+\t. (\s z. s (s z)) (\z. t (t z)) =&gt;
+\t. \z. (\z. t (t z)) ((\z. t (t z)) z) =&gt;
+\t z. (\z. t (t z)) ((\z. t (t z)) z) =&gt;
+\t z. (\z. t (t z)) (t (t z)) =&gt;
+\t z. t (t (t (t z))) =&gt;
+\s z. s (s (s (s z))) =&gt;
+ 4_</code></pre>
+<p>Okay, maybe that was a little tough to read. Maybe a little substitution will make things cleaner?</p>
+<pre><code>multiply 2_ 2_ =&gt;
+(\n m t. n (m t)) 2_ 2_ =&gt;
+\t. 2_ (2_ t) =&gt;
+\t. 2_ (\x. t (t x)) =&gt;
+\t. \z. (\x. t (t x)) ((\x. t (t x)) z) =&gt;
+\t. \z. (\x. t (t x)) (t (t z)) =&gt;
+\t. \z.t (t (t (t z))) =&gt;
+\t z. t (t (t (t z))) =&gt;
+4_</code></pre>
+<p>I don’t think that helped much. There is, clearly, a reason why we do not write programs directly in lambda calculus.</p>
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (TILC 01/05): Definition</title>
+        <link rel="stylesheet" type="text/css" href="../../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../../">jcb</a>
+                <a href="../../../posts.html">posts</a>
+                <a href="../../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+            </div>
+        </div>
+        <div id="content">
+            <h1>Notes (TILC 01/05): Definition</h1>
+          <h1 id="definition">1 Definition</h1>
+<p><strong>Lambda Calculus</strong>: The text says “the smallest universal programming language of [sic] the world [, consisting] of a single transformation rule (variable substitution) and a single function definition scheme.” I’m inferring that by “smallest” the author means “simplest,” but I would be interested to see the claim that “lambda calculus is the simplest possible programming language” developed further. What does it mean for a programming language to be “simple”?</p>
+<p>[NB. I will investigate this claim later and link back here]</p>
+<p>Lamda Calculus consists of <em>expressions</em>:</p>
+<p><strong>expression</strong>: an expression is a <em>name</em>, a <em>function</em> or an <em>application</em>. Any expression can be optionally surrounded by parentheses for clarity.</p>
+<p><strong>name</strong>: Also called a <em>variable</em>. Represents values, denoted by single lettters:</p>
+<pre><code>a, b, c ...</code></pre>
+<p><strong>function</strong>: Also called an <em>abstraction</em>, Represents functions (in the mathematical sense). Notation is of the form</p>
+<pre><code>\N. E</code></pre>
+<p>where <code>N</code> is a name and <code>E</code> is an expression. <code>N</code> is called the <em>head</em> and <code>E</code> is called the <em>body</em> of the function.</p>
+<p><strong>application</strong>: Represents the concept of apply a function to an argument. Notation is of the form</p>
+<pre><code>F N</code></pre>
+<p>where <code>F</code> and <code>N</code> are expressions. Application associates to the left, so</p>
+<pre><code>F M N</code></pre>
+<p>is equivalent to</p>
+<pre><code>((F M) N)</code></pre>
+<p><strong>evaluation</strong>: In an application expresion</p>
+<pre><code>F N</code></pre>
+<p>where <code>F</code> is a function, if the <em>name</em> in the head of <code>F</code> occurs anywhere in the body of <code>F</code>, replace each occurence of that name with the expression <code>N</code>, and return the body.</p>
+<p>Example:</p>
+<pre><code>(\x. x) y</code></pre>
+<p>evaluates to simply <code>y</code>, and</p>
+<pre><code>(\x. x y) y</code></pre>
+<p>evaluates to <code>y y</code>.</p>
+<p><strong>the identity function</strong>:</p>
+<pre><code>id = \x. x</code></pre>
+<p>returns whatever it is applied to.</p>
+<h2 id="free-and-bound-variables">1.1 Free and bound variables</h2>
+<p><strong>bound variable</strong>: The name in the head of a function is called a <em>bound</em> variable, because the function binds it as a paramter.</p>
+<p><strong>free variables</strong>: Any names in the body of a function are not bound by the function and therefore are <em>free</em>.</p>
+<p>The formal definition of free vs. bound in this text is confusing. The definition is overly detailed and obscures the idea of a function <em>binding</em> a variable.</p>
+<p>The principle is that a variable is bound if and only if it is in the body of a function that <em>binds</em> it. Any variables not so bound are free. A variable cannot be both bound and free in the scope of a single function, and we really only care about single functions, since we evaluate lambda expressions one abstraction at a time.</p>
+<p>The example given of <code>y</code> being both “bound” and “free” in</p>
+<pre><code>(\x. x y) (\y. y)</code></pre>
+<p>is right but misleading. <code>y</code> is “free” in the scope of the first function, but bound in the second. Despite all appearences, though, these are not the same <code>y</code>.</p>
+<p><code>\y. y</code> is the identity function. So is <code>\x. x</code> or <code>\n. n</code>, and any other expression of the same form which replaces the <code>y</code>’s with any other letter. These are all equivalent ways to write the same function. And therefore we can substitute any of them for any other. This property of not caring which letters of the alphabet we use as long as the form is the same is called alpha equivalence.</p>
+<p>In the case of the example in the text, through alpha equivalence,</p>
+<pre><code>(\x. x y) (\y. y) =&gt; (\x. x y) (\n. n)</code></pre>
+<p>And presto, <code>y</code> is not bound at all in this expression, according to the definition given in the text.</p>
+<p>The reason this is important is because scope matters. A statement might be true at one scope and false in another, and if we’re not careful to keep a clear idea of what scope we’re operating at, we can start badly confusing ourselves and others.</p>
+<p>As an example, let’s add an abstraction over <code>y</code> to the above:</p>
+<pre><code>\y. (\x. x y) (\y. y)</code></pre>
+<p>Now <code>y</code> is not free in the expression at all. But we would be badly mistaken if when we applied this abstraction to an expression <code>N</code> we did this:</p>
+<pre><code>(\y. (\x. x y) (\y. y)) N =&gt; (\x. x N) (\y. N)</code></pre>
+<p>Again, the <code>y</code> in <code>(\y.y)</code> is not the same <code>y</code> as the one in the head of the outer abstraction. Instead, we have to do this:</p>
+<pre><code>(\y. (\x. x y) (\y. y)) N =&gt; (\x. x N)(\y. y)</code></pre>
+<p>Which makes sense, since</p>
+<pre><code>(\x. x y)(\y. y) =&gt; (\x. x y)(\n. n)</code></pre>
+<p><strong>name-shadowing</strong>: When, in nested abstractions, a variable in an inner abstraction has the same name as a variable in an outer abstraction.</p>
+<h2 id="substitutions">1.2 Substitutions</h2>
+<p>The description of substitution in the text is a little haphazard, and I think the formalism in the previous section would have been better served in this one.</p>
+<p>Here’s what I would have included (see <a href="https://en.wikipedia.org/wiki/Lambda_calculus">Wikipedia</a>):</p>
+<p><strong>alpha equivalence</strong>: Renaming the bound (formal) variables in the expression. Used to avoid name collisions. Let <code>x</code> and <code>y</code> be names and let <code>M[x]</code> be an expression <code>M</code> containing some <code>x</code> terms. Then in the following function,</p>
+<pre><code>(\x.M[x]) =&gt; (\y.M[x:=y])</code></pre>
+<p>where <code>M[x:=y]</code> denotes replacing each instance of <code>x</code> in <code>M</code> with <code>y</code>.</p>
+<p><strong>beta reduction</strong>: Substituting the bound variable by the argument expression in the body of the abstraction. Let <code>x</code> be a name and let <code>M</code> and <code>E</code> be expressions. Then in the following application,</p>
+<pre><code>((\x.M) E) =&gt; M[x:=E]</code></pre>
+<p>where <code>M[x:=E]</code> denotes replacing each instance of <code>x</code> in <code>M</code> with <code>E</code>.</p>
+<p>Name shadowing can make both alpha equivalence and beta reduction more complicated, so the above definitions only really apply without exception when the variable names in all the lambda abstraction heads are different.</p>
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>
