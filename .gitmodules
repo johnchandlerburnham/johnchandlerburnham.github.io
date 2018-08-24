@@ -1,6 +1,6 @@
-[submodule "submodules/hpfp"]
+[submodule "projects/hpfp"]
 	path = projects/hpfp
-	url = https://github.com/johnchandlerburnham/hpfp
+	url = git@github.com:johnchandlerburnham/hpfp.git
 [submodule "projects/pvim"]
 	path = projects/pvim
 	url = git@github.com:johnchandlerburnham/pvim.git
