@@ -1,18 +1,24 @@
 [submodule "projects/hpfp"]
 	path = projects/hpfp
 	url = git@github.com:johnchandlerburnham/hpfp.git
+	branch = master
 [submodule "projects/pvim"]
 	path = projects/pvim
 	url = git@github.com:johnchandlerburnham/pvim.git
+	branch = master
 [submodule "projects/ctfp"]
 	path = projects/ctfp
 	url = git@github.com:johnchandlerburnham/ctfp.git
+	branch = master
 [submodule "projects/tilc"]
 	path = projects/tilc
 	url = git@github.com:johnchandlerburnham/tilc.git
+	branch = master
 [submodule "projects/tecp"]
 	path = projects/tecp
 	url = git@github.com:johnchandlerburnham/tecp.git
+	branch = master
 [submodule "projects/lcbb"]
 	path = projects/lcbb
 	url = git@github.com:johnchandlerburnham/lcbb.git
+	branch = master
