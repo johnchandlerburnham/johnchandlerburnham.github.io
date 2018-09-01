@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (TECP 01/13): Boolean Logic</title>
+        <link rel="stylesheet" type="text/css" href="../../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../../">jcb</a>
+                <a href="../../../posts.html">posts</a>
+                <a href="../../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+            </div>
+        </div>
+        <div id="content">
+            <h1>Notes (TECP 01/13): Boolean Logic</h1>
+          <h1 id="boolean-logic">Boolean Logic</h1>
+<p>Imagine a red ball. A round ruby-colored sphere. Maybe it’s a large ball like a red beach ball. Or maybe it’s small like the 3 ball on a pool table. Regardless of what size it is, it is very important that it be round and that it be red. You are not imagining a blue ball, or a red cube, or even a green pyramid. You are imagining a red ball.</p>
+<p>Close your eyes and fix the image of the red ball in your mind.</p>
+<p>Now answer the following questions:</p>
+<ol type="1">
+<li>Is the ball you imagined red?</li>
+<li>Is the red thing you imagined a ball?</li>
+<li>Is the ball you imagined blue?</li>
+<li>Is the red thing you imagined a cube?</li>
+</ol>
+<p>Now, if you followed the instructions, it should have been easy to answer these questions. You probably responded with “Yes” to the first two and “No” to the last two. Let’s change the questions into statements about the red ball you imagined, and this time try to figure out whether the statements are true or false.</p>
+<ol type="1">
+<li>The ball you imagined was red.</li>
+<li>The red thing you imagined was a ball.</li>
+<li>The ball you imagined was blue.</li>
+<li>The red thing you imagined was a cube.</li>
+</ol>
+<p>Some readers may object that words are inherently vague and that two different people may mean different things by the words “red” and “ball,” and therefore it’s impossible to assign truth-values (Trues and Falses) to the above sentences in a coherent way. To those people I can only ask to figure out the truth-value of the sentence “It is impossible to assign coherent truth-values to sentences.” It’s an important question, one that has occupied many philosophers and theologians over the centuries.</p>
+<p>In programming, however, a fundamental assumption we make is that it is possible to answer true and false questions in a meaningful way. In fact in a loose way, the whole discipline of computing is an elaborated way of trying to figure out all the things we can meaningfully do with Trues and Falses. Questions like: “Is the indicator light on?”, “Was my friend request accepted?”, “Is this number divisible by 2?”, “Does this program halt?” etc. etc.</p>
+<p>Let’s run with that assumption: A statement in Computing is always either True or False, never both, never neither, never some third thing. This assumption is the basis of what’s called Boolean logic.</p>
+<p>Returning to the red ball, can you assign truth-values to the following compound sentences? Keep in mind that under our assumption everything is either True or False. No “half-trues” allowed. :</p>
+<ol type="1">
+<li>It is red and it is a ball.</li>
+<li>It is a ball and it is red.</li>
+<li>It is a cube and it is red.</li>
+<li>It is blue and it is a ball.</li>
+<li>It is red and it is blue.</li>
+<li>It is red and it is red.</li>
+</ol>
+<p>Let’s go over these in order:</p>
+<ol type="1">
+<li>It is red and it is a ball.</li>
+<li>It is a ball and it is red.</li>
+</ol>
+<p>A red ball is both red and a ball, so the compound sentences is True. It doesn’t matter what order the two sub-parts of the sentence occur.</p>
+<ol start="3" type="1">
+<li>It is a cube and it is red.</li>
+</ol>
+<p>A red ball is red, but it is not a cube. The first part “it is a cube” is False, and the second part “it is red” is True. So the sentence is half-True, but we’ve already said we can’t answer “half-True.” Common sense would say that even though part of the sentence is True, overall it is False. The same analysis applies to:</p>
+<ol start="5" type="1">
+<li>It is blue and it is a ball.</li>
+</ol>
+<p>This next one is tricky:</p>
+<ol start="6" type="1">
+<li>It is red and it is blue.</li>
+</ol>
+<p>At the risk of being Clintonian, here we have to say it depends on what the meaning of “is” is. “Is” could mean “is totally”, “is mostly” or “is partially.” Let’s say that “is” means “is totally,” so that a ball with red and blue stripes would neither be totally red nor totally blue. In that case, something can’t be totally red and totally blue at the same time and in the same way, so we have to say false.</p>
+<ol start="7" type="1">
+<li>It is red and it is red.</li>
+</ol>
+<p>This is redundant, so the answer is the same as that to “It is red.” which is true.</p>
+<p>Now one thing we have to recognize is that the words “True” and “False” aren’t special. They’re just English words. In French they’re “Vrai” and “Faux,” which I rather like better because they are the same number of letters (easier to vertically align). The important thing is the meaning of “True” and “False” not the symbol.</p>
+<p>We could just as easily change the symbols to <code>1</code> for “True” and <code>0</code> for “False.” In fact, that’s what all the famous “zeros” and “ones” are in computing; little switches that can be toggled in the “True” or <code>1</code> position, or in the “False” or <code>0</code> position.</p>
+<h1 id="binary-logic">Binary Logic</h1>
+<p>Binary logic is exactly like what we did above with the red ball, only here the sentences look like this:</p>
+<pre><code>1 AND 1
+1 AND 0</code></pre>
+<p>We can also tighten up our notions of what <code>AND</code> means by listing out all the possibile ways that <code>AND</code> can combine two statements based on whether those statements are true or false. Since there are two statments that each have two possibile truth-values (<code>True</code> or <code>False</code>), there are only four possible ways (<code>2 * 2 = 4</code>)statements can be combined with an <code>AND</code>:</p>
+<pre><code>True  AND True  = True
+True  AND False = False
+False AND True  = False
+False AND False = False</code></pre>
+<p>This is called the “truth-table” of <code>AND</code>. We can think of it as taking two arbitrary inputs, call them <code>A</code> and <code>B</code>, that could be either <code>True</code> or <code>False</code> and then listing out what happens in every combination of <code>A</code> and <code>B</code>:</p>
+<table>
+<thead>
+<tr class="header">
+<th>A</th>
+<th>B</th>
+<th>AND</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>True</td>
+<td>True</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td>True</td>
+<td>False</td>
+<td>False</td>
+</tr>
+<tr class="odd">
+<td>False</td>
+<td>True</td>
+<td>False</td>
+</tr>
+<tr class="even">
+<td>False</td>
+<td>False</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p>Since <code>True</code> and <code>False</code> are just symbols, we can use <code>T</code> for <code>True</code> and <code>F</code> for <code>False</code>:</p>
+<table>
+<thead>
+<tr class="header">
+<th>A</th>
+<th>B</th>
+<th>AND</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>T</td>
+<td>T</td>
+<td>T</td>
+</tr>
+<tr class="even">
+<td>T</td>
+<td>F</td>
+<td>F</td>
+</tr>
+<tr class="odd">
+<td>F</td>
+<td>T</td>
+<td>F</td>
+</tr>
+<tr class="even">
+<td>F</td>
+<td>F</td>
+<td>F</td>
+</tr>
+</tbody>
+</table>
+<p>Or we can use <code>1</code> for <code>True</code> and <code>0</code> for <code>False</code>:</p>
+<table>
+<thead>
+<tr class="header">
+<th>A</th>
+<th>B</th>
+<th>AND</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>All these tables say the same thing.</p>
+<p>The 16 binary logic gates are:</p>
+<table>
+<thead>
+<tr class="header">
+<th>A x B</th>
+<th>True True</th>
+<th>True False</th>
+<th>False True</th>
+<th>False False</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>TRUE</td>
+<td><strong>True</strong></td>
+<td><strong>True</strong></td>
+<td><strong>True</strong></td>
+<td><strong>True</strong></td>
+</tr>
+<tr class="even">
+<td>OR</td>
+<td><strong>True</strong></td>
+<td><strong>True</strong></td>
+<td><strong>True</strong></td>
+<td>False</td>
+</tr>
+<tr class="odd">
+<td>IMPLIEDBY</td>
+<td><strong>True</strong></td>
+<td><strong>True</strong></td>
+<td>False</td>
+<td><strong>True</strong></td>
+</tr>
+<tr class="even">
+<td>A</td>
+<td><strong>True</strong></td>
+<td><strong>True</strong></td>
+<td>False</td>
+<td>False</td>
+</tr>
+<tr class="odd">
+<td>IMPLY</td>
+<td><strong>True</strong></td>
+<td>False</td>
+<td><strong>True</strong></td>
+<td><strong>True</strong></td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td><strong>True</strong></td>
+<td>False</td>
+<td><strong>True</strong></td>
+<td>False</td>
+</tr>
+<tr class="odd">
+<td>EQ (XNOR)</td>
+<td><strong>True</strong></td>
+<td>False</td>
+<td>False</td>
+<td><strong>True</strong></td>
+</tr>
+<tr class="even">
+<td>AND</td>
+<td><strong>True</strong></td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+</tr>
+<tr class="odd">
+<td>NAND</td>
+<td>False</td>
+<td><strong>True</strong></td>
+<td><strong>True</strong></td>
+<td><strong>True</strong></td>
+</tr>
+<tr class="even">
+<td>NEQ (XOR)</td>
+<td>False</td>
+<td><strong>True</strong></td>
+<td><strong>True</strong></td>
+<td>False</td>
+</tr>
+<tr class="odd">
+<td>NOT B</td>
+<td>False</td>
+<td><strong>True</strong></td>
+<td>False</td>
+<td><strong>True</strong></td>
+</tr>
+<tr class="even">
+<td>NOT IMPLY</td>
+<td>False</td>
+<td><strong>True</strong></td>
+<td>False</td>
+<td>False</td>
+</tr>
+<tr class="odd">
+<td>NOT A</td>
+<td>False</td>
+<td>False</td>
+<td><strong>True</strong></td>
+<td><strong>True</strong></td>
+</tr>
+<tr class="even">
+<td>NOT IMPLIED BY</td>
+<td>False</td>
+<td>False</td>
+<td><strong>True</strong></td>
+<td>False</td>
+</tr>
+<tr class="odd">
+<td>NOR</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td><strong>True</strong></td>
+</tr>
+<tr class="even">
+<td>FALSE</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p>This seems like a lot of detail, but keep in mind that the bottom half (everything from NAND to FALSE is just the negation of the top half).</p>
+<p>[To Be Expanded Upon]</p>
+<h1 id="canonical-implementations-of-booleans">Canonical implementations of Booleans:</h1>
+<h2 id="and">AND</h2>
+<pre><code>NOT(A NAND B)</code></pre>
+<h2 id="or">OR</h2>
+<pre><code>(NOT A) NAND (NOT B)</code></pre>
+<h2 id="nor">NOR</h2>
+<pre><code>NOT(A OR B)</code></pre>
+<h2 id="true">True</h2>
+<pre><code>A OR (NOT A)</code></pre>
+<h2 id="false">False</h2>
+<pre><code>NOT (A OR (NOT A))</code></pre>
+<h2 id="imply">IMPLY</h2>
+<pre><code>(NOT A) OR B</code></pre>
+<h2 id="implied-by">IMPLIED BY</h2>
+<pre><code>(NOT B) OR A</code></pre>
+<h2 id="eq">EQ</h2>
+<pre><code>(A AND B) OR (A NOR B)</code></pre>
+<h1 id="neq">NEQ</h1>
+<pre><code>NOT (A EQ B)</code></pre>
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes: The Elements of Computing Systems by Noam Nisan and Shimon Schocken</title>
+        <link rel="stylesheet" type="text/css" href="../../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../../">jcb</a>
+                <a href="../../../posts.html">posts</a>
+                <a href="../../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+            </div>
+        </div>
+        <div id="content">
+            <h1>Notes: The Elements of Computing Systems by Noam Nisan and Shimon Schocken</h1>
+          <div id="title" class="info">
+    Posted on April 23, 2018
+    
+        by jcb
+    
+<hr>
+</div>
+
+<h1 id="contents">Contents</h1>
+<hr />
+<ul>
+<li><strong>Completed</strong></li>
+<li><em>In Progress</em></li>
+<li>Planned</li>
+</ul>
+<hr />
+<ul>
+<li><a href="../../../projects/tecp/01">Chapter 1: Boolean Logic</a></li>
+<li>Chapter 2: Boolean Arithmetic</li>
+<li>Chapter 3: Sequential Logic</li>
+<li>Chapter 4: Machine Language</li>
+<li>Chapter 5: Computer Architecture</li>
+<li>Chapter 6: Assembler</li>
+<li>Chapter 7: Virtual Machine I, Stack Arithmetic</li>
+<li>Chapter 8: Virtual Machine II, Program Control</li>
+<li>Chapter 9: High-Level Language</li>
+<li>Chapter 10: Compiler I: Syntax Analysis</li>
+<li>Chapter 11: Code Generation</li>
+<li>Chapter 12: Operating System</li>
+<li>Chapter 13: Postscript, More Fun to Go</li>
+</ul>
+<h1 id="nand2tetris-tools-setup">Nand2Tetris Tools Setup</h1>
+<p>The Elements of Computing systems has some accompanying tools on the <a href="http://www.nand2tetris.org">Nand2Tetris website</a>. These tools include:</p>
+<ol type="1">
+<li>A Hardware Simulator to test our circuits written in HDL.</li>
+<li>A CPUEmulator to test out instructions on the CPU chip we build in Ch. 05.</li>
+<li>An Assembler for turning assembly into machine instructions for our CPU.</li>
+<li>A Jack Compiler for turning Jack language files into Assembly.</li>
+<li>A Virtual Machine Emulator that runs Operating Systems written in Jack.</li>
+<li>A text comparer utility program that checks if two files are equal.</li>
+</ol>
+<p>These tools are all Java programs with shell script wrappers. The authors only have setup instructions for Windows and macOS on the Nand2Tetris website, but running the tools on Linux is totally possible with a little work.</p>
+<h2 id="setting-up-the-tools-on-nixos-xmonad">Setting up the tools on NixOS + Xmonad</h2>
+<p>I’m running the <a href="http://www.nixos.org">NixOS distribution of Linux</a> and the <a href="http://www.xmonad.org">XMonad window manager</a>. Version numbers:</p>
+<pre><code>jcb@daphne~&gt; nix-env --version
+nix-env (Nix) 2.0
+
+jcb@daphne~&gt; nixos-version
+18.03.132021.c18.03.132021.c0c5571ec1a (Impala)
+
+jcb@daphne~&gt; xmonad --version
+xmonad 0.13</code></pre>
+<p>Suprisingly, my choice of window manager ended up being relevant to getting the tools to work.</p>
+<p><strong>Step 1</strong>: Download the tools from the <a href="http://www.nand2tetris.org/software.php">Nand2Tetris website</a>.</p>
+<p><strong>Step 2</strong>: Install the Java Runtime Engine.</p>
+<pre><code>jcb@daphne~&gt; nix-env -iA nixos.jre</code></pre>
+<p><strong>Step 3</strong>: Give the shell script wrapper you want to run executable permissions</p>
+<pre><code>jcb@daphne~&gt; chmod +x ~/nand2tetris/tools/HardwareSimulator.sh</code></pre>
+<p>The specific path to the file may be different for you.</p>
+<p><strong>Step 4</strong>: Make Java recognize XMonad</p>
+<p>Ordinarily, the previous steps should be enough, but apparently Java GUI’s need a little coaxing to actually display under XMonad. I got stuck for a little while because I would do</p>
+<pre><code>jcb@daphne~&gt; bash ~/nand2tetris/tools/HardwareSimulator.sh</code></pre>
+<p>and get only a blank grey screen. This is a <a href="https://wiki.haskell.org/Xmonad/Frequently_asked_questions#Problems_with_Java_applications.2C_Applet_java_console">documented issue between Java and XMonad</a></p>
+<p>The solution is to add the line</p>
+<pre><code>export _JAVA_AWT_WM_NONREPARENTING=1</code></pre>
+<p>to your <code>.bashrc</code> file.</p>
+<p>Or if you use the<code>fish</code> shell like me, add</p>
+<pre><code>set -x _JAVA_AWT_WM_NONREPARENTING 1</code></pre>
+<p>to your <code>.config/fish/config.fish</code>.</p>
+<h2 id="caveat">Caveat</h2>
+<p>Seems simple, right? Bear in mind that for me <strong>Step 3.5</strong> was “Take a break to deal with my confusion and crippling self-doubt caused by being unable to instantly solve the problem.” This step gets left out of many technical guides, but it’s a very important step. You and your machine are one unified system. If you, the programmer, get demoralized and give up, the problem won’t get solved!</p>
+<p>When this happens I try to keep in mind the following: Every programmer feels dumb <del>sometimes</del> often. Feeling dumb is being confronted by a problem you don’t know how to solve. A programmer that doesn’t feel dumb is a programmer that is only working on problems they already know how to solve, that is, a programmer who’s not pushing themselves.</p>
+<p>I’m mentioning this because one of the temptations of solving technical problems is to present the clarity of a solution while retroactively sanitizing the process by which you arrived at the solution. This is very effective at making other people think you are smart, but it’s not honest, and I think it demoralizes beginners.</p>
+<p>The Elements of Computing Systems is a text that I think is incredibly helpful for a beginner programmers (or any programmer, in fact). It gives you great conceptual framework for the whole structure of computing, from the heights of the application to the foundation of physical circuits. It’s also a text that contains many opportunites for getting stuck, confused and demoralized.</p>
+<p>I want to make perfectly clear that this is a normal and expected part of the process of learning about computers. I personally got stuck and gave up on Chapter 6 twice in two separate read-throughs over the course of the past few years. Hopefully this third time will be, as they say, the charm.</p>
+
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>
