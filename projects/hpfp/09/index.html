@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (HPFP 09/31): Lists</title>
+        <link rel="stylesheet" type="text/css" href="../../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../../">jcb</a>
+                <a href="../../../posts.html">posts</a>
+                <a href="../../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+            </div>
+        </div>
+        <div id="content">
+            <h1>Notes (HPFP 09/31): Lists</h1>
+          <h1 id="lists">9 Lists</h1>
+<h2 id="using-ranges-to-construct-lists">9.5 Using ranges to construct lists</h2>
+<h3 id="exercise-enumfromto">Exercise: EnumFromTo</h3>
+<p>see <code>EnumFromTo.hs</code></p>
+<h2 id="extracting-portions-of-lists">9.6 Extracting portions of lists</h2>
+<h3 id="exercises-thy-fearful-symmetry">Exercises: Thy Fearful Symmetry</h3>
+<p>see <code>FearfulSymmetry.hs</code></p>
+<h2 id="list-comprehensions">9.7 List Comprehensions</h2>
+<h3 id="exercises-comprehend-thy-lists">Exercises: Comprehend Thy Lists</h3>
+<ol type="1">
+<li><code>[4,15,36,64,100]</code></li>
+<li><div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1">[(<span class="dv">1</span>,<span class="dv">1</span>),(<span class="dv">1</span>,<span class="dv">4</span>),(<span class="dv">1</span>,<span class="dv">9</span>),(<span class="dv">1</span>,<span class="dv">16</span>),(<span class="dv">1</span>,<span class="dv">25</span>),(<span class="dv">1</span>,<span class="dv">36</span>),(<span class="dv">1</span>,<span class="dv">49</span>)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">,(<span class="dv">4</span>,<span class="dv">1</span>),(<span class="dv">4</span>,<span class="dv">4</span>),(<span class="dv">4</span>,<span class="dv">9</span>),(<span class="dv">4</span>,<span class="dv">16</span>),(<span class="dv">4</span>,<span class="dv">25</span>),(<span class="dv">4</span>,<span class="dv">36</span>),(<span class="dv">4</span>,<span class="dv">49</span>)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">,(<span class="dv">9</span>,<span class="dv">1</span>),(<span class="dv">9</span>,<span class="dv">4</span>),(<span class="dv">9</span>,<span class="dv">9</span>),(<span class="dv">9</span>,<span class="dv">16</span>),(<span class="dv">9</span>,<span class="dv">25</span>),(<span class="dv">9</span>,<span class="dv">36</span>),(<span class="dv">9</span>,<span class="dv">49</span>)</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">,(<span class="dv">16</span>,<span class="dv">1</span>),(<span class="dv">16</span>,<span class="dv">4</span>),(<span class="dv">16</span>,<span class="dv">9</span>),(<span class="dv">16</span>,<span class="dv">16</span>),(<span class="dv">16</span>,<span class="dv">25</span>),(<span class="dv">16</span>,<span class="dv">36</span>),(<span class="dv">16</span>,<span class="dv">49</span>)</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">,(<span class="dv">25</span>,<span class="dv">1</span>),(<span class="dv">25</span>,<span class="dv">4</span>),(<span class="dv">25</span>,<span class="dv">9</span>),(<span class="dv">25</span>,<span class="dv">16</span>),(<span class="dv">25</span>,<span class="dv">25</span>),(<span class="dv">25</span>,<span class="dv">36</span>),(<span class="dv">25</span>,<span class="dv">49</span>)</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">,(<span class="dv">36</span>,<span class="dv">1</span>),(<span class="dv">36</span>,<span class="dv">4</span>),(<span class="dv">36</span>,<span class="dv">9</span>),(<span class="dv">36</span>,<span class="dv">16</span>),(<span class="dv">36</span>,<span class="dv">25</span>),(<span class="dv">36</span>,<span class="dv">36</span>),(<span class="dv">36</span>,<span class="dv">49</span>)</a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">,(<span class="dv">49</span>,<span class="dv">1</span>),(<span class="dv">49</span>,<span class="dv">4</span>),(<span class="dv">49</span>,<span class="dv">9</span>),(<span class="dv">49</span>,<span class="dv">16</span>),(<span class="dv">49</span>,<span class="dv">25</span>),(<span class="dv">49</span>,<span class="dv">36</span>),(<span class="dv">49</span>,<span class="dv">49</span>)</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">]</a></code></pre></div></li>
+<li><code>[(1,1),(1,4),(1,9),(1,16),(1,25)]</code></li>
+</ol>
+<h3 id="exercises-square-cube">Exercises: Square Cube</h3>
+<p>see <code>SquareCube.hs</code></p>
+<h2 id="spines-and-nonstrict-evaluation">9.8 Spines and nonstrict evaluation</h2>
+<h3 id="exercises-bottom-madness">Exercises: Bottom Madness</h3>
+<ol type="1">
+<li>bottom</li>
+<li>works</li>
+<li>bottom</li>
+<li>works</li>
+<li>bottom</li>
+<li>works</li>
+<li>bottom</li>
+<li>works</li>
+<li>works</li>
+<li>bottom</li>
+</ol>
+<h3 id="intermission-is-it-in-normal-form">Intermission: Is it in normal form?</h3>
+<ol type="1">
+<li>WHNF &amp; NF</li>
+<li>WHNF</li>
+<li>neither</li>
+<li>neither</li>
+<li>neither</li>
+<li>neither</li>
+<li>WHNF</li>
+</ol>
+<h2 id="transforming-lists">9.9 Transforming lists</h2>
+<h3 id="exercises-more-bottoms">Exercises: More Bottoms</h3>
+<ol type="1">
+<li>bottom</li>
+<li>yes</li>
+<li>bottom</li>
+<li>Is this character a vowel? <code>itIsMystery :: Char -&gt; Bool</code></li>
+<li><ol type="a">
+<li>the first 10 square numbers</li>
+<li><code>[1, 10, 20]</code></li>
+<li><code>[15, 15, 15]</code></li>
+</ol></li>
+<li>see <code>FoldBool.hs</code></li>
+</ol>
+<h2 id="filtering-lists-of-values">9.10 Filtering lists of values</h2>
+<h3 id="exercises-filtering">Exercises: Filtering</h3>
+<p>see <code>Filtering.hs</code></p>
+<h3 id="zipping-exercises">Zipping exercises</h3>
+<p>see <code>ZippingExercises.hs</code></p>
+<h2 id="chapter-exercises">9.12 Chapter Exercises</h2>
+<h3 id="data.char">Data.Char</h3>
+<p>see <code>CharExercises.hs</code></p>
+<h3 id="ciphers">Ciphers</h3>
+<p>see <code>Cipher.hs</code></p>
+<h3 id="writing-your-own-standard-functions">Writing your own standard functions</h3>
+<p>see <code>StdFunc.hs</code></p>
+<h2 id="follow-up-resources">9.14 Follow-up resources</h2>
+<ol type="1">
+<li><p><a href="http://hackage.haskell.org/package/base/docs/Data-List.html">Data.List documentation for the base library.</a></p></li>
+<li><p><a href="https://wiki.haskell.org/H-99:_Ninety-Nine_Haskell_Problems">Ninety-nine Haskell problems.</a></p></li>
+</ol>
+<hr />
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>
