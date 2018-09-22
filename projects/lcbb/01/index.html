@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (LCBB 01/07): Introduction</title>
+        <link rel="stylesheet" type="text/css" href="../../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../../">jcb</a>
+                <a href="../../../posts.html">posts</a>
+                <a href="../../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+            </div>
+        </div>
+        <div id="content">
+            <h1>Notes (LCBB 01/07): Introduction</h1>
+          <h1 id="introduction">1 Introduction</h1>
+<p><strong>The Entsheidungsproblem</strong>: The decision problem. Loosely speaking, whether it s possible to to come up with a general procedure to determine if statements are valid in some formal system.</p>
+<p>Take arithmetic as an example of a formal system. It has statements “1 + 1 = 2”, “5 &gt; 3” and so on. Some statements are true, like “1 + 1 = 2”, while others are false, like “1 = 0”. Given an arbitrary statement <code>X</code>, is there a function <code>D</code> such that <code>D(X)</code> returns True if <code>X</code> is true and False if <code>X</code> is false? That’s the decision problem. And the answer is no. No such function exists, nor can it exist.</p>
+<p><strong>lambda calculus</strong>: A formal system developed by Alonzo Church in 1936. Church proved the decision problem in the negative by showing that no function exists that can determine whether two expression in the lambda calculus were equivalent.</p>
+<p><strong>Turing Machines</strong>: A formal system developed by Alan Turing in 1936. Turing proved the decision problem in the negative by showing that no function exists that can determine whether a Turing machine will halt or run forever.</p>
+<p><strong>Church-Turing Thesis</strong>: The lambda calculus and Turing machines have equivalent power as formal systems. Any function defined in one can be defined in the other.</p>
+<p><strong>Von Neumann Machines</strong>: Turing machines with random access memory (RAM). The usual formulation of a Turing machine has sequential access memory on a tape. Most modern computers are hardware Von Neumann Machines.</p>
+<p>Assembly languages and imperative programming languages are based on Turing machines, and are generally built around sequences of statements and commands.</p>
+<p>Functional programming languages are based on the lambda calculus and are built around expression reduction.</p>
+<p><strong>Reduction Machine</strong>: A machine designed to execute expressions in a functional language. Such machines have been built in the flesh (in the silicon?), such as the <a href="https://en.wikipedia.org/wiki/Lisp_machine">Lisp Machines</a> but are generally rare. Most functional programming languages compile to Von Neumann Machine instructions.</p>
+<h2 id="reduction-and-functional-programming">Reduction and functional programming</h2>
+<p><strong>functional program</strong> An expression <code>E</code> that can be reduced. Reduction of <code>E</code> is equivalent to computing the function that <code>E</code> represents. <code>E</code> is reduced by some rewrite rules, such that a part <code>P</code> of E is replaced with <code>P'</code>:</p>
+<pre><code>E[P] -&gt; E[P']</code></pre>
+<p>as long as the replacement <code>P -&gt; P'</code> is implied by the rewrite rules.</p>
+<p><strong>Church-Rosser property</strong>: If applying the rewrite rules in a reduction system can be done in any order and yield the same expression, the reduction system satisfies the Church-Rosser property.</p>
+<h2 id="application-and-abstraction">Application and abstraction</h2>
+<p><strong>application</strong>: A pair of expressions <code>F</code> and <code>A</code> where <code>F</code> considered a function and <code>A</code> is the input to that function.</p>
+<p><strong>abstraction</strong>: An expression parameterized on some variable. The abstraction <code>\x.M</code> can be considered the function from x to <code>M[x]</code>, where <code>M[x]</code> is the expression <code>M</code> containing some (or no) instances of <code>x.</code></p>
+<p><strong>Beta reduction</strong>: When an abstraction is the first expression in an application:</p>
+<pre><code>(\x.M) N</code></pre>
+<p>then the application can be reduced by replaceing each instance of <code>x</code> in the expression <code>M</code> with <code>N</code>:</p>
+<pre><code>(\x.M) N = M[x := N]</code></pre>
+<h2 id="free-and-bound-variables">Free and bound variables</h2>
+<p><strong>binding a variable</strong>: Every abstraction <em>binds</em> some variable. Variables can be either <em>free</em> or <em>bound</em>. <em>Free</em> variables are those that are not <em>bound</em> by any abstraction. When an abstraction is applied, only the variables bound by that abstraction are substituted with the input.</p>
+<pre><code>(\x. y x (\x. x)) N = y N (\x. x)</code></pre>
+<p>The <code>x</code> in <code>\x. x</code> is bound by inner <code>\x.</code> abstraction head, not the outer one. The expression <code>N</code> is only substituted for the variables bound by the abstraction being applied, not those bound by any other.</p>
+<h2 id="functions-of-more-arguments">Functions of more arguments</h2>
+<p><strong>currying</strong>: A construction of some function <code>f</code> that depends on multiple arguments by the repeated application of functions of single arguments. Suppose <code>f(x, y)</code> is a function that depends on both <code>x</code> and <code>y</code>. Then <code>f</code> can be constructed from some function <code>F</code>, such that</p>
+<pre><code>F(x) = F_x
+F_x(y) = f(x, y)</code></pre>
+<p>In the lambda calculus:</p>
+<pre><code>\x.(F x) = F_x
+\y.(F_x y) = f(x, y)</code></pre>
+<p>So that,</p>
+<pre><code>(\x.\y.(F x) y) x y = (\y. F_x y) y = f(x, y)</code></pre>
+<p>In other words, we transform <code>f</code> which mapped from the space of pairs <code>(x,y)</code> to some output space, into the function <code>F</code> which maps from the space of <code>x</code>s to the space of functions <code>F_x</code>, which are the functions that map from space of <code>y</code>s to the output space.</p>
+<p>In this way, we can build functions of multiple arguments out of chaining together functions of single arguments.</p>
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>
