@@ -17,7 +17,8 @@ and other interests of mine.
 
 # About Me
 
-  - Software Engineer in Boston, MA.
+  - Senior Software Engineer at [camlCase
+    Technologies](https://twitter.com/camlCaseTech) in Brooklyn, NY
 
   - Wrote some Haskell at [Serokell OU](http://www.serokell.io).
 
