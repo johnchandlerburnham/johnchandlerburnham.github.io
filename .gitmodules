@@ -22,3 +22,7 @@
 	path = projects/lcbb
 	url = git@github.com:johnchandlerburnham/lcbb.git
 	branch = master
+[submodule "projects/ofvb"]
+	path = projects/ofvb
+	url = git@github.com:johnchandlerburnham/ofvb.git
+	branch = master

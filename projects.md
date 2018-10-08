@@ -30,7 +30,6 @@ title: Projects
 1.  *[The Elements of Computing Systems (Nisan, Schocken)](/projects/tecp/00)*
 
 - Type Theory and Functional Programming (Thompson)
-- Structure and Interpretation of Computer Programs (Abelson, Sussman, Sussman
 - Types and Programming Languages (Pierce)
 - The Algorithm Design Manual (Skiena)
 - Compilers: Principles, Techniques, and Tools (Aho, Lam, Sethi,Ulman)
@@ -41,9 +40,11 @@ title: Projects
 
 1. *[Haskell Programming from First Principles (Allen, Moronuki)](/projects/hpfp/00)*
 2. *[Type Driven Development in Idris (Brady)](/projects/tddi/00)*
+3. **[OCaml from the Very Beginning by John Whittington](/projects/ofvb/00)**
 
 - Purescript by Example (Freeman)
 - The Rust Programming Language (Klabnik, Nichols)
+- Structure and Interpretation of Computer Programs (Abelson, Sussman, Sussman
 
 ### Cryptography
 
