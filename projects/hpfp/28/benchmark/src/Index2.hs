@@ -1,23 +1,14 @@
-module Main where
+module Index2 where
 
 import Criterion.Main
 
-{-
-infixl 9 !?
-_      !? n | n < 0 = Nothing
-[]     !? _         = Nothing
-(x:_)  !? 0         = Just x
-(_:xs) !? n         = xs !? (n - 1)
--}
-
 infixl 9 !?
 {-# INLINABLE (!?) #-}
-(!?) :: [a] -> Int -> Maybe a
 xs !? n
   | n < 0 = Nothing
   | otherwise = foldr (\x r k -> case k of
                                   0 -> Just x
-                                  _ -> r (k - 1)) 
+                                  _ -> r (k - 1))
                       (const Nothing) xs n
 myList :: [Int]
 myList = [1..9999]
