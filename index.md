@@ -17,7 +17,7 @@ and other interests of mine.
 
 # About Me
 
-  - Senior Software Engineer at [camlCase
+  - CTO at [camlCase
     Technologies](https://twitter.com/camlCaseTech) in Brooklyn, NY
 
   - Wrote some Haskell at [Serokell OU](http://www.serokell.io).
