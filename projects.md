@@ -38,9 +38,9 @@ title: Projects
 
 ### Languages
 
-1. *[Haskell Programming from First Principles (Allen, Moronuki)](/projects/hpfp/00)*
-2. *[Type Driven Development in Idris (Brady)](/projects/tddi/00)*
-3. **[OCaml from the Very Beginning by John Whittington](/projects/ofvb/00)**
+1. **[Haskell Programming from First Principles (Allen, Moronuki)](/projects/hpfp/00)**
+2. **[OCaml from the Very Beginning by John Whittington](/projects/ofvb/00)**
+3. *[Type Driven Development in Idris (Brady)](/projects/tddi/00)*
 
 - Purescript by Example (Freeman)
 - The Rust Programming Language (Klabnik, Nichols)
