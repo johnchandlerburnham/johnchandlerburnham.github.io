@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (HPFP 29/31): IO</title>
+        <link rel="stylesheet" type="text/css" href="../../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../../">jcb</a>
+                <a href="../../../posts.html">posts</a>
+                <a href="../../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+            </div>
+        </div>
+        <div id="content">
+            <h1>Notes (HPFP 29/31): IO</h1>
+          <h1 id="io">29 IO</h1>
+<p>One interesting thing about how <code>IO</code> is defined is that</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">newtype</span> <span class="dt">IO</span> a <span class="fu">=</span> <span class="dt">IO</span> (<span class="dt">State</span><span class="fu">#</span> <span class="dt">RealWorld</span> <span class="ot">-&gt;</span> (<span class="fu">#</span> <span class="dt">State</span><span class="fu">#</span> <span class="dt">RealWorld</span>, a <span class="fu">#</span>))</a></code></pre></div>
+<p>is that it inverts the usual perspective of subjective thought happening within an objective world. <code>IO</code> is like looking into the universe from the plane of pure Platonic computation, calculating its physics forward a step in time, and then plucking out the type <code>a</code> you happen to want. It’s a very heady perspective, and small wonder people get hooked on it.</p>
+<p>But it’s important to remember that this perspective is a lie. GHC is only simulating the outside-view; the code we run is still very much within the universe and generating causal effects like heating our cpu, increasing our electric bill etc. etc. These effects are usually (but not always) small, which is what makes the simulated outside perspective useful.</p>
+<p>The outside perspective preserves purity by modeling (or pretending to model) the whole universe as a pure function. The <code>IO</code> type is that model, it makes <code>GHC</code> safely switch off simulating computation as something that happens outside of time and space. Within <code>IO</code>, <code>GHC</code> respects RealWorld time, and doesn’t mess with our execution order.</p>
+<p>There is also an unsafe way to punch a hole in the simulation:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">import</span> <span class="dt">System.IO.Unsafe</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="ot">unsafe ::</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">unsafe <span class="fu">=</span> unsafePerformIO (print <span class="st">&quot;a hole in the simulation&quot;</span> <span class="fu">&gt;&gt;</span> return <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb2-7" data-line-number="7">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-8" data-line-number="8">  putStrLn <span class="st">&quot;the outside perspective&quot;</span></a>
+<a class="sourceLine" id="cb2-9" data-line-number="9">  print <span class="fu">$</span> <span class="dv">2</span> <span class="fu">+</span> unsafe</a></code></pre></div>
+<h2 id="chapter-exercises">29.9 Chapter Exercises</h2>
+<h3 id="file-io-with-vigenere">File IO with Vigenere</h3>
+<p>see <code>src/VignereFile.hs</code></p>
+<h3 id="config-directories">Config directories</h3>
+<p>see <code>src/ConfigDirectories.hs</code></p>
+<p>I love how terse this program is. Just traverse a parser and zip!</p>
+<h2 id="follow-up-resources">29.10 Follow-up resources</h2>
+<ol type="1">
+<li><a href="https://wiki.haskell.org/Referential_transparency">Referential Transparency; Haskell Wiki</a></li>
+<li><a href="https://wiki.haskell.org/IO_inside">IO Inside; Haskell Wiki</a></li>
+<li>Unraveling the mystery of the IO Monad; Edward Z. Yang</li>
+<li><a href="https://github.com/commercialhaskell/haskelldocumentation/blob/master/content/primitive-haskell.md">Primitive Haskell; Michael Snoyman</a></li>
+<li><a href="https://wiki.haskell.org/Evaluation_order_and_state_tokens">Evaluation order and state tokens; Michael Snoyman</a></li>
+<li>Haskell GHC Illustrated; Takenobu Tani</li>
+<li><a href="http://research.microsoft.com/en-us/um/people/simonpj/papers/marktoberdorf/mark.pdf">Tackling the Awkward Squad; Simon Peyto Jones</a></li>
+<li>Note [IO hack in the demand analyser]; GHC source code</li>
+<li>Monadic I/O in Haskell 1.3; Andrew D. Gordon and Kevin Ham- mond</li>
+<li><a href="http://www.disi.unige.it/person/MoggiE/ftp/ic91.pdf">Notions of computation and monads; Eugenio Moggi</a></li>
+<li>The Next 700 Programming Languages; P. J. Landin</li>
+</ol>
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>
