@@ -68,7 +68,7 @@ g . f' :: A -&gt; A</code></pre>
 <p>Which implies:</p>
 <pre><code>f' = f' . id_a = f' . g . f = id_b . f = f</code></pre>
 <p>So, either <code>Cat</code> is not a category, or <code>f' == f.</code></p>
-<p>cf. <a href="https://en.wikibooks.org/wiki/Haskell/Category_theory#Hask,_the_Haskell_category">Haskell Wikibook page on Category Theory</a></p>
+<p>cf. <a href="https://en.wikibooks.org/wiki/Haskell/Category_theory#Hask,_the_Haskell_category">Haskell Wikibook page on Category Theory</a></p>
 <p>I think the important thing to keep in mind here is that when looking at a possible structure to see if its a category, the structure is constant. There aren’t any implicit elements of <code>Cat</code> that could also satisfy the property that e.g <code>(g . f)</code> is in <code>Cat</code>. We actually have to look in <code>Cat</code> to find if something fits the properties. If not, it’s not a category.</p>
 <p>When I first approached this topic I confused the statements:</p>
 <ul>
@@ -78,11 +78,11 @@ g . f' :: A -&gt; A</code></pre>
 <p>This really confused me for a bit, until I realized that when I was doing the latter I was just trying to build a superset of <code>C</code> that actually was a category. This is apparently called a “free category”.</p>
 <h2 id="challenges">1. 4 Challenges</h2>
 <ol type="1">
-<li><code>I = (\x. x)</code> in the lambda calculus.</li>
+<li><p><code>I = (\x. x)</code> in the lambda calculus.</p></li>
 <li><p><code>compose = (\x y z. x (y z))</code></p></li>
 <li><p><code>compose I F X = (\x y z. x (y z)) I F X = I (F X) = F X</code> <code>compose F I X = (\x y z. x (y z)) F I X = F (I X) = F X</code></p></li>
-<li>No, links are not composable.</li>
-<li>Friendships are not composable.</li>
+<li><p>No, links are not composable.</p></li>
+<li><p>Friendships are not composable.</p></li>
 <li><p>When the edges are composable, and every node has a self-directed edge.</p></li>
 </ol>
 <hr />

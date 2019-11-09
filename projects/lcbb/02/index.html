@@ -25,7 +25,7 @@
 <ul>
 <li><p>A variable from the infinite set of variables</p>
 <pre><code>V = {v, v', v'', ...}</code></pre></li>
-<li>An application <code>(M N)</code> where <code>M</code> and <code>N</code> are both lambda terms</li>
+<li><p>An application <code>(M N)</code> where <code>M</code> and <code>N</code> are both lambda terms</p></li>
 <li><p>An abstraction <code>(\x.M)</code>, where <code>x</code> is a variable and <code>M</code> is a lambda term</p></li>
 </ul>
 <p><strong>Equivalent definition with de Bruijn indices:</strong></p>
@@ -46,7 +46,7 @@ v'v = 2 1
 <p>De Bruijn indices are fun, but probably out of band for these notes. I plan on doing more with them later though.</p>
 <h2 id="convention-of-notation">2.3 Convention of Notation</h2>
 <ol type="1">
-<li>Lower case letters are variables. Upper case letters are terms</li>
+<li><p>Lower case letters are variables. Upper case letters are terms</p></li>
 <li><p><code>M == N</code> denotes that <code>M</code> and <code>N</code> are alpha equivalent. Two expressions are alpha equivalent if their Partial de Bruijn forms are identical. An expression may be converted into its Partial de Bruijn form by replacing every bound variable with the relative index of its binding abstraction layer, every <code>\</code> followed by a variable with <code>0</code> and leaving all free variables constant.</p>
 <pre><code>(\ x y) z == (\ x y) z =&gt; (0 y) z
 (\ x x) z == (\ y y) z =&gt; (0 1) z

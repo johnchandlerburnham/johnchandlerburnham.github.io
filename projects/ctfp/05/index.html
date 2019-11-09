@@ -86,9 +86,9 @@ v     |
 Y &lt;- Z2</code></pre>
 <p>This satisfies the category properties of composition and identity (since arrows in the above category can only be composed with identity arrows) and the partial order properties, but there is no defined product of <code>Y</code> and <code>X</code></p>
 <p>For the product of <code>X</code> and <code>Y</code> to exist, there must be some element <code>Z</code> of <code>Z_n</code> such that all objects <code>Z_i</code> in <code>Z_n</code> have arrows <code>Z_i -&gt; Z</code>. In other words, if arrows in a posetal category represent “less-than-or-equal”, the product of <code>X</code> and <code>Y</code> is the greatest of all objects less than or equal to <code>X</code> and <code>Y</code>, or the greatest lower bound of <code>X</code> and <code>Y</code>.</p>
-<p>Interestingly, if e.g. <code>X -&gt; Y</code> then <code>X</code> is in <code>Z_n</code> because of <code>X -&gt; X</code>. And by definition is the greatest lower bound (because all <code>Z_i</code> have <code>Z_i -&gt; X</code>). So if there is an arrow between <code>X</code> and <code>Y</code>, the product is simply the minimum of the two.</p></li>
+<p>Interestingly, if e.g. <code>X -&gt; Y</code> then <code>X</code> is in <code>Z_n</code> because of <code>X -&gt; X</code>. And by definition is the greatest lower bound (because all <code>Z_i</code> have <code>Z_i -&gt; X</code>). So if there is an arrow between <code>X</code> and <code>Y</code>, the product is simply the minimum of the two.</p></li>
 <li><p>The coproduct of two objects <code>X</code> and <code>Y</code> in a posetal category is the least upper bound of <code>X</code> and <code>Y</code>, that is, the smalllest object that is greater than or equal to both. It’s exactly like the product, but with the arrows reversed.</p></li>
-<li>I have no favorite languages other than Haskell.</li>
+<li><p>I have no favorite languages other than Haskell.</p></li>
 <li><p>So despite the C++ code, I think I can translate this problem into something</p>
 <p>I can do:</p>
 <pre><code>i :: Int -&gt; Int

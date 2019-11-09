@@ -104,19 +104,19 @@ mappend mempty a = mappend a mempty = a            -- identity element</code></p
 <li><p>Graph <code>G</code> with node <code>A</code> and no edges. Adding</p>
 <pre><code>id_a :: A -&gt; A</code></pre>
 <p>Gives a category.</p></li>
-<li>This is a category</li>
+<li><p>This is a category</p></li>
 <li><p>Graph <code>G</code> with nodes <code>A</code>, <code>B</code> and edge <code>A -&gt; B</code>. Adding</p>
 <pre><code>id_A :: A -&gt; A
 id_B :: B -&gt; B</code></pre>
 <p>Gives a category.</p></li>
-<li><p>Let the single node be the object <code>String</code>. from each edge generate prepender and appender arrows for each letter, so the <code>'a'</code> edge becomes <code>(++ &quot;a&quot;)</code> and <code>(&quot;a&quot; ++)</code>. Then add an empty string (++ “”) arrow, which is the identity. Then add arrows for the compositions of all arrows. And now we have the <code>String</code> monoid category.</p></li>
+<li><p>Let the single node be the object <code>String</code>. from each edge generate prepender and appender arrows for each letter, so the <code>'a'</code> edge becomes <code>(++ "a")</code> and <code>("a" ++)</code>. Then add an empty string (++ "") arrow, which is the identity. Then add arrows for the compositions of all arrows. And now we have the <code>String</code> monoid category.</p></li>
 </ol></li>
 <li><ol type="a">
 <li><p>Inclusion is</p>
 <ul>
-<li>reflexive, since by definition all elements of <code>A</code> are in <code>A</code></li>
-<li>transitive, since if <code>A</code> is in <code>B</code> all elements of <code>A</code> are also in <code>B</code></li>
-<li>antisymmetric, since if <code>A</code> is in <code>B</code> and <code>B</code> is in <code>A</code>. there are no elements that they do not share, so all their elements are the same, and thus <code>A == B</code></li>
+<li><p>reflexive, since by definition all elements of <code>A</code> are in <code>A</code></p></li>
+<li><p>transitive, since if <code>A</code> is in <code>B</code> all elements of <code>A</code> are also in <code>B</code></p></li>
+<li><p>antisymmetric, since if <code>A</code> is in <code>B</code> and <code>B</code> is in <code>A</code>. there are no elements that they do not share, so all their elements are the same, and thus <code>A == B</code></p></li>
 <li><p>not necessarily total from the information given. If the set of sets is the set of sets of integers, for example, then <code>{1}, {2}</code> are both in the set, but <code>{2}</code> is not in <code>{1}</code> and <code>{1}</code> is not in <code>{2}</code>.</p>
 <p>But if the set of sets is, e.g. the set of the empty set <code>{{}}</code>, then the inclusion relation could be total. So this is actually an interesting question:</p>
 <p>I think we can define this recursively: a set with total order is either the empty set or a set of sets with total order:</p>

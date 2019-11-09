@@ -43,27 +43,27 @@
 <p>Here’s a slightly philosophical question: Was the grocery list a list before someone added the first item (<code>Milk</code>) to it?</p>
 <p>In common language, we probably wouldn’t call a blank piece of paper a list. But we could perhaps call a piece of paper with the title <code>Grocery List</code> at the top a “blank grocery list”, or an “empty grocery list”, although that might sound strange.</p>
 <p>In Haskell-land (and CS-country in general), an empty list is definitely a list. <code>List</code> in Haskell is defined as follows:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">data</span> <span class="dt">List</span> a <span class="fu">=</span> <span class="dt">Nil</span> <span class="fu">|</span> <span class="dt">Cons</span> a (<span class="dt">List</span> a)</a></code></pre></div>
-<p><code>Nil</code> is the empty list. We build lists by connecting the items in the list to each other and ultimately to the empty list. So the above definition says roughly: “A list of <code>a</code> is either an empty list, or is the connection of an <code>a</code> to a <code>List</code> of <code>a</code>.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">data</span> <span class="dt">List</span> a <span class="ot">=</span> <span class="dt">Nil</span> <span class="op">|</span> <span class="dt">Cons</span> a (<span class="dt">List</span> a)</span></code></pre></div>
+<p><code>Nil</code> is the empty list. We build lists by connecting the items in the list to each other and ultimately to the empty list. So the above definition says roughly: "A list of <code>a</code> is either an empty list, or is the connection of an <code>a</code> to a <code>List</code> of <code>a</code>.</p>
 <p>Since <code>a</code> is just a stand-in for some type of thing, a list of groceries in Haskell would be:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">data</span> <span class="dt">List</span> <span class="dt">Grocery</span> <span class="fu">=</span> <span class="dt">Nil</span> <span class="fu">|</span> <span class="dt">Cons</span> <span class="dt">Grocery</span> (<span class="dt">List</span> <span class="dt">Grocery</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">data</span> <span class="dt">List</span> <span class="dt">Grocery</span> <span class="ot">=</span> <span class="dt">Nil</span> <span class="op">|</span> <span class="dt">Cons</span> <span class="dt">Grocery</span> (<span class="dt">List</span> <span class="dt">Grocery</span>)</span></code></pre></div>
 <p>“A list of groceries is either an empty list, or is the connection of a grocery item to a list of groceries.”</p>
 <p>If <code>Milk</code>, <code>Eggs</code> and <code>Flour</code> are all of the type <code>Grocery</code>, then we can make the following Grocery list:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1">aGroceryList <span class="fu">=</span> <span class="dt">Cons</span> <span class="dt">Milk</span> (<span class="dt">Cons</span> <span class="dt">Eggs</span> (<span class="dt">Cons</span> <span class="dt">Flour</span> <span class="dt">Nil</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a>aGroceryList <span class="ot">=</span> <span class="dt">Cons</span> <span class="dt">Milk</span> (<span class="dt">Cons</span> <span class="dt">Eggs</span> (<span class="dt">Cons</span> <span class="dt">Flour</span> <span class="dt">Nil</span>))</span></code></pre></div>
 <p>This looks a little complicated though, so in Haskell, <code>Cons</code> represented as the <code>:</code> operator and <code>Nil</code> is <code>[]</code>.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1">aNicerGroceryList <span class="fu">=</span> <span class="dt">Milk</span><span class="fu">:</span><span class="dt">Eggs</span><span class="fu">:</span><span class="dt">Flour</span><span class="fu">:</span>[]</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a>aNicerGroceryList <span class="ot">=</span> <span class="dt">Milk</span><span class="op">:</span><span class="dt">Eggs</span><span class="op">:</span><span class="dt">Flour</span><span class="op">:</span>[]</span></code></pre></div>
 <p>But the syntactic sugar goes even a step further.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" data-line-number="1">theNicestGroceryList <span class="fu">=</span> [<span class="dt">Milk</span>, <span class="dt">Eggs</span>, <span class="dt">Flour</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a>theNicestGroceryList <span class="ot">=</span> [<span class="dt">Milk</span>, <span class="dt">Eggs</span>, <span class="dt">Flour</span>]</span></code></pre></div>
 <p>At the REPL:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="kw">data</span> <span class="dt">Grocery</span> <span class="fu">=</span> <span class="dt">Milk</span> <span class="fu">|</span> <span class="dt">Eggs</span> <span class="fu">|</span> <span class="dt">Flour</span> <span class="kw">deriving</span> <span class="dt">Show</span></a>
-<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="dt">Milk</span><span class="fu">:</span><span class="dt">Eggs</span><span class="fu">:</span><span class="dt">Flour</span><span class="fu">:</span>[]</a>
-<a class="sourceLine" id="cb7-3" data-line-number="3">[<span class="dt">Milk</span>,<span class="dt">Eggs</span>,<span class="dt">Flour</span>]</a>
-<a class="sourceLine" id="cb7-4" data-line-number="4"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="fu">:</span><span class="kw">type</span> [<span class="dt">Milk</span>,<span class="dt">Eggs</span>,<span class="dt">Flour</span>]</a>
-<a class="sourceLine" id="cb7-5" data-line-number="5">[<span class="dt">Milk</span>,<span class="dt">Eggs</span>,<span class="dt">Flour</span>]<span class="ot"> ::</span> [<span class="dt">Grocery</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="kw">data</span> <span class="dt">Grocery</span> <span class="ot">=</span> <span class="dt">Milk</span> <span class="op">|</span> <span class="dt">Eggs</span> <span class="op">|</span> <span class="dt">Flour</span> <span class="kw">deriving</span> <span class="dt">Show</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="dt">Milk</span><span class="op">:</span><span class="dt">Eggs</span><span class="op">:</span><span class="dt">Flour</span><span class="op">:</span>[]</span>
+<span id="cb7-3"><a href="#cb7-3"></a>[<span class="dt">Milk</span>,<span class="dt">Eggs</span>,<span class="dt">Flour</span>]</span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span><span class="kw">type</span> [<span class="dt">Milk</span>,<span class="dt">Eggs</span>,<span class="dt">Flour</span>]</span>
+<span id="cb7-5"><a href="#cb7-5"></a>[<span class="dt">Milk</span>,<span class="dt">Eggs</span>,<span class="dt">Flour</span>]<span class="ot"> ::</span> [<span class="dt">Grocery</span>]</span></code></pre></div>
 <p>That last line means that the type of <code>[Milk,Eggs,Flour]</code> is a <code>[Grocery]</code>, which means the same as <code>List Grocery</code>.</p>
 <p><code>[]</code> is the list constructor in Haskell, which we can see at the REPL</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="fu">:</span>info []</a>
-<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="kw">data</span> [] a <span class="fu">=</span> [] <span class="fu">|</span> a <span class="fu">:</span> [a] 	<span class="co">-- Defined in ‘GHC.Types’</span></a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span>info []</span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="kw">data</span> [] a <span class="ot">=</span> [] <span class="op">|</span> a <span class="op">:</span> [a] 	<span class="co">-- Defined in ‘GHC.Types’</span></span></code></pre></div>
 <p>There’s some overloading of <code>[]</code> here, since <code>[]</code> is representing both <code>List</code> and <code>Nil</code>, but in practice this is nice since you build a list of <code>a</code>, <code>[a]</code>, by consing <code>a</code> to <code>nil</code>, <code>a:[]</code>.</p>
 <h3 id="char">Char</h3>
 <p>A <code>Char</code> is an ASCII character (<a href="https://en.wikipedia.org/wiki/ASCII">American Standard Code for Information Interchange</a>).</p>
@@ -105,26 +105,26 @@
  31  US  (unit separator)            63  ?         95  _        127  DEL</code></pre>
 <p>Most of the first 32 are control characters intended for use by teletype machines and magnetic tape readers, so you don’t have to worry about them. A few are still used though, <code>\n</code> in Haskell means newline and is the same as ASCII 10 <code>\LF</code>.</p>
 <p>We can see the correspondence at the REPL:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="kw">import</span> <span class="dt">Data.Char</span></a>
-<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="dt">Prelude</span> <span class="dt">Data.Char</span><span class="fu">&gt;</span> ord <span class="ch">'a'</span></a>
-<a class="sourceLine" id="cb10-3" data-line-number="3"><span class="dv">97</span></a>
-<a class="sourceLine" id="cb10-4" data-line-number="4"><span class="dt">Prelude</span> <span class="dt">Data.Char</span><span class="fu">&gt;</span> chr <span class="dv">97</span></a>
-<a class="sourceLine" id="cb10-5" data-line-number="5"><span class="ch">'a'</span></a>
-<a class="sourceLine" id="cb10-6" data-line-number="6"><span class="dt">Prelude</span> <span class="dt">Data.Char</span><span class="fu">&gt;</span> <span class="fu">:</span><span class="kw">type</span> ord</a>
-<a class="sourceLine" id="cb10-7" data-line-number="7">ord<span class="ot"> ::</span> <span class="dt">Char</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb10-8" data-line-number="8"><span class="dt">Prelude</span> <span class="dt">Data.Char</span><span class="fu">&gt;</span> <span class="fu">:</span><span class="kw">type</span> chr</a>
-<a class="sourceLine" id="cb10-9" data-line-number="9">chr<span class="ot"> ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Char</span></a>
-<a class="sourceLine" id="cb10-10" data-line-number="10"><span class="dt">Prelude</span> <span class="dt">Data.Char</span><span class="fu">&gt;</span> map ord <span class="st">&quot;foobar&quot;</span></a>
-<a class="sourceLine" id="cb10-11" data-line-number="11">[<span class="dv">102</span>,<span class="dv">111</span>,<span class="dv">111</span>,<span class="dv">98</span>,<span class="dv">97</span>,<span class="dv">114</span>]</a>
-<a class="sourceLine" id="cb10-12" data-line-number="12"><span class="dt">Prelude</span> <span class="dt">Data.Char</span><span class="fu">&gt;</span> map chr [<span class="dv">102</span>,<span class="dv">111</span>,<span class="dv">111</span>,<span class="dv">98</span>,<span class="dv">97</span>,<span class="dv">114</span>]</a>
-<a class="sourceLine" id="cb10-13" data-line-number="13"><span class="st">&quot;foobar&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="kw">import</span> <span class="dt">Data.Char</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="dt">Prelude</span> <span class="dt">Data.Char</span><span class="op">&gt;</span> <span class="fu">ord</span> <span class="ch">'a'</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="dv">97</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="dt">Prelude</span> <span class="dt">Data.Char</span><span class="op">&gt;</span> <span class="fu">chr</span> <span class="dv">97</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a><span class="ch">'a'</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a><span class="dt">Prelude</span> <span class="dt">Data.Char</span><span class="op">&gt;</span> <span class="op">:</span><span class="kw">type</span> <span class="fu">ord</span></span>
+<span id="cb10-7"><a href="#cb10-7"></a><span class="fu">ord</span><span class="ot"> ::</span> <span class="dt">Char</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb10-8"><a href="#cb10-8"></a><span class="dt">Prelude</span> <span class="dt">Data.Char</span><span class="op">&gt;</span> <span class="op">:</span><span class="kw">type</span> <span class="fu">chr</span></span>
+<span id="cb10-9"><a href="#cb10-9"></a><span class="fu">chr</span><span class="ot"> ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Char</span></span>
+<span id="cb10-10"><a href="#cb10-10"></a><span class="dt">Prelude</span> <span class="dt">Data.Char</span><span class="op">&gt;</span> <span class="fu">map</span> <span class="fu">ord</span> <span class="st">&quot;foobar&quot;</span></span>
+<span id="cb10-11"><a href="#cb10-11"></a>[<span class="dv">102</span>,<span class="dv">111</span>,<span class="dv">111</span>,<span class="dv">98</span>,<span class="dv">97</span>,<span class="dv">114</span>]</span>
+<span id="cb10-12"><a href="#cb10-12"></a><span class="dt">Prelude</span> <span class="dt">Data.Char</span><span class="op">&gt;</span> <span class="fu">map</span> <span class="fu">chr</span> [<span class="dv">102</span>,<span class="dv">111</span>,<span class="dv">111</span>,<span class="dv">98</span>,<span class="dv">97</span>,<span class="dv">114</span>]</span>
+<span id="cb10-13"><a href="#cb10-13"></a><span class="st">&quot;foobar&quot;</span></span></code></pre></div>
 <h3 id="strings-ii">Strings II</h3>
 <p>A String is just a list of <code>Char</code>, or <code>[Char]</code>:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="fu">:</span>info <span class="dt">String</span></a>
-<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="kw">type</span> <span class="dt">String</span> <span class="fu">=</span> [<span class="dt">Char</span>] 	<span class="co">-- Defined in ‘GHC.Base’</span></a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span>info <span class="dt">String</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="kw">type</span> <span class="dt">String</span> <span class="ot">=</span> [<span class="dt">Char</span>] 	<span class="co">-- Defined in ‘GHC.Base’</span></span></code></pre></div>
 <p>The double quotes in “foobar” are just syntactic sugar for:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="dt">Prelude</span><span class="fu">&gt;</span> [<span class="ch">'f'</span>,<span class="ch">'o'</span>,<span class="ch">'o'</span>,<span class="ch">'b'</span>,<span class="ch">'a'</span>,<span class="ch">'r'</span>]</a>
-<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="st">&quot;foobar&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1"></a><span class="dt">Prelude</span><span class="op">&gt;</span> [<span class="ch">'f'</span>,<span class="ch">'o'</span>,<span class="ch">'o'</span>,<span class="ch">'b'</span>,<span class="ch">'a'</span>,<span class="ch">'r'</span>]</span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="st">&quot;foobar&quot;</span></span></code></pre></div>
 <h2 id="top-level-versus-local-definitions">3.4 Top-level versus local definitions</h2>
 <h3 id="exercises-scope">Exercises: Scope</h3>
 <ol type="1">
@@ -163,7 +163,7 @@
 <h3 id="building-functions">Building Functions:</h3>
 <ol type="1">
 <li><ol type="a">
-<li><code>(++ &quot;!&quot;)</code></li>
+<li><code>(++ "!")</code></li>
 <li><code>(!! 4)</code></li>
 <li><code>(drop 6)</code></li>
 </ol></li>

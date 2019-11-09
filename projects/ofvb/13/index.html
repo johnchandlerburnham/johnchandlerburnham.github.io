@@ -28,10 +28,10 @@
 <p>References <code>x</code> and <code>y</code> have been created. Initial values are <code>!x = 1</code>, <code>!y = 2</code>, final values are <code>!x = 2</code>, <code>!y = 4</code>. The expression evaluates to <code>6</code> with type <code>int</code>.</p>
 <h2 id="section-1">2</h2>
 <p>The difference is that in the first case we have a list of two different references, whereas the second is a list of two identical references. So updating either reference in the second list changes the value the other ref points to, because both refs point to the same place.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><a class="sourceLine" id="cb1-1" data-line-number="1">utop # updateRefListHead twoRef <span class="dv">6</span>;;</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">- : <span class="dt">int</span> <span class="dt">ref</span> <span class="dt">list</span> = [{contents = <span class="dv">6</span>}; {contents = <span class="dv">5</span>}]</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">utop # updateRefListHead oneRef <span class="dv">6</span>;;</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4">- : <span class="dt">int</span> <span class="dt">ref</span> <span class="dt">list</span> = [{contents = <span class="dv">6</span>}; {contents = <span class="dv">6</span>}]</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb1-1"><a href="#cb1-1"></a>utop # updateRefListHead twoRef <span class="dv">6</span>;;</span>
+<span id="cb1-2"><a href="#cb1-2"></a>- : <span class="dt">int</span> <span class="dt">ref</span> <span class="dt">list</span> = [{contents = <span class="dv">6</span>}; {contents = <span class="dv">5</span>}]</span>
+<span id="cb1-3"><a href="#cb1-3"></a>utop # updateRefListHead oneRef <span class="dv">6</span>;;</span>
+<span id="cb1-4"><a href="#cb1-4"></a>- : <span class="dt">int</span> <span class="dt">ref</span> <span class="dt">list</span> = [{contents = <span class="dv">6</span>}; {contents = <span class="dv">6</span>}]</span></code></pre></div>
 <h2 id="section-2">3</h2>
 <p>We could just use recursion or a <code>while</code> with an explicit iteration variable.</p>
 <h2 id="section-3">4</h2>

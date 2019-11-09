@@ -180,9 +180,9 @@ isZero 1 = (\x . x true) (\ p. p false n_) = true false n_ = false</code></pre>
 <li>The minimization function <code>μm[P(m)]</code> is tricky to understand, so lets work through it step by step:
 <ul>
 <li><code>m</code> is a number</li>
-<li><code>P(m)</code> is predicate or true/false question on <code>m</code>: <code>&quot;True or False: m is an even-number&quot;</code> is an example of a predicate.</li>
-<li><code>μm[P(m)]</code> returns the smallest number for which the <code>P(m)</code> predicate is true. <code>μm[&quot;m is even&quot;]</code> returns <code>2</code>, because <code>2</code> is the smallest even number.</li>
-<li>If the predicate is always false though, like it would be for <code>&quot;m is the square root of -1</code>&quot; (since numeric functions only operate on natural numbers), then the minimization function is undefined.</li>
+<li><code>P(m)</code> is predicate or true/false question on <code>m</code>: <code>"True or False: m is an even-number"</code> is an example of a predicate.</li>
+<li><code>μm[P(m)]</code> returns the smallest number for which the <code>P(m)</code> predicate is true. <code>μm["m is even"]</code> returns <code>2</code>, because <code>2</code> is the smallest even number.</li>
+<li>If the predicate is always false though, like it would be for <code>"m is the square root of -1</code>" (since numeric functions only operate on natural numbers), then the minimization function is undefined.</li>
 </ul></li>
 </ul>
 <h2 id="definition-of-a-class-of-numeric-functions">3.7 Definition of a class of numeric functions</h2>
