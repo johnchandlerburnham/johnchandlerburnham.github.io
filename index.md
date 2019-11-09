@@ -11,14 +11,13 @@ width = 371px>
 
 Welcome to my website!
 
-This site is a work in progress right now. I plan on
-gradually adding some content, mainly focused on programming, math, philosophy
-and other interests of mine.
-
 # About Me
 
-  - CTO at [camlCase
-    Technologies](https://twitter.com/camlCaseTech) in Brooklyn, NY
+  - Building [Moonad](https://github.com/moonad/) and the
+    [Formality language](https://github.com/moonad/Formality) at [Sunshine
+    Cybernetics](https://sunshinecybernetics.com)
+
+  - Worked on Tezos at [Toqueville Group](tqtezos.com) in Brooklyn, NY
 
   - Wrote some Haskell at [Serokell OU](http://www.serokell.io).
 
@@ -33,7 +32,7 @@ and other interests of mine.
     in San Francisco. Learned about functional programming and startups.
 
   - Research Fellowship at [Wolfram Research](http://www.wolfram.com) in Somerville,
-    MA.  Worked on social network data analytics in the Wolfram Alpha knowledge
+    MA. Worked on social network data analytics in the Wolfram Alpha knowledge
     engine.
 
   - Interned at a few space technology startups in Silicon Valley:
@@ -43,7 +42,7 @@ and other interests of mine.
   - Won a [Thiel Fellowship](http://thielfellowship.org) for an asteroid mining idea.
     (Did not mine any asteroids).
 
-  - Boarding school at ([Northfield Mount Hermon](http://www.nmhschool.org)).  Started
+  - Boarding school at ([Northfield Mount Hermon](http://www.nmhschool.org)). Started
     a student newspaper, wrestled, rowed crew, earned the rank of Eagle Scout
     in the Boy Scouts of America.
 

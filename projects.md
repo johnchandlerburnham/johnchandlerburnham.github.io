@@ -1,52 +1,28 @@
 ---
 title: Projects
 ---
+
+# Blockchain/Crypto
+
+- currently working on [Moonad](https://github.com/moonad/Whitepaper) and the
+  [Formality language](https://github.com/moonad/Formality)
+- initial team lead of [Morley Smart Contract test library and Lorentz
+  eDSL](https://gitlab.com/morley-framework/morley)
+- wrote a [Michelson Language Tutorial](https://gitlab.com/morley-framework/michelson-tutorial)
+- [contributed to the Ariadne Cardano wallet](https://github.com/serokell/ariadne/commits?author=johnchandlerburnham)
+- worked on [Urbit](https://github.com/urbit/archaeology/commits?author=johnchandlerburnham&before=6b2ce202207b9bb3f4e65fc1ea9a2fb434396dd4+35)
+- and on [Urbit's docs](https://github.com/urbit/old-urbit.org/commits?author=johnchandlerburnham)
+
 <hr>
+
 # Textbook Notes
 
-- **Completed**
+- [A Tutorial Introduction to the Lambda Calculus (Rojas)](/projects/tilc/00)
+- [Category Theory for Programmers (Milewski)](/projects/ctfp/00)
+- [Introduction to Lambda Calculus (Barendregt, Barendsen)](/projects/lcbb/00)
+- [Practical Vim (Neil)](/projects/pvim/00)
+- [Haskell Programming from First Principles (Allen, Moronuki)](/projects/hpfp/00)
+- [OCaml from the Very Beginning by John Whittington](/projects/ofvb/00)
+- [The Rust Programming Language (Klabnik, Nichols)](/projects/trpl/00)
+- [Type Level Programming in Haskell (Macguire)](/projects/trpl/00)
 
-- *In Progress*
-
-- Planned
-
-## Mathematics
-
-1. **[A Tutorial Introduction to the Lambda Calculus (Rojas)](/projects/tilc/00)**
-2. *[Category Theory for Programmers (Milewski)](/projects/ctfp/00)*
-3. *[Introduction to Lambda Calculus (Barendregt, Barendsen)](/projects/lcbb/00)*
-
-- Proofs and Types (Girard)
-- How to Solve It: A New Aspect of Mathematical Method (Polya)
-
-## Computer Science and Programming
-
-### Tools
-
-1. *[Practical Vim (Neil)](/projects/pvim/00)*
-
-### Concepts
-
-1.  *[The Elements of Computing Systems (Nisan, Schocken)](/projects/tecp/00)*
-
-- Type Theory and Functional Programming (Thompson)
-- Types and Programming Languages (Pierce)
-- The Algorithm Design Manual (Skiena)
-- Compilers: Principles, Techniques, and Tools (Aho, Lam, Sethi,Ulman)
-- Distributed Systems (van Steen, Tanenbaum)
-
-
-### Languages
-
-1. **[Haskell Programming from First Principles (Allen, Moronuki)](/projects/hpfp/00)**
-2. **[OCaml from the Very Beginning by John Whittington](/projects/ofvb/00)**
-3. *[Type Driven Development in Idris (Brady)](/projects/tddi/00)*
-
-- Purescript by Example (Freeman)
-- The Rust Programming Language (Klabnik, Nichols)
-- Structure and Interpretation of Computer Programs (Abelson, Sussman, Sussman
-
-### Cryptography
-
-- Cryptography Engineering: Design Principles and Practical Applications (Ferguson, Schneier, Kohno)
-- Applied Cryptography (Schneier)
