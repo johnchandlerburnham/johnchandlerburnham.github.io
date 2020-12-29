@@ -26,3 +26,9 @@
 	path = projects/ofvb
 	url = git@github.com:johnchandlerburnham/ofvb.git
 	branch = master
+[submodule "projects/tlph"]
+	path = projects/tlph
+	url = https://github.com/johnchandlerburnham/tlph
+[submodule "projects/trpl"]
+	path = projects/trpl
+	url = https://github.com/johnchandlerburnham/trpl

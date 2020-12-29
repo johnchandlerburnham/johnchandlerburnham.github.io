@@ -1,20 +1,23 @@
 --------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
-import           Data.Monoid         (mappend)
-import qualified Data.Set            as S
-import           Hakyll
-import           Text.Pandoc.Options
+
+import Data.Monoid (mappend)
+import qualified Data.Set as S
+import Hakyll
+import Text.Pandoc.Options
 
 --------------------------------------------------------------------------------
 config :: Configuration
-config = defaultConfiguration { destinationDirectory = "_site"
-                              , deployCommand        = "bash deploy.sh deploy"
-                              }
+config =
+  defaultConfiguration
+    { destinationDirectory = "_site",
+      deployCommand = "bash deploy.sh deploy"
+    }
 
 main :: IO ()
 main = hakyllWith config $ do
-  let postPattern       = "posts/*" .||. "notes/*" .||. "**/00/index.md"
-  let projectPostPattern   = "projects/**.md"
+  let postPattern = "posts/*" .||. "notes/*" .||. "**/00/index.md"
+  let projectPostPattern = "projects/**.md"
   let projectSourcePattern = "projects/**" .&&. (complement projectPostPattern)
 
   match "images/*" $ do
@@ -25,12 +28,19 @@ main = hakyllWith config $ do
     route idRoute
     compile compressCssCompiler
 
-  match (fromList ["index.md", "projects.md"]) $ do
+  match (fromList ["index.md"]) $ do
     route $ setExtension "html"
-    compile
-      $   pandocMathCompiler
-      >>= loadAndApplyTemplate "templates/default.html" defaultContext
-      >>= relativizeUrls
+    compile $
+      pandocMathCompiler
+        >>= loadAndApplyTemplate "templates/post-list.html" defaultContext
+        >>= relativizeUrls
+
+  match (fromList ["about.md", "projects.md"]) $ do
+    route $ setExtension "html"
+    compile $
+      pandocMathCompiler
+        >>= loadAndApplyTemplate "templates/default.html" defaultContext
+        >>= relativizeUrls
 
   tags <- buildTags postPattern (fromCapture "tags/*.html")
 
@@ -44,30 +54,30 @@ main = hakyllWith config $ do
               `mappend` listField "posts" (postCtxWithTags tags) (return posts)
               `mappend` defaultContext
       makeItem ""
-        >>= loadAndApplyTemplate "templates/tag.html"     ctx
+        >>= loadAndApplyTemplate "templates/tag.html" ctx
         >>= loadAndApplyTemplate "templates/default.html" ctx
         >>= relativizeUrls
 
   match postPattern $ do
     route $ setExtension "html"
-    compile
-      $   pandocMathCompiler
-      >>= loadAndApplyTemplate "templates/post.html"    (postCtxWithTags tags)
-      >>= loadAndApplyTemplate "templates/default.html" (postCtxWithTags tags)
-      >>= relativizeUrls
+    compile $
+      pandocMathCompiler
+        >>= loadAndApplyTemplate "templates/post.html" (postCtxWithTags tags)
+        >>= loadAndApplyTemplate "templates/default.html" (postCtxWithTags tags)
+        >>= relativizeUrls
 
   match projectPostPattern $ do
     route $ setExtension "html"
-    compile
-      $   pandocMathCompiler
-      >>= loadAndApplyTemplate "templates/default.html" defaultContext
-      >>= relativizeUrls
+    compile $
+      pandocMathCompiler
+        >>= loadAndApplyTemplate "templates/default.html" defaultContext
+        >>= relativizeUrls
 
   match projectSourcePattern $ do
     route idRoute
     compile copyFileCompiler
 
-  create ["posts.html"] $ do
+  create ["index.html"] $ do
     route idRoute
     compile $ do
       posts <- recentFirst =<< loadAll postPattern
@@ -82,7 +92,6 @@ main = hakyllWith config $ do
 
   match "templates/*" $ compile templateBodyCompiler
 
-
 --------------------------------------------------------------------------------
 postCtx :: Context String
 postCtx = dateField "date" "%B %e, %Y" `mappend` defaultContext
@@ -95,10 +104,11 @@ pandocMathCompiler =
   let mathExtensions =
         [Ext_tex_math_dollars, Ext_tex_math_double_backslash, Ext_latex_macros]
       defaultExtensions = writerExtensions defaultHakyllWriterOptions
-      newExtensions     = defaultExtensions `mappend` extensionsFromList mathExtensions
-      writerOptions     = defaultHakyllWriterOptions
-        { writerTableOfContents = False
-        , writerExtensions      = newExtensions
-        , writerHTMLMathMethod  = MathJax ""
-        }
-  in  pandocCompilerWith defaultHakyllReaderOptions writerOptions
+      newExtensions = defaultExtensions `mappend` extensionsFromList mathExtensions
+      writerOptions =
+        defaultHakyllWriterOptions
+          { writerTableOfContents = False,
+            writerExtensions = newExtensions,
+            writerHTMLMathMethod = MathJax ""
+          }
+   in pandocCompilerWith defaultHakyllReaderOptions writerOptions

@@ -1,9 +1,8 @@
-resolver: lts-14.2
+resolver: lts-16.27
 
 packages:
 - .
 extra-deps:
-  - hakyll-4.12.5.2@sha256:435eec729639a4bf0d58f3c7c71929600f4130f10241275d5e7df856cc8aae90
 flags: {}
 
 extra-package-dbs: []
