@@ -1,7 +1,7 @@
 #! /usr/bin/env nix-shell
 #! nix-shell -i bash -p git bash
 
-REMOTE="git@github.com:johnchandlerburnham/johnchandlerburnham.github.io.git"
+REMOTE="git@github.com:johnchandlerburnham/johnchandlerburnham.github.io"
 
 info() {
   printf "  \033[00;32m+\033[0m $1\n"

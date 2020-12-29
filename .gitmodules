@@ -28,7 +28,7 @@
 	branch = master
 [submodule "projects/tlph"]
 	path = projects/tlph
-	url = https://github.com/johnchandlerburnham/tlph
+	url = git@github.com:johnchandlerburnham/tlph.git
 [submodule "projects/trpl"]
 	path = projects/trpl
-	url = https://github.com/johnchandlerburnham/trpl
+	url = git@github.com:johnchandlerburnham/trpl.git
