@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (TRPL 01/21): Getting Started</title>
+        <link rel="stylesheet" type="text/css" href="../../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../../">posts</a>
+                <a href="../../../about.html">about</a>
+                <a href="../../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://fosstodon.org/@johnburnham">fediverse</a>
+            </div>
+        </div>
+        <div id="content">
+            <h1>Notes (TRPL 01/21): Getting Started</h1>
+          <h1 id="getting-started">1 Getting Started</h1>
+<h2 id="installing-rust-on-nixos">1.1 Installing Rust (on NixOS)</h2>
+<p>I run NixOS, so I’m going to have to modify the installation instructions in the book in order to take advantage of all the awesome package management work that Nix already does for me.</p>
+<p>First, I’m not going to use <code>rustup</code>. Instead, the way I’m going to manage which version of Rust is on my system is by using <a href="https://github.com/mozilla/nixpkgs-mozilla">Mozilla’s Rust overlay for <code>nixpkgs</code></a></p>
+<p>A <code>nixpkgs</code> overlay is a way to customize the packages that are published in the official <code>nixpkgs</code> repository. We want to have easy access to all the different Rust versions, rather than whatever version happens to be in <code>nixpkgs</code> in the <code>nixos</code> or <code>unstable</code> channels. Fortunately for us, Mozilla maintains an overlay that lets us use nix to <a href="https://www.mail-archive.com/nix-dev@lists.science.uu.nl/msg33296.html">mimic <code>rustup</code>’s behavior.</a></p>
+<p>This method (instructions in either of the above links) automatically installs the right <code>rustc</code> and <code>cargo</code>, so make sure you haven’t already installed <code>rustc</code> and <code>cargo</code> with <code>nix-env</code> or globally in <code>environment.systemPackages</code>, or you’ll get a package name collision.</p>
+<p>Also, make sure you have <code>gcc</code> installed, since Rust needs a linker.</p>
+<pre><code>$ nix-env -iA nixos.gcc</code></pre>
+<p>Actually probably not a bad idea to put <code>gcc</code> in your <code>configuration.nix</code> system packages.</p>
+<h2 id="hello-world">1.2 Hello, World!</h2>
+<p>[see <code>hello_world/main.rs</code>]</p>
+<p>Okay, so apparently Rust has opinions about how I should indent my code. While I respect their desire for consistency of style between libraries, I also have a desire for consistency of my style across languages. My personal preference is for 2-space indents with an 80 character line length. That’s what I like, but when collaborating with other people I also always try to defer to the preference of the repository owner or primary author. I think that strikes a reasonable balance between staying true to my aesthetics and also being friendly.</p>
+<p>(Some languages like Python enforces 4-space indentation as a matter of syntax. My policy is to not push-back against language-level syntax enforcement, except maybe by writing my code in a less draconian language, if reasonable)</p>
+<p>I think what I’m gonna do here is install the <code>rust-lang/rust.vim</code> plugin and set:</p>
+<pre><code>
+let g:rust_recommended_style=0
+let g:rustfmt_options='--config-path ~/.config/rustfmt/rustfmt.toml'
+let g:rustfmt_autosave=1</code></pre>
+<p>in my <code>.vimrc</code>, which turns off the soft style recommendations, and runs <code>rustfmt</code> every time I write a buffer in vim, with a global format configuration file.</p>
+<p>This is probably going to be annoying when I write Rust code that someone else touches, but I think as long as my global <code>rustfmt.toml</code> is only accessed by vim, I should be okay, since running <code>rustfmt</code> and <code>cargo fmt</code> from the command line will still format according to any local <code>rustfmt.toml</code></p>
+<h2 id="hello-cargo">1.3 Hello, Cargo!</h2>
+<p>Okay, so we’re also going to have to do a little funkiness to get <code>nix</code> and <code>cargo</code> to play nice together. We’re going to use a program called <code>carnix</code> that turns the <code>Cargo.lock</code> file that <code>cargo</code> generates into a nix expression that we can build with <code>nix-build</code>. The reason we want to do this is that when we start to manage dependencies, <code>nix</code> is a much more powerful than <code>cargo</code>. <code>nix</code> is a general purpose build-system and package manager that allows us to have reproducible, atomic builds. <code>cargo</code>, for all its virtues, only works with Rust packages (crates). So if we run into a situation where we have non-rust dependencies, <code>nix</code> is going to help us a lot.</p>
+<p>Furthermore, since I’m running NixOS, and therefore already managing all my packages with nix, there’s some advantage to maintaining consistency. <code>nix</code> expressions compose (you can import one expression into another), so if I ever want to, e.g. combine Rust and PureScript into a single application, <code>nix</code> will be useful for that (since I’ve already figured out how to have <code>nix</code> manage Purescript’s build environment by integrating with <code>psc-package</code> and <code>npm</code>)</p>
+<p><del>Instructions for how to use <code>carnix</code> are <a href="https://nixos.org/nixpkgs/manual/#compiling-rust-crates-using-nix-instead-of-cargo">here</a>:</del></p>
+<p>These instructions are outdated, <code>carnix</code>’s UI has improved as of version <code>0.7</code>;</p>
+<pre><code>$ cargo new hello
+$ cd hello
+$ carnix build
+...
+$ ./result/bin/hello
+Hello, world!
+$ cargo run
+...
+Hello, world!</code></pre>
+<p>Seems like there’s no wrapping for <code>cargo check</code> though.</p>
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (TLPH 05/15): Constraints and GADTS</title>
+        <link rel="stylesheet" type="text/css" href="../../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../../">posts</a>
+                <a href="../../../about.html">about</a>
+                <a href="../../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://fosstodon.org/@johnburnham">fediverse</a>
+            </div>
+        </div>
+        <div id="content">
+            <h1>Notes (TLPH 05/15): Constraints and GADTS</h1>
+          <h1 id="introduction">5.1 Introduction</h1>
+<p>Type equalities let us impose additional constraints on type variables, by telling the compiler to infer equivalence between types.</p>
+<h1 id="gadts">5.2 GADTs</h1>
+<p>see <code>05/GADT.hs</code>.</p>
+<p>An Algebraic Data Type is canonically represented as a sum of tagged product types:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">Expr</span> a <span class="ot">=</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>    <span class="dt">LitInt</span> <span class="dt">Int</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>  <span class="op">|</span> <span class="dt">LitBool</span> <span class="dt">Bool</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>  <span class="op">|</span> <span class="dt">Add</span> <span class="dt">Int</span> <span class="dt">Int</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a>  <span class="op">|</span> <span class="dt">Not</span> <span class="dt">Bool</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>  <span class="op">|</span> <span class="dt">If</span> <span class="dt">Bool</span> (<span class="dt">Expr</span> a) (<span class="dt">Expr</span> a)</span></code></pre></div>
+<p>Each of these data constructors returns an <code>Expr a</code> type, which is not very useful, since there’s no mechanism in <code>Expr</code> to refine <code>a</code> into something more concrete.</p>
+<p>This is what the <code>-XGADTs</code> extension does. Generalized Algebraic Data Types allow ordinary Algebraic Data Types to return different refinements of <code>Expr a</code> depending on its data constructor:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">Expr'</span> a <span class="kw">where</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>   <span class="dt">LitInt'</span><span class="ot">  ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Expr'</span> <span class="dt">Int</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a>   <span class="dt">LitBool'</span><span class="ot"> ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Expr'</span> <span class="dt">Bool</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a>   <span class="dt">Add'</span><span class="ot">     ::</span> <span class="dt">Expr'</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Expr'</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Expr'</span> <span class="dt">Int</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a>   <span class="dt">Not'</span><span class="ot">     ::</span> <span class="dt">Expr'</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Expr'</span> <span class="dt">Bool</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a>   <span class="dt">If'</span><span class="ot">      ::</span> <span class="dt">Expr'</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Expr'</span> a <span class="ot">-&gt;</span> <span class="dt">Expr'</span> a <span class="ot">-&gt;</span> <span class="dt">Expr'</span> a</span></code></pre></div>
+<p>These refinements are inferred through a type equality constraint, which the GADT syntax is a syntactic sugar for (modulo some existential quantification):</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">Expr_</span> a <span class="ot">=</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>    (a <span class="op">~</span> <span class="dt">Int</span>) <span class="ot">=&gt;</span> <span class="dt">LitInt_</span> <span class="dt">Int</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>  <span class="op">|</span> (a <span class="op">~</span> <span class="dt">Bool</span>) <span class="ot">=&gt;</span> <span class="dt">LitBool_</span> <span class="dt">Bool</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a>  <span class="op">|</span> (a <span class="op">~</span> <span class="dt">Int</span>) <span class="ot">=&gt;</span> <span class="dt">Add_</span> (<span class="dt">Expr_</span> <span class="dt">Int</span>) (<span class="dt">Expr_</span> <span class="dt">Int</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a>  <span class="op">|</span> (a <span class="op">~</span> <span class="dt">Bool</span>) <span class="ot">=&gt;</span> <span class="dt">Not_</span> (<span class="dt">Expr_</span> <span class="dt">Bool</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a>  <span class="op">|</span> <span class="dt">If_</span> (<span class="dt">Expr_</span> <span class="dt">Bool</span>) (<span class="dt">Expr_</span> a) (<span class="dt">Expr_</span> a)</span></code></pre></div>
+<h1 id="heterogeneous-lists">5.3 Heterogeneous Lists</h1>
+<p>see <code>05/HList.hs</code>.</p>
+<p>A heterogeneous list is a list that is polymorphic with respect to each element. That is, an ordinary list is polymorphic over its elements, but all elements must be of the same type:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">List</span> a <span class="ot">=</span> <span class="dt">Cons</span> a <span class="op">|</span> <span class="dt">Nil</span></span></code></pre></div>
+<p>Once the generic type variable <code>a</code> has been fixed by a single element, it is fixed for all other elements:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="ot">intList ::</span> [<span class="dt">Int</span>]</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a>intList <span class="ot">=</span> [<span class="dv">3</span>]</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a>goodAppend <span class="ot">=</span> <span class="dv">2</span> <span class="op">:</span> intList</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a>badAppend <span class="ot">=</span> <span class="ch">'A'</span> <span class="op">:</span> intList <span class="co">-- TYPE ERROR</span></span></code></pre></div>
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>

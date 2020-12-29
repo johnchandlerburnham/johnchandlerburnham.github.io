@@ -1,0 +1,14 @@
+[package]
+name = "errors"
+version = "0.1.0"
+authors = ["John C. Burnham <jcb@johnchandlerburnham.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "guess"
+path = "src/guess.rs"
+
+[dependencies]
+rand = "0.4.0"

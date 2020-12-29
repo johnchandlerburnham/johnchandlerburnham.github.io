@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (TLPH 02/15): Terms, Types and Kinds</title>
+        <link rel="stylesheet" type="text/css" href="../../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../../">posts</a>
+                <a href="../../../about.html">about</a>
+                <a href="../../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://fosstodon.org/@johnburnham">fediverse</a>
+            </div>
+        </div>
+        <div id="content">
+            <h1>Notes (TLPH 02/15): Terms, Types and Kinds</h1>
+          <h1 id="the-kind-system">2.1 The Kind System</h1>
+<p>A <strong>kind</strong> is a type of types. Compile-time is runtime for the compiler, and values the compiler runs computation on are types.</p>
+<h2 id="the-kind-of-types">2.1.1 The Kind of “Types”</h2>
+<p>Roughly, a “type” are type-level terms, a subset of which are “value types”, which can be inhabited by runtime values and correspond to the Haskell kind <code>*</code> or <code>Type</code>. For example <code>Maybe</code> is a type, but not a <code>Type</code>, because it has kind <code>Type -&gt; Type</code>.</p>
+<h2 id="arrow-kinds">2.1.2 Arrow Kinds</h2>
+<p>Higher-kinded types are type constructors. <code>Maybe</code> is an HKT, because its kind is <code>Type -&gt; Type</code>.</p>
+<h2 id="constraint-kinds">2.1.3 Constraint Kinds</h2>
+<h2 id="exercise-2.1.3-i">Exercise 2.1.3 (i)</h2>
+<p><code>Show</code> has kind <code>Type -&gt; Constraint</code></p>
+<h2 id="exercise-2.1.3-ii">Exercise 2.1.3 (ii)</h2>
+<p><code>Functor</code> has kind <code>(Type -&gt; Type) -&gt; Constraint</code>, since it operates on unary type constructors (like <code>[]</code>, <code>Maybe</code> etc.).</p>
+<h2 id="exercise-2.1.3-iii">Exercise 2.1.3 (iii)</h2>
+<p><code>Monad</code> has kind <code>(Type -&gt; Type) -&gt; Constraint</code></p>
+<h2 id="exercise-2.1.3-iv">Exercise 2.1.3 (iv)</h2>
+<p>The definition of <code>MonadTrans</code> is:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">class</span> <span class="dt">MonadTrans</span> t <span class="kw">where</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="ot">  lift ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> m a <span class="ot">-&gt;</span> t m a</span></code></pre></div>
+<p>From the class declaration, which must be a <code>Constraint</code>, we can see that <code>MonadTrans</code> has kind <code>T -&gt; Constraint</code>, where <code>T</code> is the kind of the <code>t</code> type variable.</p>
+<p>We can expand the kind of <code>T</code> by noticing that in the type signature for <code>lift</code>, <code>t</code> is a type constructor that takes two arguments <code>m</code> and <code>a</code>, therefore it’s kind must be <code>M -&gt; A -&gt; Type</code>, where <code>M</code> is the kind of <code>m</code> and <code>A</code> is the kind of <code>A</code>. Only <code>Type</code> kinds can appear in type signatures.</p>
+<p>In the constraint on <code>lift</code>, the type variable <code>m</code> is an argument to <code>Monad</code>, which has kind <code>(Type -&gt; Type) -&gt; Constraint</code>.</p>
+<p>Therefore kind <code>M</code> is <code>Type -&gt; Type</code>, and since <code>m a</code> has kind <code>Type</code>, the kind of <code>a</code> is <code>Type</code>.</p>
+<p>Therefore the kind of <code>t</code> is <code>(Type -&gt; Type) -&gt; Type -&gt; Type</code>, and the kind of <code>MonadTrans</code> is</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a>(<span class="dt">Type</span> <span class="ot">-&gt;</span> <span class="dt">Type</span>) <span class="ot">-&gt;</span> <span class="dt">Type</span> <span class="ot">-&gt;</span> <span class="dt">Type</span> <span class="ot">-&gt;</span> <span class="dt">Constraint</span></span></code></pre></div>
+<h1 id="data-kinds">2.2 Data Kinds</h1>
+<p><code>-XDataKinds</code> allows lifting of data constructors into type constructors.</p>
+<p>Seems like there are some bugs with the <code>UserType</code> example given in the text if naively copied into a source file, but perhaps that wasn’t the author’s intent. Regardless, was a simple fix:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE DataKinds      #-}</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="ot">{-# LANGUAGE KindSignatures #-}</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">UserType</span> <span class="ot">=</span> <span class="dt">UserK</span> <span class="op">|</span> <span class="dt">AdminK</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">Proxy</span> (<span class="ot">a ::</span> <span class="dt">UserType</span>) <span class="ot">=</span> <span class="dt">Proxy</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">User</span> <span class="ot">=</span> <span class="dt">User</span> {<span class="ot"> userAdminToken ::</span> <span class="dt">Maybe</span> (<span class="dt">Proxy</span> <span class="dt">'AdminK</span>) }</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true"></a><span class="ot">doSensitiveThings ::</span> <span class="dt">Proxy</span> <span class="dt">'AdminK</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true"></a>doSensitiveThings <span class="ot">=</span> <span class="fu">undefined</span></span></code></pre></div>
+<p>Which kind-errors on <code>doSensitveThings (a :: Proxy 'UserK)</code></p>
+<h1 id="type-level-functions">2.4 Type-Level Functions</h1>
+<p>For exercise solutions, see <code>02/TypeLevelFunctions.hs</code></p>
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>

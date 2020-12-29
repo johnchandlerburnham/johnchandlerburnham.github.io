@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (TLPH 07/15): Existential Types</title>
+        <link rel="stylesheet" type="text/css" href="../../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../../">posts</a>
+                <a href="../../../about.html">about</a>
+                <a href="../../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://fosstodon.org/@johnburnham">fediverse</a>
+            </div>
+        </div>
+        <div id="content">
+            <h1>Notes (TLPH 07/15): Existential Types</h1>
+          <h1 id="existential-types-and-eliminators">7.1 Existential Types and Eliminators</h1>
+<h2 id="exercise-7.1-i">Exercise 7.1 (i)</h2>
+<p>I think that the only functions of type <code>forall a. a -&gt; r</code> are the constant functions, since one of the things an <code>a</code> can be is <code>()</code> and the only thing we can do from unit is return a constant. That is, we can’t use any information from <code>a</code> to determine <code>r</code>, because <code>a</code> might not give us <em>any</em> information at all.</p>
+<h2 id="exercise-7.1-ii">Exercise 7.1 (ii)</h2>
+<p>Is this question just asking me to relay GHC’s error message? If so:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="dv">07</span><span class="op">/</span>Existential.hs<span class="op">:</span><span class="dv">16</span><span class="op">:</span><span class="dv">36</span><span class="op">:</span> <span class="fu">error</span><span class="op">:</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>    • <span class="dt">No</span> <span class="kw">instance</span> for (<span class="dt">Show</span> t) arising from a use <span class="kw">of</span> ‘show’</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>      <span class="dt">Possible</span> fix<span class="op">:</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>        add (<span class="dt">Show</span> t) to the context <span class="kw">of</span> the <span class="kw">data</span> constructor ‘<span class="dt">HasShow</span>’</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a>    • <span class="dt">In</span> the second argument <span class="kw">of</span> ‘(<span class="op">++</span>)’, namely ‘show s’</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>      <span class="dt">In</span> the expression<span class="op">:</span> <span class="st">&quot;HasShow &quot;</span> <span class="op">++</span> <span class="fu">show</span> s</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a>      <span class="dt">In</span> an equation for ‘show’<span class="op">:</span> <span class="fu">show</span> (<span class="dt">HasShow</span> s) <span class="ot">=</span> <span class="st">&quot;HasShow &quot;</span> <span class="op">++</span> <span class="fu">show</span> s</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a>   <span class="op">|</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a><span class="dv">16</span> <span class="op">|</span>   <span class="fu">show</span> (<span class="dt">HasShow</span> s) <span class="ot">=</span> <span class="st">&quot;HasShow &quot;</span> <span class="op">++</span> <span class="fu">show</span> s</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a>   <span class="op">|</span></span></code></pre></div>
+<p>see <code>07/Existential.hs</code></p>
+<h2 id="exercise-7.1-iii">Exercise 7.1 (iii)</h2>
+<p>Since the only information <code>elimHasShow</code> has about the <code>a</code> in</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">forall</span> a<span class="op">.</span> <span class="dt">Show</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> r</span></code></pre></div>
+<p>is that <code>a</code> has a <code>Show</code> instance, the only functions <code>elimHasShow</code> can take are either constant with respect to <code>a</code>, or use <code>a</code>’s <code>Show</code> instance.</p>
+<h2 id="dynamic-types">7.1.1 Dynamic Types</h2>
+<p>It’s cool how existential types, and a <code>Typeable</code> constraint to allow you to recover the type turns out to be equivalent to dynamic typing. Yes, it’s unityping, as per the common saying “dynamic typing is just static typing with a single type”, but I think it’s actually a little more interesting than that here: We’re bijecting the universe of Haskell types (constrained by <code>Typeable</code>) into the <code>Dynamic</code> unitype. There no actual loss of information, we’re just turning static checking into runtime checking.</p>
+<p>I’m not really a static typing ideologue; I think dynamic typing is an important (though often abused) technique, because sometimes being able to selectively turn off static checks gives you extraordinary power (“with great power comes great responsibility”).</p>
+<hr />
+<p>Interestingly, the constraint synonym</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">class</span> (<span class="dt">Monoid</span> a, <span class="dt">Eq</span> a) <span class="ot">=&gt;</span> <span class="dt">MonoidEq</span> a</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="kw">instance</span> (<span class="dt">Monoid</span> a, <span class="dt">Eq</span> a) <span class="ot">=&gt;</span> <span class="dt">MonoidEq</span> a</span></code></pre></div>
+<p>required turning on <code>UndecidableInstances</code>. Not sure why.</p>
+<h2 id="scoping-information-with-existentials">Scoping Information with Existentials</h2>
+<p>All the <code>seq</code>s in the typeclass instances are to make sure the <code>a</code> in <code>ST s a</code> is strict.</p>
+<hr />
+<p>This <code>ST</code> trick is such a hack. Like, it’s clever to use <code>forall</code> scoping to teach the type-system that we don’t want to leak references, but the fact we have to add an otherwise useless parameter <code>s</code> to <code>ST</code> just feels clunky.</p>
+<p>I wonder how this trick relates to linear types?</p>
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>

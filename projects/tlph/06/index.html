@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (TLPH 06/15): Rank-N Types</title>
+        <link rel="stylesheet" type="text/css" href="../../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../../">posts</a>
+                <a href="../../../about.html">about</a>
+                <a href="../../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://fosstodon.org/@johnburnham">fediverse</a>
+            </div>
+        </div>
+        <div id="content">
+            <h1>Notes (TLPH 06/15): Rank-N Types</h1>
+          <h1 id="introduction">6.1 Introduction</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="ot">applyToFive ::</span> (a <span class="ot">-&gt;</span> a) <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>applyToFive  f <span class="ot">=</span> f <span class="dv">5</span></span></code></pre></div>
+<p>With explicit quantification:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="ot">applyToFive ::</span> <span class="kw">forall</span> a<span class="op">.</span> (a <span class="ot">-&gt;</span> a) <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>applyToFive  f <span class="ot">=</span> f <span class="dv">5</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a><span class="fu">id</span><span class="ot"> ::</span> <span class="kw">forall</span> a<span class="op">.</span> a <span class="ot">-&gt;</span> a</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a><span class="fu">id</span> a <span class="ot">=</span> a</span></code></pre></div>
+<p>The distinction between the above two type signatures can be clarified by:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="op">&gt;</span> <span class="kw">type</span> <span class="dt">Endo</span> a <span class="ot">=</span> a <span class="ot">-&gt;</span> a</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="op">&gt;</span> <span class="kw">type</span> <span class="dt">Id</span> a <span class="ot">=</span> <span class="kw">forall</span><span class="op">.</span> a <span class="ot">-&gt;</span> a</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a><span class="op">&gt;</span> <span class="op">:</span>t<span class="ot"> not ::</span> <span class="dt">Endo</span> <span class="dt">Int</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a><span class="op">&gt;</span> <span class="op">:</span>t<span class="ot"> id ::</span> <span class="dt">Id</span> a</span></code></pre></div>
+<p>In other words:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="ot">applyToFive ::</span> <span class="kw">forall</span> a<span class="op">.</span> <span class="dt">Endo</span> a <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a>applyToFive  f <span class="ot">=</span> f <span class="dv">5</span></span></code></pre></div>
+<p>which simply won’t work. <code>f</code> can’t be <em>any</em> endomorphism to <code>5</code>, but only an <code>Endo Int</code> (because of the inference from the return type <code>Int</code>).</p>
+<p>If we want to only accept the identity, though:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="ot">idFive ::</span> <span class="dt">Id</span> a <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a>idFive  f <span class="ot">=</span> f <span class="dv">5</span></span></code></pre></div>
+<p>which is just:</p>
+<pre><code>idFive :: (forall a. a -&gt; a) -&gt; Int
+idFive  f = f 5</code></pre>
+<h1 id="the-nitty-gritty-details">6.3 The Nitty Gritty Details</h1>
+<h2 id="exercise-6.3-i">Exercise 6.3 (i)</h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="kw">forall</span> a<span class="op">.</span> a <span class="ot">-&gt;</span> a</span></code></pre></div>
+<p>is rank-1, because <code>Id a = (forall a. a ~ a)</code> is rank-1.</p>
+<h2 id="exercise-6.3-ii">Exercise 6.3 (ii)</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a>(a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (<span class="kw">forall</span> c<span class="op">.</span> c <span class="ot">-&gt;</span> a) <span class="ot">-&gt;</span> b</span></code></pre></div>
+<p>is rank-2.</p>
+<h2 id="exercise-6.3-iii">Exercise 6.3 (iii)</h2>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a>((<span class="kw">forall</span> x<span class="op">.</span> m x <span class="ot">-&gt;</span> b (z m x)) <span class="ot">-&gt;</span> b (z m a)) <span class="ot">-&gt;</span> m a</span></code></pre></div>
+<p>is rank-3.</p>
+<h2 id="the-continuation-monad">6.4 The Continuation Monad</h2>
+<p>The first function</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="ot">cont ::</span> a <span class="ot">-&gt;</span> (<span class="kw">forall</span> r<span class="op">.</span> (a <span class="ot">-&gt;</span> r) <span class="ot">-&gt;</span> r)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a>cont a <span class="ot">=</span> \f <span class="ot">-&gt;</span> f a</span></code></pre></div>
+<p>says that "given an <code>a</code>, then all functions <code>f</code> that accept an <code>a</code> and produces any type <code>r</code>, will produce that <code>r</code> if called with <code>a</code>.</p>
+<p>The second function</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a><span class="ot">runCont ::</span> (<span class="kw">forall</span> r<span class="op">.</span> (a <span class="ot">-&gt;</span> r) <span class="ot">-&gt;</span> r) <span class="ot">-&gt;</span> a</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true"></a>runCont f <span class="ot">=</span> <span class="kw">let</span> callback <span class="ot">=</span> <span class="fu">id</span> <span class="kw">in</span> f callback</span></code></pre></div>
+<p>is saying that "if you have a function <code>f</code> that can take as input all functions from type <code>a</code> to any other type <code>r</code>, then you can produce a type <code>a</code> by passing <code>f</code> the function <code>a ~ r =&gt; a -&gt; r</code>, i.e. the identity function, which is of type <code>(a -&gt; r)</code> when <code>a</code> and <code>r</code> are the same type.</p>
+<h2 id="exercise-6.4-i">Exercise 6.4 (i)</h2>
+<p>I can cheat with category theory here:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a><span class="kw">newtype</span> <span class="dt">Identity</span> a <span class="ot">=</span> <span class="dt">Identity</span> {<span class="ot"> unIdentity ::</span> a }</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true"></a><span class="co">--                f' </span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true"></a><span class="co">--     Identity a -&gt; Identity b</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true"></a><span class="co">--     ^ |              ^ |</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true"></a><span class="co">--   g | | g'         h | | h'</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true"></a><span class="co">--     | v              | v</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true"></a><span class="co">--     Cont a     -&gt;   Cont b</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true"></a><span class="co">--             (fmap f)</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true"></a><span class="ot">f' ::</span> <span class="dt">Identity</span> a <span class="ot">-&gt;</span> <span class="dt">Identity</span> b</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true"></a>f' <span class="ot">=</span> <span class="fu">fmap</span> f</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true"></a></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true"></a><span class="ot">g ::</span> <span class="dt">Cont</span> a <span class="ot">-&gt;</span> <span class="dt">Identity</span> a</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true"></a>g <span class="ot">=</span> <span class="dt">Identity</span> <span class="op">.</span> runCont</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true"></a></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true"></a><span class="ot">g' ::</span> <span class="dt">Identity</span> a <span class="ot">-&gt;</span> <span class="dt">Cont</span> a</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true"></a>g' <span class="ot">=</span> cont <span class="op">.</span> unIdentity</span></code></pre></div>
+<p>Notice that the above polymorphic <code>g</code> and <code>g'</code> are the same as <code>h</code> and <code>h'</code> respectively. Therefore</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">Cont</span> <span class="kw">where</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true"></a><span class="ot">  fmap' ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">Cont</span> a <span class="ot">-&gt;</span> <span class="dt">Cont</span> b</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true"></a>  <span class="fu">fmap</span> f <span class="ot">=</span> g' <span class="op">.</span> f' <span class="op">.</span> g</span></code></pre></div>
+<p>Or more simply:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">Cont</span> <span class="kw">where</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true"></a>  <span class="fu">fmap</span> f <span class="ot">=</span> cont <span class="op">.</span> f <span class="op">.</span> runCont</span></code></pre></div>
+<p>Okay, maybe that wasn’t cheating. Was still fun though</p>
+<p>(Note that this requires slightly modifying <code>cont</code> and <code>runCont</code>. See <code>06/Cont.hs</code>)</p>
+<h2 id="exercise-6.4-ii">Exercise 6.4 (ii)</h2>
+<p>See <code>06/Cont.hs</code></p>
+<h2 id="exercise-6.4-iii">Exercise 6.4 (iii)</h2>
+<p>See <code>06/Cont.hs</code></p>
+<h2 id="exercise-6.4-iv">Exercise 6.4 (iv)</h2>
+<p>See <code>06/Cont.hs</code></p>
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>

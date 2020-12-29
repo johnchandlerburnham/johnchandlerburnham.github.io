@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (TRPL 03/21): Common Programming Concepts</title>
+        <link rel="stylesheet" type="text/css" href="../../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../../">posts</a>
+                <a href="../../../about.html">about</a>
+                <a href="../../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://fosstodon.org/@johnburnham">fediverse</a>
+            </div>
+        </div>
+        <div id="content">
+            <h1>Notes (TRPL 03/21): Common Programming Concepts</h1>
+          <h1 id="common-programming-concepts">3 Common Programming Concepts</h1>
+<h3 id="keywords">Keywords</h3>
+<p>I’m sorry, but the following just popped into my head as I was reading this: <a href="https://www.youtube.com/watch?v=OnFlx2Lnr9Q">“When the text hits your eye shaded green by vi, that’s a keyword”</a>.</p>
+<p>Che schifo.</p>
+<h3 id="identifiers">Identifiers</h3>
+<p>Lol, <code>__</code> is a valid identifier:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">fn</span> __(x <span class="op">:</span> <span class="dt">u32</span>) <span class="op">-&gt;</span> <span class="dt">u32</span> <span class="op">{</span> <span class="kw">return</span> x <span class="op">}</span></span></code></pre></div>
+<p>It’s nice that we can break through the identifier restriction with <code>r#</code> though.</p>
+<h2 id="variables-and-mutability">Variables and Mutability</h2>
+<p>Very good to have to explicitly note where one wants a variable to be mutable.</p>
+<h2 id="differences-between-variables-and-constants">Differences Between Variables and Constants</h2>
+<p>The way I like to think about constants is that a constant is data that you happen to be including in a source file, and is only ever going to be an input value in your program. It’s a strong commitment that a given name will always have a certain value (within a specific scope). <code>const</code> values also cannot be shadowed; the compiler will complain if you do:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="kw">fn</span> main() <span class="op">{</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a>   <span class="kw">const</span> x<span class="op">:</span> <span class="dt">u32</span> <span class="op">=</span> <span class="dv">3</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a>   <span class="pp">println!</span>(<span class="st">&quot;The value of x is: {}&quot;</span><span class="op">,</span> x)<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a>   <span class="kw">let</span> x <span class="op">=</span> <span class="dv">6</span><span class="op">;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a>   <span class="pp">println!</span>(<span class="st">&quot;The value of x is: {}&quot;</span><span class="op">,</span> x)<span class="op">;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a><span class="op">}</span></span></code></pre></div>
+<p>But the compiler’s tot totally fine if you do:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="kw">fn</span> main() <span class="op">{</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>  <span class="kw">let</span> x <span class="op">=</span> <span class="dv">5</span><span class="op">;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a>  <span class="pp">println!</span>(<span class="st">&quot;The value of x is: {}&quot;</span><span class="op">,</span> x)<span class="op">;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a>  <span class="kw">let</span> x <span class="op">=</span> <span class="dv">6</span><span class="op">;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a>  <span class="pp">println!</span>(<span class="st">&quot;The value of x is: {}&quot;</span><span class="op">,</span> x)<span class="op">;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a><span class="op">}</span></span></code></pre></div>
+<h3 id="shadowing">Shadowing</h3>
+<p>I really like the restriction on only being able to mutate values and not types. That’s very much like how <code>IORef</code> works in Haskell (I know, I know, another Haskell comparison, but at least it’s another positive one!)</p>
+<h2 id="data-types">Data Types</h2>
+<p>Does this mean that the <code>.parse</code> is polymorphic in its return values? I wonder if that’s implemented with traits/typeclasses.</p>
+<h3 id="integer-overflow">Integer Overflow</h3>
+<p>I wonder why overflow is allowed in release builds at all if it’s considered bad when debugging. Furthermore, why should debug mode differ from release mode? I guess that might be okay if debug mode is more strict than release mode, so you have a guarantee that if it runs fine in debug it’ll run fine in release.</p>
+<h3 id="numeric-operations">Numeric Operations</h3>
+<p>From Appendix B, it looks like a lot of these reserved operators are overloadedable via typeclasses!</p>
+<h2 id="compound-types">Compound Types</h2>
+<p>These are just product types, yes? I guess arrays are actually dependently typed vectors. Very neat that Rust has dependent types, even in this very minor way.</p>
+<p>Actually looks like the compiler does error if you do e.g. <code>a[6]</code> on an <code>[T; 5]</code>, but not if you hide the index behind a layer of indirection. This is a little odd, I wonder why that is? Is there a macro that’ll automatically concretize an index referred to by a value so I can get compile-time bounds checking?</p>
+<p>This naive approach didn’t work:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="pp">macro_rules!</span> id <span class="op">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a>  (<span class="op">$</span>e<span class="op">:</span>ident) <span class="op">=&gt;</span> (<span class="op">$</span>e)<span class="op">;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a><span class="op">}</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a><span class="pp">println!</span>(<span class="st">&quot;id(index) is: {}&quot;</span><span class="op">,</span> <span class="pp">id!</span>(index))<span class="op">;</span></span></code></pre></div>
+<p>I guess the macro doesn’t force the variable to resolve.</p>
+<h2 id="functions">Functions</h2>
+<p>Statements are like expressions of type <code>IO ()</code> in Haskell, they might do something, but they never return anything other than unit.</p>
+<p>Actually I think this is literally true in rust, since the following typechecks:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="kw">let</span> x<span class="op">:</span>() <span class="op">=</span> <span class="op">{</span><span class="kw">let</span> y <span class="op">=</span> <span class="dv">6</span><span class="op">;};</span></span></code></pre></div>
+<p>So the semicolon in Rust is a little like saying <code>return ()</code> in Haskell.</p>
+<h2 id="control-flow">Control Flow</h2>
+<p><code>if</code> expressions are really just like functions of <code>IO Bool -&gt; IO a -&gt; IO a -&gt; IO a</code></p>
+<p>like all these are valid <code>if</code> expressions:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="kw">let</span> x <span class="op">=</span> <span class="kw">if</span> <span class="op">{</span><span class="kw">let</span> x <span class="op">=</span> <span class="cn">false</span><span class="op">;</span> x<span class="op">}</span> <span class="op">{</span> () <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span> () <span class="op">};</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a><span class="kw">let</span> x <span class="op">=</span> <span class="kw">if</span> <span class="op">{</span><span class="kw">let</span> x <span class="op">=</span> <span class="cn">true</span><span class="op">;</span> x<span class="op">}</span> <span class="op">{</span> () <span class="op">};</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a><span class="kw">let</span> x <span class="op">=</span> <span class="kw">if</span> <span class="op">{</span><span class="kw">let</span> x <span class="op">=</span> <span class="cn">true</span><span class="op">;</span> x<span class="op">}</span> <span class="op">{</span> <span class="dv">3</span> <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span> <span class="dv">4</span> <span class="op">};</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a><span class="kw">let</span> x <span class="op">=</span> <span class="kw">if</span> <span class="op">{</span><span class="kw">let</span> x <span class="op">=</span> <span class="cn">false</span><span class="op">;</span> x<span class="op">}</span> <span class="op">{;}</span> <span class="kw">else</span> <span class="op">{;};</span></span></code></pre></div>
+<h3 id="repetition-with-loops">Repetition with Loops</h3>
+<p><code>loop</code> is like <code>IO a -&gt; IO a</code></p>
+<p><code>while</code> is like <code>IO Bool -&gt; IO a -&gt; IO a</code></p>
+<p>I think the thing <code>for</code> loops are most like is list comprehensions, where <code>.iter</code> is just doing a <code>toList</code> conversion.</p>
+<h2 id="exercises">Exercises</h2>
+<ol type="1">
+<li>Temperature conversion:</li>
+</ol>
+<div class="sourceCode" id="cb7"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="kw">fn</span> farenheit_to_celsius (x <span class="op">:</span> <span class="dt">f32</span>) <span class="op">-&gt;</span> <span class="dt">f32</span> <span class="op">{</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a>    (x <span class="op">-</span> <span class="dv">32.0</span>) <span class="op">*</span> <span class="dv">100.0</span><span class="op">/</span><span class="dv">180.0</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a><span class="op">}</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a><span class="kw">fn</span> celsius_to_farenheit (x <span class="op">:</span> <span class="dt">f32</span>) <span class="op">-&gt;</span> <span class="dt">f32</span> <span class="op">{</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a>    x <span class="op">*</span> <span class="dv">180.0</span><span class="op">/</span><span class="dv">100.0</span> <span class="op">+</span> <span class="dv">32.0</span></span></code></pre></div>
+<ol start="2" type="1">
+<li>Fibonacii:</li>
+</ol>
+<div class="sourceCode" id="cb8"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="kw">fn</span> fib (x <span class="op">:</span> <span class="dt">i64</span>) <span class="op">-&gt;</span> <span class="dt">i64</span> <span class="op">{</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a>  <span class="kw">match</span> x <span class="op">{</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a>    <span class="dv">0</span> <span class="op">|</span> <span class="dv">1</span> <span class="op">=&gt;</span> <span class="dv">1</span><span class="op">,</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a>    n <span class="kw">if</span> n <span class="op">&lt;</span> <span class="dv">0</span> <span class="op">=&gt;</span> <span class="dv">0</span><span class="op">,</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true"></a>    _ <span class="op">=&gt;</span> fib(x <span class="op">-</span> <span class="dv">1</span>) <span class="op">+</span> fib (x <span class="op">-</span> <span class="dv">2</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true"></a>  <span class="op">}</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true"></a><span class="op">}</span></span></code></pre></div>
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>

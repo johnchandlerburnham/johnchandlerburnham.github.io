@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (TLPH 10/15): First Class Families</title>
+        <link rel="stylesheet" type="text/css" href="../../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../../">posts</a>
+                <a href="../../../about.html">about</a>
+                <a href="../../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://fosstodon.org/@johnburnham">fediverse</a>
+            </div>
+        </div>
+        <div id="content">
+            <h1>Notes (TLPH 10/15): First Class Families</h1>
+          <h1 id="defunctionalization">10.1 Defunctionalization</h1>
+<h2 id="exercise-10.1-i">Exercise 10.1-i</h2>
+<p>The fact that <code>Fst a b</code> is parameterized on both <code>a</code> and <code>b</code> confused me for a moment. On this problem I wasn’t sure what <code>ListMaybe</code> should be parameterized on. Then I realized that what defunctionalization basically is taking a type signature with an explicit <code>forall</code> and rewriting it:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="fu">fst</span><span class="ot"> ::</span> <span class="kw">forall</span> a b<span class="op">.</span> (a, b) <span class="ot">-&gt;</span> a</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="ot">listMaybe ::</span> <span class="kw">forall</span> a<span class="op">.</span> [a] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a</span></code></pre></div>
+<p>The transformation is a little like this:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="fu">fst</span><span class="ot"> ::</span> <span class="kw">forall</span> a b<span class="op">.</span>      (a, b) <span class="ot">-&gt;</span> a</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="dt">Fst</span>           a b <span class="ot">=</span> <span class="dt">Fst</span> (a, b)</span></code></pre></div>
+<p>And the return type goes into the functional dependency in the <code>Eval</code> class.</p>
+<p>The really trippy thing is that we actually gain a degree of freedom here by duplicating <code>Fst</code> as both a type and data constructor. Consider the pathological case:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">Fst'</span> a b <span class="ot">=</span> <span class="dt">Snd'</span> (a, b)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">Snd'</span> a b <span class="ot">=</span> <span class="dt">Fst'</span> (a, b)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Eval</span> (<span class="dt">Fst'</span> a b) a <span class="kw">where</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a>  eval (<span class="dt">Snd'</span> (a, b)) <span class="ot">=</span> a</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Eval</span> (<span class="dt">Snd'</span> a b) b <span class="kw">where</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true"></a>  eval (<span class="dt">Fst'</span> (a, b)) <span class="ot">=</span> b</span></code></pre></div>
+<p>And when we evaluate:</p>
+<pre><code>*FirstClass&gt; eval (Fst' (&quot;hello&quot;, True))
+True
+*FirstClass&gt; eval (Snd' (&quot;hello&quot;, True))
+&quot;hello&quot;</code></pre>
+<h2 id="type-level-defunctionalization">10.2 Type-Level Defunctionalization</h2>
+<p>Oh cool! My observation from the previous chapter is answered here when we move to the type-level, because type constructors automatically promote to kind constructors, i.e. <code>Exp a</code> (which is just a wrapped <code>-&gt;</code>) is both a type and a kind from a single declaration.</p>
+<p>I think the <code>_1</code> in <code>type instance Eval (FromMaybe _1 ('Just a)) = a</code> is a wildcard? It still compiles replacing <code>_1</code> with <code>_</code>. Standby…</p>
+<p>Okay, having experimented, it’s a <em>labeled</em> wildcard:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="kw">type</span> <span class="kw">instance</span> <span class="dt">Eval</span> (<span class="dt">FromMaybe</span> _1 (<span class="dt">'Just</span> a)) <span class="ot">=</span> _1</span></code></pre></div>
+<p>Which works as expected:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="op">*</span><span class="dt">FirstClass</span><span class="op">&gt;</span> <span class="op">:</span>kind<span class="op">!</span> <span class="dt">Eval</span> (<span class="dt">FromMaybe</span> <span class="st">&quot;nothing&quot;</span> (<span class="dt">'Just</span> <span class="st">&quot;just&quot;</span>))</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a><span class="dt">Eval</span> (<span class="dt">FromMaybe</span> <span class="st">&quot;nothing&quot;</span> (<span class="dt">'Just</span> <span class="st">&quot;just&quot;</span>))<span class="ot"> ::</span> <span class="dt">GHC.Types.Symbol</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a><span class="ot">=</span> <span class="st">&quot;nothing&quot;</span></span></code></pre></div>
+<h2 id="exercise-10.2-i">Exercise 10.2-i</h2>
+<p>see <code>FirstClass.hs</code></p>
+<h2 id="exercise-10.2-ii">Exercise 10.2-ii</h2>
+<p>see <code>FirstClass.hs</code></p>
+<pre><code>*FirstClass&gt; :kind! Eval (Foldr Cons '[] '[1, 2, 3, 4])
+Eval (Foldr Cons '[] '[1, 2, 3, 4]) :: [GHC.Types.Nat]
+= '[1, 2, 3, 4]</code></pre>
+<h2 id="ad-hoc-polymorphism">10.4 Ad-Hoc Polymorphism</h2>
+<h2 id="exercise-10.4-i">Exercise 10.4-i</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="kw">type</span> <span class="kw">instance</span> <span class="dt">Eval</span> (<span class="dt">Map</span> f '(a, b)) <span class="ot">=</span> '(a, <span class="dt">Eval</span> (f b))</span></code></pre></div>
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>

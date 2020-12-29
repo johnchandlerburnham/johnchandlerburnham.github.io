@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (TRPL 08/21): Common Collections</title>
+        <link rel="stylesheet" type="text/css" href="../../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../../">posts</a>
+                <a href="../../../about.html">about</a>
+                <a href="../../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://fosstodon.org/@johnburnham">fediverse</a>
+            </div>
+        </div>
+        <div id="content">
+            <h1>Notes (TRPL 08/21): Common Collections</h1>
+          <h1 id="common-collections">8 Common Collections</h1>
+<h2 id="vectors">8.1 Vectors</h2>
+<p>see <code>src/main.rs</code></p>
+<p>Defining,</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">let</span> <span class="kw">mut</span> v <span class="op">=</span> <span class="dt">Vec</span><span class="pp">::</span>new()<span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>v<span class="op">.</span>push(<span class="dv">5</span>)<span class="op">;</span></span></code></pre></div>
+<p>looks like it causes the compiler to infer that <code>v : Vec&lt;{integer}&gt;</code>. I think this is the case because if I force a type error with</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">let</span> <span class="kw">mut</span> v <span class="op">=</span> <span class="dt">Vec</span><span class="pp">::</span>new()<span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a>v<span class="op">.</span>push(<span class="dv">5</span>)<span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a>v<span class="op">.</span>push(<span class="st">&quot;a&quot;</span>)<span class="op">;</span></span></code></pre></div>
+<p>The compiler says:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="dv">9</span> <span class="op">|</span>   v3<span class="op">.</span>push(<span class="st">&quot;a&quot;</span>)<span class="op">;</span> <span class="co">// type inference!</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>  <span class="op">|</span>           <span class="op">^^^</span> expected integral variable<span class="op">,</span> found reference</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>  <span class="op">|</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a>  <span class="op">=</span> note<span class="op">:</span> expected <span class="kw">type</span> `{integer}`</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a>             found type `&amp;'static str`</span></code></pre></div>
+<p>I wonder how the compiler decides to pick a concrete type like <code>i32</code> from <code>{integer}</code> though.</p>
+<h3 id="reading-elements-of-vectors">Reading Elements of Vectors</h3>
+<p>If you try to access an element out of bounds:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">let</span> v <span class="op">=</span> <span class="pp">vec!</span>[<span class="dv">1</span><span class="op">,</span> <span class="dv">2</span><span class="op">,</span> <span class="dv">3</span><span class="op">,</span> <span class="dv">4</span><span class="op">,</span> <span class="dv">5</span>]<span class="op">;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="kw">let</span> sixth<span class="op">:</span> <span class="op">&amp;</span><span class="dt">i32</span> <span class="op">=</span> <span class="op">&amp;</span>v[<span class="dv">6</span>]<span class="op">;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a><span class="pp">println!</span>(<span class="st">&quot;The sixth element is {}&quot;</span><span class="op">,</span> sixth)<span class="op">;</span></span></code></pre></div>
+<p>The thread will panic at runtime. Using <code>.get</code> we can get elements safely.</p>
+<p>I really like that having an immutable reference to an element of a vector prevents creating mutable references and vice-versa:</p>
+<p>This has two immutable references to <code>v[0]</code> so no problems:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="kw">let</span> <span class="kw">mut</span> v <span class="op">=</span> <span class="pp">vec!</span>[<span class="dv">1</span><span class="op">,</span> <span class="dv">2</span><span class="op">,</span> <span class="dv">3</span><span class="op">,</span> <span class="dv">4</span><span class="op">,</span> <span class="dv">5</span>]<span class="op">;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a><span class="pp">println!</span>(<span class="st">&quot;v is {:?}&quot;</span><span class="op">,</span> v)<span class="op">;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a><span class="kw">let</span> first <span class="op">=</span> <span class="op">&amp;</span>v[<span class="dv">0</span>]<span class="op">;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a><span class="pp">println!</span>(<span class="st">&quot;first is {}&quot;</span><span class="op">,</span> first)<span class="op">;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a><span class="co">//v[0] = 3;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true"></a><span class="co">//println!(&quot;first is {}&quot;, first);</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true"></a><span class="pp">println!</span>(<span class="st">&quot;v is {:?}&quot;</span><span class="op">,</span> v)<span class="op">;</span></span></code></pre></div>
+<p>Hmmm, looks like we can create an immutable reference to <code>v[0]</code> and then mutate under it, as long as our immutable reference is never actually used.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="kw">let</span> first <span class="op">=</span> <span class="op">&amp;</span>v[<span class="dv">0</span>]<span class="op">;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a><span class="co">//println!(&quot;first is {}&quot;, first);</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a>v[<span class="dv">0</span>] <span class="op">=</span> <span class="dv">3</span><span class="op">;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a><span class="co">//println!(&quot;first is {}&quot;, first);</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a><span class="op">/</span><span class="pp">println!</span>(<span class="st">&quot;v is {:?}&quot;</span><span class="op">,</span> v)<span class="op">;</span></span></code></pre></div>
+<p>I guess that makes sense because the scope we’re in already mutably owns <code>v</code> because we declared it here. But this still seems like something that could cause us some confusion later on if we forget exactly how the borrow checker works.</p>
+<p>We can actually make the above code work by just pushing another value onto the stack with <code>first</code>’s value:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="kw">let</span> first <span class="op">=</span> <span class="op">&amp;</span>v[<span class="dv">0</span>]<span class="op">;</span> <span class="co">// ref A</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a><span class="kw">let</span> first_ <span class="op">=</span> first<span class="op">;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a><span class="pp">println!</span>(<span class="st">&quot;first_ is {}&quot;</span><span class="op">,</span> first_)<span class="op">;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a>v[<span class="dv">0</span>] <span class="op">=</span> <span class="dv">3</span><span class="op">;</span> <span class="co">// allowed because first is never borrowed by anything</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true"></a>          <span class="co">// we could have done</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true"></a>          <span class="co">// let first = v[0].clone()</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true"></a>          <span class="co">// or simply</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true"></a>          <span class="co">// let first = v[0];</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true"></a><span class="kw">let</span> first <span class="op">=</span> <span class="op">&amp;</span>v[<span class="dv">0</span>]<span class="op">;</span> <span class="co">// this &amp;v[0] is potentially a different reference than ref A</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true"></a><span class="pp">println!</span>(<span class="st">&quot;first is {}&quot;</span><span class="op">,</span> first)<span class="op">;</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true"></a><span class="op">/</span><span class="pp">println!</span>(<span class="st">&quot;v is {:?}&quot;</span><span class="op">,</span> v)<span class="op">;</span></span></code></pre></div>
+<p>Okay, so that explains why we’re allowed to even have an immutable reference that never gets borrowed in the same scope as a mutable reference. We can use the value, but only to copy it’s value into new memory, whether onto the stack with a <code>let</code> or onto the heap with a <code>.clone()</code>.</p>
+<h3 id="iterating-over-the-values-in-a-vector">Iterating over the Values in a Vector</h3>
+<p><code>*</code> is the dereference operator. <code>*ref</code> means the value at memory location <code>ref</code>. It’s important to distinguish <code>let *x = y</code> from <code>let y = *x</code> though. The former is a write operation that sets the value at <code>x</code> to equal the value of the variable <code>y</code> on the stack. The latter is a read operation that copies the value at <code>x</code> and allocates a new variable <code>y</code> on the stack with that value.</p>
+<p>It’s a little confusing that <code>=</code> does different things to the left-hand and right-hand side. Keep in mind that in C family languages (of which Rust is one), the <code>=</code> assignment operator should properly be <code>:=</code>, which corresponds to the definition notation from mathematics. The only reason it isn’t is that in 1969 Dennis Ritchie and Ken Thompson were trying to fit their new B language efficiently into the 9.2 KB memory of the PDP-7, so they cut the <code>:</code> out of <code>:=</code> <a href="https://www.hillelwayne.com/post/equals-as-assignment/">to save space</a>.</p>
+<h2 id="string">8.2 String</h2>
+<p>see <code>src/main2.rs</code></p>
+<h3 id="storing-utf-8-encoded-text-with-strings">Storing UTF-8 Encoded Text with Strings</h3>
+<p>Wondering how <code>+</code> is overloaded to be concatenation on Strings and addition on numbers. Oh, I see, there’s just an <code>Add</code> trait: https://doc.rust-lang.org/std/ops/trait.Add.html</p>
+<p>Strings are UTF-8 encoded so since UTF-8 is variable width, slices and indexes of Strings don’t always map cleanly to characters. The Rust compiler flat out prevents you from accessing a single index of a string. String slices are allowed but can cause a thread to panic if the slice bounds don’t correspond to UTF-8 char boundaries.</p>
+<p>tldr; Strings are complicated, use methods and libraries.</p>
+<h2 id="hash-maps">8.3 Hash Maps</h2>
+<p>see <code>src/main3.rs</code></p>
+<p>A <code>HashMap&lt;K, V&gt;</code> is a map from keys of type <code>K</code> to values of type <code>V</code>.</p>
+<p>The line:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a>teams<span class="op">.</span>iter()<span class="op">.</span>zip(initial_scores<span class="op">.</span>iter())<span class="op">.</span>collect()<span class="op">;</span></span></code></pre></div>
+<p>feels kind-of functional, but I want to get a beter understanding of what <code>.iter()</code> does concretely.</p>
+<h3 id="hash-maps-and-ownership">Hash Maps and Ownership</h3>
+<p>Once they get passed into <code>.insert()</code>, the <code>field_name</code> and <code>field_value</code> references have been moved into the <code>map</code>.</p>
+<p>How exactly does the <code>for ... in</code> in</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="kw">for</span> (key<span class="op">,</span> value) <span class="kw">in</span> <span class="op">&amp;</span>scores</span></code></pre></div>
+<p>iterate over all the pairs in the HashMap? Is there a trait? I bet there is, there’s always a trait when I ask these kinds of questions…</p>
+<p>Indeed there is! <a href="http://xion.io/post/code/rust-for-loop.html">It’s the Iterator trait</a>.</p>
+<h2 id="exercises">Exercises</h2>
+<h3 id="mean-median-mode">Mean, Median, Mode</h3>
+<div class="sourceCode" id="cb10"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="kw">fn</span> median(ns<span class="op">:</span> <span class="op">&amp;</span><span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">i32</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="dt">f32</span> <span class="op">{</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a>  <span class="kw">let</span> <span class="kw">mut</span> ms <span class="op">=</span> ns<span class="op">.</span>clone()<span class="op">;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a>  ms<span class="op">.</span>sort()<span class="op">;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a>  <span class="kw">let</span> l <span class="op">=</span> ns<span class="op">.</span>len()<span class="op">;</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true"></a>  <span class="kw">if</span> l <span class="op">%</span> <span class="dv">2</span> <span class="op">==</span> <span class="dv">1</span> <span class="op">{</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true"></a>    ms[l <span class="op">/</span> <span class="dv">2</span>] <span class="kw">as</span> <span class="dt">f32</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true"></a>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true"></a>    (ms[l <span class="op">/</span> <span class="dv">2</span>] <span class="kw">as</span> <span class="dt">f32</span> <span class="op">+</span> ms[l <span class="op">/</span> <span class="dv">2</span> <span class="op">-</span> <span class="dv">1</span>] <span class="kw">as</span> <span class="dt">f32</span>) <span class="op">/</span> <span class="dv">2.0</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true"></a>  <span class="op">}</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true"></a><span class="op">}</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true"></a></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true"></a><span class="kw">fn</span> mean(ns<span class="op">:</span> <span class="op">&amp;</span><span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">i32</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="dt">f32</span> <span class="op">{</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true"></a>  <span class="kw">let</span> total<span class="op">:</span> <span class="dt">i32</span> <span class="op">=</span> ns<span class="op">.</span>iter()<span class="op">.</span>sum()<span class="op">;</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true"></a>  <span class="kw">let</span> size <span class="op">=</span> ns<span class="op">.</span>len() <span class="kw">as</span> <span class="dt">f32</span><span class="op">;</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true"></a>  total <span class="kw">as</span> <span class="dt">f32</span> <span class="op">/</span> size</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true"></a><span class="op">}</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true"></a></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true"></a><span class="kw">fn</span> mode(ns<span class="op">:</span> <span class="op">&amp;</span><span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">i32</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">i32</span><span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true"></a>  <span class="kw">let</span> <span class="kw">mut</span> map<span class="op">:</span> HashMap<span class="op">&lt;</span><span class="dt">i32</span><span class="op">,</span> <span class="dt">i32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="pp">HashMap::</span>new()<span class="op">;</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true"></a>  <span class="kw">for</span> n <span class="kw">in</span> ns <span class="op">{</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true"></a>    <span class="kw">let</span> count <span class="op">=</span> map<span class="op">.</span>entry(<span class="op">*</span>n)<span class="op">.</span>or_insert(<span class="dv">0</span>)<span class="op">;</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true"></a>    <span class="op">*</span>count <span class="op">+=</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true"></a>  <span class="op">}</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true"></a>  <span class="kw">let</span> max<span class="op">:</span> <span class="dt">i32</span> <span class="op">=</span> <span class="op">*</span>map<span class="op">.</span>iter()<span class="op">.</span>max_by_key(<span class="op">|</span>(_<span class="op">,</span> <span class="op">&amp;</span>v)<span class="op">|</span> v)<span class="op">.</span>unwrap()<span class="op">.</span><span class="dv">1</span><span class="op">;</span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true"></a>  map</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true"></a>    <span class="op">.</span>iter()</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true"></a>    <span class="op">.</span>filter(<span class="op">|</span>(_<span class="op">,</span> <span class="op">&amp;</span>v)<span class="op">|</span> v <span class="op">==</span> max)</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true"></a>    <span class="op">.</span>map(<span class="op">|</span>(<span class="op">&amp;</span>k<span class="op">,</span> _)<span class="op">|</span> k)</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true"></a>    <span class="op">.</span>collect()</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true"></a><span class="op">}</span></span></code></pre></div>
+<p>The mode function was particularly fun. One question I have is how Rust distinguishes between a reference to a struct vs a struct of references. In some of the tuples above they’re interchangeable, but not in all of them.</p>
+<h3 id="pig-latin">Pig Latin</h3>
+<p>For pig-latin, we’ll use the <code>unicode-segmentation</code> <a href="https://unicode-rs.github.io/unicode-segmentation/unicode_segmentation/index.html">external crate</a></p>
+<p>I don’t know what the best way to test if graphemes are consonants or vowel though… Properly this would require an <code>is_vowel</code> function that was total over every <code>UTF-8</code> codepoint, but I don’t know if there’s a Rust library for that…</p>
+<h3 id="text-interface-for-a-department-records-system">Text Interface for a department records system</h3>
+<p>see <code>src/main3.rs</code></p>
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>

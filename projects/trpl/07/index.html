@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (TRPL 07/21): Packages, Crates, and Modules</title>
+        <link rel="stylesheet" type="text/css" href="../../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../../">posts</a>
+                <a href="../../../about.html">about</a>
+                <a href="../../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://fosstodon.org/@johnburnham">fediverse</a>
+            </div>
+        </div>
+        <div id="content">
+            <h1>Notes (TRPL 07/21): Packages, Crates, and Modules</h1>
+          <h1 id="packages-crates-modules">7 Packages, Crates, Modules</h1>
+<ul>
+<li><em>Packages</em> contain crates wrapped up for <code>cargo</code> handling with a <code>Cargo.toml</code></li>
+<li><em>Crates</em> contain a module hierarchy (tree)</li>
+<li>Modules contain <em>path</em>s which are named expressions (structs, functions, modules)</li>
+</ul>
+<h2 id="packages-and-crates-for-making-libraries-and-executables">7.1 Packages and Crates for Making Libraries and Executables</h2>
+<p><code>cargo</code> looks for <code>src/main.rs</code> to build a binary by convention, if no other source files are specified with e.g.:</p>
+<pre><code>[[bin]]
+name = &quot;main2&quot;
+path = &quot;src/main2.rs&quot;</code></pre>
+<h2 id="the-module-system-to-control-scope-and-privacy">7.2 The Module System to Control Scope and Privacy</h2>
+<p>Interesting, modules in rust do not have to correspond one-to-one with source files. A file can contain multiple modules.</p>
+<h3 id="modules-as-the-privacy-boundary">Modules as the Privacy Boundary</h3>
+<p>Access upwards is implicitly allowed, access downwards has to be explicitly granted.</p>
+<p>Privacy rules apply to any named expression, i.e. functions and structs as well as modules.</p>
+<p>This feels very object-oriented.</p>
+<h3 id="the-use-keword-to-bring-paths-into-a-scope">The use Keword to Bring Paths into a scope</h3>
+<p>The <code>a::b::c::d()</code> pattern is verbose, we can bring <code>d</code> into scope with</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">use</span> <span class="kw">crate</span><span class="pp">::a::b::c::</span>d</span></code></pre></div>
+<p>But if <code>d</code> is function then it might be preferable to import the containing module <code>c</code>:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">use</span> <span class="kw">crate</span><span class="pp">::a::b::</span>c</span></code></pre></div>
+<p>And call <code>d</code> with <code>c::d()</code></p>
+<h3 id="idiomatic-use-paths-for-functions-vs.-other-items">Idiomatic <code>use</code> Paths for Functions vs. Other Items</h3>
+<p>It’s idiomatic to import functions with</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">use</span> <span class="kw">crate</span><span class="pp">::</span>module</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a><span class="pp">module::</span>function()<span class="op">;</span></span></code></pre></div>
+<p>But to import structs or enums with</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="kw">use</span> <span class="kw">crate</span><span class="pp">::module::</span>StructEnum</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a><span class="pp">StructEnum::</span>function()<span class="op">;</span></span></code></pre></div>
+<p>Unless this would create a namespace conflict, in which you can disambiguate by importing the containing modules, or by using the <code>as</code> keyword.</p>
+<h3 id="renaming-types-brought-into-scope-with-the-as-keyword">Renaming Types Brought Into Scope with the <code>as</code> Keyword</h3>
+<p>With <code>as</code> you can assign a module to a name in your namespace:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="kw">use</span> <span class="kw">crate</span><span class="pp">::module::</span>StructEnum <span class="kw">as</span> SE</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a><span class="pp">SE::</span>function()<span class="op">;</span></span></code></pre></div>
+<h3 id="nested-paths-for-cleaning-up-large-use-lists">Nested Paths for Cleaning Up Large <code>use</code> Lists</h3>
+<p>Some nice tools here for nicely managing import lists:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="kw">use</span> <span class="pp">std::</span>io<span class="op">;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a><span class="kw">use</span> <span class="pp">std::io::</span><span class="bu">Write</span><span class="op">;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a><span class="kw">use</span> <span class="pp">std::cmp::</span>Ordering<span class="op">;</span></span></code></pre></div>
+<p>becomes</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="kw">use</span>  <span class="pp">std::</span><span class="op">{</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a>  <span class="pp">cmp::</span>Ordering<span class="op">,</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a>  <span class="pp">io::</span><span class="op">{</span><span class="kw">self</span><span class="op">,</span> <span class="bu">Write</span><span class="op">}</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a><span class="op">};</span></span></code></pre></div>
+<p>which even gets nicely autoformatted by <code>rustfmt</code>!</p>
+<p>And then of course the notorious glob operator:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="kw">use</span> <span class="pp">std::collections::</span><span class="op">*;</span></span></code></pre></div>
+<p>It’s a good rule of thumb to always be very very wary of the glob. Much wailing and gnashing of teeth has resulted from careless globbing, particularly when used as a command line argument (cf. <code>rm -rf</code>). In this case, though you probably won’t do anything other than make your scope messy. Nevertheless, ¡Cuidado!</p>
+<h3 id="separating-modules-into-different-files">Separating Modules into Different Files</h3>
+<p>If we have a file <code>src/separate_file.rs</code>:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="kw">pub</span> <span class="kw">fn</span> do_something() <span class="op">{</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a>  <span class="pp">println!</span>(<span class="st">&quot;doing something&quot;</span>)<span class="op">;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a><span class="op">}</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true"></a><span class="kw">pub</span> <span class="kw">mod</span> separate_file_module <span class="op">{</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true"></a>  <span class="kw">pub</span> <span class="kw">fn</span> do_another_thing() <span class="op">{</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true"></a>    <span class="pp">println!</span>(<span class="st">&quot;doing another thing&quot;</span>)<span class="op">;</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true"></a>  <span class="op">}</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true"></a><span class="op">}</span></span></code></pre></div>
+<p>Then from <code>src/main.rs</code> we can do:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a><span class="kw">mod</span> separate_file<span class="op">;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true"></a><span class="kw">fn</span> main() <span class="op">{</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true"></a>  <span class="pp">separate_file::</span>do_something()<span class="op">;</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true"></a>  <span class="pp">separate_file::separate_file_module::</span>do_another_thing()<span class="op">;</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true"></a><span class="op">}</span></span></code></pre></div>
+<p>Which calls the functions as expected.</p>
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>

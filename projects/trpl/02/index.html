@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (TRPL 02/21): Programming a Guessing Game</title>
+        <link rel="stylesheet" type="text/css" href="../../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../../">posts</a>
+                <a href="../../../about.html">about</a>
+                <a href="../../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://fosstodon.org/@johnburnham">fediverse</a>
+            </div>
+        </div>
+        <div id="content">
+            <h1>Notes (TRPL 02/21): Programming a Guessing Game</h1>
+          <h1 id="programming-a-guessing-game">2 Programming a Guessing Game</h1>
+<h2 id="setting-up-a-new-project">Setting up a New Project</h2>
+<p>Despite having gone through all the work to figure out <code>carnix</code> in the last chapter, I think I’m just going to use <code>cargo</code> without <code>nix</code> for the moment, so that I can learn the usual non-<code>nix</code> way first. <del>I kinda wish cargo automatically integrated with <code>nix</code> like <code>stack</code> does with haskell, so I don’t have to throught the extra <code>cargo build</code>, <code>carnix</code> and <code>nix-build</code> steps.</del> (despite the fact that <code>carnix</code> is more ergonomic now, it’s still bleeding-edge undocumented code, so i don’t want to run into issues that might complicate my rust learning.)</p>
+<h2 id="handling-potential-failure-with-the-result-type">Handling Potential Failure with the <code>Result</code> Type</h2>
+<p>How can we make <code>read_line</code> fail though? The docs say that it errors on any <a href="https://doc.rust-lang.org/std/io/trait.BufRead.html#method.read_line">bytes that aren’t valid UTF-8</a>, but I tried typing in some various malformed UTF-8 sequences (with <code>&lt;C-U&gt;</code>) from this <a href="https://www.cl.cam.ac.uk/~mgk25/ucs/examples/UTF-8-test.txt">UTF-8 test page</a>, and couldn’t get it to error.</p>
+<p>I will keep investigating.</p>
+<h2 id="generating-a-random-number">Generating a Random Number</h2>
+<p>The <code>cargo doc --open</code> command is awesome.</p>
+<h2 id="comparing-the-guess-to-the-secret-number">Comparing the Guess to the Secret Number</h2>
+<p>Okay, great we have pattern matching, excellent.</p>
+<p>I’m not sure how I feel about the <code>.function</code> notation for doing function “piping”. It’s very terse and legible, but I guess I can’t help but compare it to Haskell does make me appreciate how <code>&gt;&gt;=</code> is just a regular function and not special language syntax.</p>
+<p>I’m going to try to dampen that “But in Haskell…” reflex though, this is a different language with its own philosophy of programming, particularly on how best to safely handle mutable state.</p>
+<h2 id="allowing-multiple-guesses-with-looping">Allowing Multiple Guesses with Looping</h2>
+<p>To expand on the previous thought, I think there’s actually great value in the way Rust provides concise conceptual tools for dealing with control flow and state mutation. Take the <code>continue</code> keyword in this example, for instance. If we were trying to accomplish the same thing with pure code, we’d probably assign a name to the loop and use recursion:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">fn</span> main() <span class="op">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>  <span class="pp">println!</span>(<span class="st">&quot;Guess the number!&quot;</span>)<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>  <span class="kw">let</span> secret_number <span class="op">=</span> <span class="pp">rand::</span>thread_rng()<span class="op">.</span>gen_range(<span class="dv">1</span><span class="op">,</span> <span class="dv">101</span>)<span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>  <span class="pp">println!</span>(<span class="st">&quot;The secret number is: {}&quot;</span><span class="op">,</span> secret_number)<span class="op">;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a>  loop_(secret_number)<span class="op">;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a><span class="op">}</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a><span class="kw">fn</span> loop_(secret <span class="op">:</span> <span class="dt">u32</span>) <span class="op">-&gt;</span> <span class="dt">u32</span> <span class="op">{</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a>    <span class="pp">println!</span>(<span class="st">&quot;Please input your guess.&quot;</span>)<span class="op">;</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a>    <span class="kw">let</span> <span class="kw">mut</span> guess <span class="op">=</span> <span class="dt">String</span><span class="pp">::</span>new()<span class="op">;</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true"></a>    <span class="pp">io::</span>stdin()<span class="op">.</span>read_line(<span class="op">&amp;</span><span class="kw">mut</span> guess)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true"></a>      <span class="op">.</span>expect(<span class="st">&quot;Failed to read line&quot;</span>)<span class="op">;</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true"></a>    <span class="kw">let</span> guess<span class="op">:</span> <span class="dt">u32</span> <span class="op">=</span> <span class="kw">match</span> guess<span class="op">.</span>trim()<span class="op">.</span>parse() <span class="op">{</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true"></a>        <span class="cn">Ok</span>(num) <span class="op">=&gt;</span> num<span class="op">,</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true"></a>        <span class="cn">Err</span>(_) <span class="op">=&gt;</span> loop_(secret)<span class="op">,</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true"></a>      <span class="op">};</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true"></a>    <span class="pp">println!</span>(<span class="st">&quot;You guessed: {}&quot;</span><span class="op">,</span> guess)<span class="op">;</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true"></a>    <span class="kw">match</span> guess<span class="op">.</span>cmp(<span class="op">&amp;</span>secret) <span class="op">{</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true"></a>      <span class="pp">Ordering::</span>Less <span class="op">=&gt;</span> <span class="op">{</span><span class="pp">println!</span>(<span class="st">&quot;Too small!&quot;</span>)<span class="op">;</span> loop_(secret) <span class="op">}</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true"></a>      <span class="pp">Ordering::</span>Greater <span class="op">=&gt;</span> <span class="op">{</span> <span class="pp">println!</span>(<span class="st">&quot;Too big!&quot;</span>)<span class="op">;</span> loop_(secret) <span class="op">}</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true"></a>      <span class="pp">Ordering::</span>Equal <span class="op">=&gt;</span> <span class="op">{</span> <span class="pp">println!</span>(<span class="st">&quot;You win!&quot;</span>)<span class="op">;</span> <span class="kw">return</span> guess<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true"></a>    <span class="op">}</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true"></a>  <span class="op">}</span></span></code></pre></div>
+<p>But this actually doesn’t work! If the parsing fails, the pattern matching continuation doubles up on itself. So we actually have to do:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">fn</span> main() <span class="op">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>  <span class="pp">println!</span>(<span class="st">&quot;Guess the number!&quot;</span>)<span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a>  <span class="kw">let</span> secret_number <span class="op">=</span> <span class="pp">rand::</span>thread_rng()<span class="op">.</span>gen_range(<span class="dv">1</span><span class="op">,</span> <span class="dv">101</span>)<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a>  <span class="pp">println!</span>(<span class="st">&quot;The secret number is: {}&quot;</span><span class="op">,</span> secret_number)<span class="op">;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a>  loop_(secret_number)<span class="op">;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a><span class="op">}</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a><span class="kw">fn</span> loop_(secret <span class="op">:</span> <span class="dt">u32</span>) <span class="op">-&gt;</span> <span class="dt">u32</span> <span class="op">{</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a>    <span class="pp">println!</span>(<span class="st">&quot;Please input your guess.&quot;</span>)<span class="op">;</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true"></a>    <span class="kw">let</span> <span class="kw">mut</span> guess <span class="op">=</span> <span class="dt">String</span><span class="pp">::</span>new()<span class="op">;</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true"></a>    <span class="pp">io::</span>stdin()<span class="op">.</span>read_line(<span class="op">&amp;</span><span class="kw">mut</span> guess)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true"></a>      <span class="op">.</span>expect(<span class="st">&quot;Failed to read line&quot;</span>)<span class="op">;</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true"></a>    <span class="kw">let</span> guess<span class="op">:</span> <span class="dt">u32</span> <span class="op">=</span> <span class="kw">match</span> guess<span class="op">.</span>trim()<span class="op">.</span>parse() <span class="op">{</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true"></a>        <span class="cn">Ok</span>(num) <span class="op">=&gt;</span> continue_(secret<span class="op">,</span> num)<span class="op">,</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true"></a>        <span class="cn">Err</span>(_) <span class="op">=&gt;</span> loop_(secret)<span class="op">,</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true"></a>      <span class="op">};</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true"></a>    <span class="kw">return</span> guess<span class="op">;</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true"></a>  <span class="op">}</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true"></a><span class="kw">fn</span> continue_(secret <span class="op">:</span> <span class="dt">u32</span><span class="op">,</span> guess <span class="op">:</span> <span class="dt">u32</span>) <span class="op">-&gt;</span> <span class="dt">u32</span> <span class="op">{</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true"></a>    <span class="pp">println!</span>(<span class="st">&quot;You guessed: {}&quot;</span><span class="op">,</span> guess)<span class="op">;</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true"></a>    <span class="kw">match</span> guess<span class="op">.</span>cmp(<span class="op">&amp;</span>secret) <span class="op">{</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true"></a>      <span class="pp">Ordering::</span>Less <span class="op">=&gt;</span> <span class="op">{</span><span class="pp">println!</span>(<span class="st">&quot;Too small!&quot;</span>)<span class="op">;</span> loop_(secret) <span class="op">}</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true"></a>      <span class="pp">Ordering::</span>Greater <span class="op">=&gt;</span> <span class="op">{</span> <span class="pp">println!</span>(<span class="st">&quot;Too big!&quot;</span>)<span class="op">;</span> loop_(secret) <span class="op">}</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true"></a>      <span class="pp">Ordering::</span>Equal <span class="op">=&gt;</span> <span class="op">{</span> <span class="pp">println!</span>(<span class="st">&quot;You win!&quot;</span>)<span class="op">;</span> <span class="kw">return</span> guess<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true"></a>    <span class="op">}</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true"></a> <span class="op">}</span></span></code></pre></div>
+<p>This is pure, but ugly. As opposed to the example from the text, which is impure yet lovely (<a href="https://biblehub.com/songs/1-5.htm">“O daughters of Jerusalem”</a>).</p>
+<p>The pure code has a lot of plumbing, and okay a language designed for that plumbing is going to be little cleaner, but only a little, and for differet reasons.</p>
+<p>I mean, I know I said was going to tone down the Haskell comparisons, but this is actually a point in Rust’s favo, so look at what a Haskell verison of the guessing game might look like:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Main</span> <span class="kw">where</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">System.Random</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Text.Read</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true"></a>  secret <span class="ot">&lt;-</span> getStdRandom (randomR (<span class="dv">1</span>,<span class="dv">101</span>))</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="st">&quot;secret is: &quot;</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true"></a>  <span class="fu">print</span> secret</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true"></a>  <span class="kw">let</span> loop <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true"></a>        <span class="fu">putStrLn</span> <span class="st">&quot;Please input your guess&quot;</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true"></a>        guess <span class="ot">&lt;-</span> <span class="fu">getLine</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true"></a>        <span class="kw">case</span> (readMaybe guess)<span class="ot"> ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span> <span class="kw">of</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true"></a>          <span class="dt">Nothing</span> <span class="ot">-&gt;</span> loop</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true"></a>          <span class="dt">Just</span> x  <span class="ot">-&gt;</span> <span class="kw">case</span> (<span class="fu">compare</span> guess secret) <span class="kw">of</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true"></a>            <span class="dt">GT</span> <span class="ot">-&gt;</span> (<span class="fu">putStrLn</span> <span class="st">&quot;Too high&quot;</span> <span class="op">&gt;&gt;</span> loop)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true"></a>            <span class="dt">EQ</span> <span class="ot">-&gt;</span> (<span class="fu">putStrLn</span> <span class="st">&quot;You win!&quot;</span> <span class="op">&gt;&gt;</span> <span class="fu">return</span> ())</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true"></a>            <span class="dt">LT</span> <span class="ot">-&gt;</span> (<span class="fu">putStrLn</span> <span class="st">&quot;Too low&quot;</span> <span class="op">&gt;&gt;</span> loop)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true"></a>  loop</span></code></pre></div>
+<p>Is this more concise? Definitely more consise than the pure Rust guessing game, but it’s actually about comparable to the idiomatic <code>main.rs</code> in the book (23 lines for Haskell vs 25 or 33 for Rust depending on if count the empty lines in the function body).</p>
+<p>But the thing is that the Rust code exposes a lot of information that the Haskell code abstracts over! For example, the <code>guess</code> in my Haskell code should actually be using <code>IORef</code> and <code>Text</code> to better match the fact that the Rust code creates an empty mutable string variable. And that’s not even getting into the borrowing and reference management that Rust is doing.</p>
+<p>In this particular example it doesn’t matter, but I can imagine a lot of cases where the fact that Rust exposes a lot of granular low-level detail might come in really helpful.</p>
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>

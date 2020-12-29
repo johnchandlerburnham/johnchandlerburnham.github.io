@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>John Chandler Burnham - Notes (TRPL 05/21): Using Structs to Struture Related Data</title>
+        <link rel="stylesheet" type="text/css" href="../../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="navigation">
+                <a href="../../../">posts</a>
+                <a href="../../../about.html">about</a>
+                <a href="../../../projects.html">projects</a>
+                <a href="https://github.com/johnchandlerburnham">github</a>
+                <a href="https://fosstodon.org/@johnburnham">fediverse</a>
+            </div>
+        </div>
+        <div id="content">
+            <h1>Notes (TRPL 05/21): Using Structs to Struture Related Data</h1>
+          <h1 id="using-structs-to-structure-related-data">5 Using Structs to Structure Related Data</h1>
+<p>see <code>src/main.rs</code></p>
+<h2 id="defining-and-instantiating-structs">5.1 Defining and Instantiating Structs</h2>
+<p>The text is right, field init shorthand is convenient.</p>
+<h3 id="tuple-structs-without-named-fields-to-create-different-types">Tuple Structs without Named Fields to Create Different Types</h3>
+<p>Okay so tuple structs give us labeled product types, do we have sum types?</p>
+<h3 id="ownership-of-struct-data">Ownership of Struct Data</h3>
+<p>Very curious to see what all these references to <em>lifetimes</em> are about.</p>
+<h2 id="an-example-program-using-structs">5.2 An Example Program Using Structs</h2>
+<p>see <code>src/main2.rs</code></p>
+<p>BTW, to easily use <code>cargo run</code> to build an run multiple binaries, add the following section to <code>Cargo.toml</code>:</p>
+<pre class="toml"><code>[[bin]]
+name = &quot;main&quot;
+path = &quot;src/main.rs&quot;
+
+[[bin]]
+name = &quot;main2&quot;
+path = &quot;src/main2.rs&quot;</code></pre>
+<p>I wonder why the third area function uses a <code>&amp;Rectangle</code> argument instead of just a <code>Rectangle</code>.</p>
+<p>I really like that we have separate traits for <code>Debug</code> and <code>Display</code>, in Haskell I feel like it’s easy to overload <code>Show</code>.</p>
+<h2 id="method-syntax">5.3 Method Syntax</h2>
+<p>Methods are just functions that live inside structs. Or in other words they’re functions associated with Struct S with the type signature <code>method :: S -&gt; a</code> or <code>fn method(&amp;self) -&gt; &lt;T&gt;</code>.</p>
+<p>The distinction between a function from a struct versus a method of that struct is that the method can be used with <em>method syntax</em>.</p>
+<p>Okay, so my question as to why we’re borrowing with <code>&amp;Rectangle</code> is because of ownership. If we did:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">fn</span> main() <span class="op">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>  <span class="kw">let</span> rect1 <span class="op">=</span> Rectangle <span class="op">{</span> width<span class="op">:</span> <span class="dv">30</span><span class="op">,</span> height<span class="op">:</span> <span class="dv">50</span> <span class="op">};</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a>  <span class="kw">let</span> foo <span class="op">=</span> take_ownership(rect1)<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a>  <span class="pp">println!</span>(</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a>    <span class="st">&quot;The area of the rectangle is {} square pixels.&quot;</span><span class="op">,</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a>    rect1<span class="op">.</span>area()</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a>  )<span class="op">;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a><span class="op">}</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a><span class="kw">fn</span> take_ownership(rect<span class="op">:</span> Rectangle) <span class="op">-&gt;</span> () <span class="op">{</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true"></a>  <span class="kw">return</span> ()</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true"></a> <span class="op">}</span></span></code></pre></div>
+<p>We get a compiler error, because <code>rect1</code> gets moved into <code>take_ownership</code> and thus it gets freed when <code>take_ownership</code> returns.</p>
+<p>So I guess methods are broader than just functions with type <code>method :: S -&gt; a</code>, because they can also side effect on what values are in scope afterwards.</p>
+<h3 id="associated-functions">Associated Functions</h3>
+<p>Okay, so the <code>::</code> operator is how we get some namespace management. I wonder what this implies about the relationship between <code>struct</code>s and modules though.</p>
+        </div>
+        <div id="footer">
+          <p>&copy; <script>document.write(new Date().getFullYear());</script>
+             John Chandler Burnham.
+            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+          </p>
+        </div>
+    </body>
+</html>
