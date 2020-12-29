@@ -10,11 +10,11 @@
     <body>
         <div id="header">
             <div id="navigation">
-                <a href="../../../">jcb</a>
-                <a href="../../../posts.html">posts</a>
+                <a href="../../../">posts</a>
+                <a href="../../../about.html">about</a>
                 <a href="../../../projects.html">projects</a>
                 <a href="https://github.com/johnchandlerburnham">github</a>
-                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+                <a href="https://fosstodon.org/@johnburnham">fediverse</a>
             </div>
         </div>
         <div id="content">
@@ -28,12 +28,12 @@
 <p>“In a sense, types and typeclasses are the same.” In the sense that they both specify and constrain the properties of expressions.</p>
 <p>“In a sense, types and typeclasses are opposites.” In the sense that generation is opposed to consumption. The type definition is where you figure out how to make values; the typeclass definition is where you write interfaces that can use those values.</p>
 <p>If an expression’s type is an instance of <code>Eq</code> it means there’s a way to define to define and equals function <code>(==)</code> to check if two expressions of that type are equal:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span>info <span class="dt">Eq</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">class</span> <span class="dt">Eq</span> a <span class="kw">where</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="ot">  (==) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="ot">  (/=) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a>  <span class="ot">{-# MINIMAL (==) | (/=) #-}</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a>    <span class="co">-- Defined in ‘GHC.Classes’</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span>info <span class="dt">Eq</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="kw">class</span> <span class="dt">Eq</span> a <span class="kw">where</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="ot">  (==) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="ot">  (/=) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a>  <span class="ot">{-# MINIMAL (==) | (/=) #-}</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>    <span class="co">-- Defined in ‘GHC.Classes’</span></span></code></pre></div>
 <p>But there are types that it is impossible to define <code>(==)</code> for! The function constructor <code>(-&gt;)</code>, for example, cannot be an instance of <code>Eq</code>. Why? The Halting Problem! If there’s no general way to test whether a function will halt on a given input, there’s certainly no general way to determine whether two functions will do the same thing (run forever or return the same value) for a given input.</p>
 <p>So typeclasses constrains the potential things types can be by specifying what they can do.</p>
 <p>Some typeclasses and their relationships:</p>
@@ -43,15 +43,15 @@
 <h2 id="writing-typeclass-instances">6.5 Writing typeclass instances</h2>
 <p>The thing about writing your own instances vs deriving them automagically is that when you write your own you have control over what the instance does, whereas GHC can only derive them in one way.</p>
 <p>For example, if I using the automatic deriving for the typeclass <code>Show</code>:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="op">&gt;</span> <span class="kw">data</span> <span class="dt">Foo</span> <span class="ot">=</span> <span class="dt">Foo</span> <span class="kw">deriving</span> <span class="dt">Show</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="op">&gt;</span> <span class="fu">show</span> <span class="dt">Foo</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="st">&quot;Foo&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="op">&gt;</span> <span class="kw">data</span> <span class="dt">Foo</span> <span class="ot">=</span> <span class="dt">Foo</span> <span class="kw">deriving</span> <span class="dt">Show</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="op">&gt;</span> <span class="fu">show</span> <span class="dt">Foo</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="st">&quot;Foo&quot;</span></span></code></pre></div>
 <p>GHC derives the show function so that the output string is just whatever the data constructor is.</p>
 <p>But it doesn’t have to be! We could manually write a perfectly valid <code>Show</code> instance for <code>Foo</code> like so:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="op">&gt;</span> <span class="kw">data</span> <span class="dt">Foo</span> <span class="ot">=</span> <span class="dt">Foo</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="op">&gt;</span> <span class="kw">instance</span> <span class="dt">Show</span> <span class="dt">Foo</span> <span class="kw">where</span> <span class="fu">show</span> <span class="dt">Foo</span> <span class="ot">=</span> <span class="st">&quot;Bar&quot;</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="op">&gt;</span> <span class="fu">show</span> <span class="dt">Foo</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a><span class="op">&gt;</span> <span class="st">&quot;Bar&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="op">&gt;</span> <span class="kw">data</span> <span class="dt">Foo</span> <span class="ot">=</span> <span class="dt">Foo</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="op">&gt;</span> <span class="kw">instance</span> <span class="dt">Show</span> <span class="dt">Foo</span> <span class="kw">where</span> <span class="fu">show</span> <span class="dt">Foo</span> <span class="ot">=</span> <span class="st">&quot;Bar&quot;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a><span class="op">&gt;</span> <span class="fu">show</span> <span class="dt">Foo</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a><span class="op">&gt;</span> <span class="st">&quot;Bar&quot;</span></span></code></pre></div>
 <p>All we need for a <code>Show</code>, is a <code>show :: a -&gt; String</code> function, but there are no promises as to what <code>String</code> is shown!</p>
 <h3 id="partial-functions">Partial functions</h3>
 <p><strong>total function</strong>: a functional that is defined for all inputs in its domain. <strong>partial function</strong>: a function that is undefined for some inputs in its domain.</p>

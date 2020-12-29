@@ -10,11 +10,11 @@
     <body>
         <div id="header">
             <div id="navigation">
-                <a href="../../../">jcb</a>
-                <a href="../../../posts.html">posts</a>
+                <a href="../../../">posts</a>
+                <a href="../../../about.html">about</a>
                 <a href="../../../projects.html">projects</a>
                 <a href="https://github.com/johnchandlerburnham">github</a>
-                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+                <a href="https://fosstodon.org/@johnburnham">fediverse</a>
             </div>
         </div>
         <div id="content">
@@ -23,13 +23,13 @@
 <p>The quote at the beginning of this chapter is an excerpt from the Wallace Stevens poem, <a href="https://www.poetryfoundation.org/poems/43431/the-idea-of-order-at-key-west">The Idea of Order at Key West</a>. The whole poem resonates with me; it aptly captures the aesthetics of type level programming.</p>
 <h2 id="how-to-read-type-signatures">5.3 How to read type signatures</h2>
 <p>The type constructor for function <code>(-&gt;)</code> isn’t magic. It’s exactly like any other type constructor. Recall how previously with lists the type constructor was <code>[]</code>:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span>i []</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">data</span> [] a <span class="ot">=</span> [] <span class="op">|</span> a <span class="op">:</span> [a]  <span class="co">-- Defined in ‘GHC.Types’</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span>i []</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="kw">data</span> [] a <span class="ot">=</span> [] <span class="op">|</span> a <span class="op">:</span> [a]  <span class="co">-- Defined in ‘GHC.Types’</span></span></code></pre></div>
 <p>There isn’t any reason other than cleaner syntax that <code>[] a</code> or <code>[a]</code> couldn’t be <code>List a</code>.</p>
 <p>Well the function type is almost exactly the same. There isn’t any reason why <code>a -&gt; b</code>, which is <code>(-&gt;) a b</code>, couldn’t be <code>Fun a b</code>. It’s just more syntactic sugar (Haskell is a very sugary language. That’s why it’s so sweet!)</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span>i (<span class="ot">-&gt;</span>)</span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="kw">data</span> (<span class="ot">-&gt;</span>) t1 t2   <span class="co">-- Defined in ‘GHC.Prim’</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="kw">infixr</span> <span class="dv">0</span> <span class="ot">`(-&gt;)`</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span>i (<span class="ot">-&gt;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="kw">data</span> (<span class="ot">-&gt;</span>) t1 t2   <span class="co">-- Defined in ‘GHC.Prim’</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="kw">infixr</span> <span class="dv">0</span> <span class="ot">`(-&gt;)`</span></span></code></pre></div>
 <p>There isn’t any definition for the function type though because it’s a primitive (hence the <code>GHC.Prim</code>).</p>
 <h3 id="exercises-type-matching">Exercises: Type Matching</h3>
 <ol type="1">
@@ -43,11 +43,11 @@
 </ol>
 <h2 id="currying">5.4 Currying</h2>
 <p>All these types for <code>f</code> are equivalent:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">type</span> <span class="dt">Fun</span> <span class="ot">=</span> (<span class="ot">-&gt;</span>)</span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="ot">f ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a</span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="ot">f ::</span> a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> a)</span>
-<span id="cb3-4"><a href="#cb3-4"></a><span class="ot">f ::</span> (<span class="ot">-&gt;</span>) a ((<span class="ot">-&gt;</span>) a a)</span>
-<span id="cb3-5"><a href="#cb3-5"></a><span class="ot">f ::</span> <span class="dt">Fun</span> a (<span class="dt">Fun</span> a a)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">type</span> <span class="dt">Fun</span> <span class="ot">=</span> (<span class="ot">-&gt;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="ot">f ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a><span class="ot">f ::</span> a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> a)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a><span class="ot">f ::</span> (<span class="ot">-&gt;</span>) a ((<span class="ot">-&gt;</span>) a a)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a><span class="ot">f ::</span> <span class="dt">Fun</span> a (<span class="dt">Fun</span> a a)</span></code></pre></div>
 <p>Functions in Haskell return one and only one thing. Partial application is kind of a silly term. What’s partial about applying a <code>Fun a (Fun a a)</code> to an <code>a</code>? You give it an <code>a</code>, it gives you a function. Nothing partial about that. Maybe we wanted a function.</p>
 <p>It’s only partial if you think of functions of somehow not being final values. Which is how they are in imperative-land. But we’re not in imperative-land anymore. Here functions are first-class, so they actually are values like anything else.</p>
 <p>In fact, if you remember any of Chapter 1, there’s a good argument to be made that functions are more real than any other value. Lambda calculus builds the whole universe out of functions. Sure literals exist, but they’re a convenience (a huge convenience) not a strict necessity.</p>
@@ -103,11 +103,11 @@ meter: measure</code></pre>
 <p>A parameter is quite literally a “side measure.” When we measure a thing by looking at it next to something else, we’re using a parameter. Ever ask whether something was bigger than a breadbox? That’s measuring size in terms of breadboxes. It’s a side measure. It’s a parameter.</p>
 <p>The function <code>id :: a -&gt; a</code> is called parametrically polymorphic, because it’s using <code>a</code> as the side-measure, or parameter.</p>
 <p>This is a little clearer if we enabled the <code>ExplicitForall</code> language extension:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="ot">{-# LANGUAGE ExplicitForAll #-}</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a><span class="kw">module</span> <span class="dt">SideMeasure</span> <span class="kw">where</span></span>
-<span id="cb7-3"><a href="#cb7-3"></a></span>
-<span id="cb7-4"><a href="#cb7-4"></a><span class="ot">id' ::</span> <span class="kw">forall</span> a<span class="op">.</span> a <span class="ot">-&gt;</span> a</span>
-<span id="cb7-5"><a href="#cb7-5"></a>id' a <span class="ot">=</span> a</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE ExplicitForAll #-}</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">SideMeasure</span> <span class="kw">where</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a><span class="ot">id' ::</span> <span class="kw">forall</span> a<span class="op">.</span> a <span class="ot">-&gt;</span> a</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a>id' a <span class="ot">=</span> a</span></code></pre></div>
 <p>The <code>forall</code> is actually implicit in the regular type definition of <code>id</code>, but we’ve just made it explicit here. All it’s saying is that whatever <code>a</code> type the argument of <code>id'</code> has, <code>id'</code> will always return something of the same type.</p>
 <p>Interestingly this implies that the only thing we can do with <code>id'</code> is just return the argument unchanged. You can see this pretty clearly, I think, if you consider what has to happen if you pass in a type that only has a single value inhabiting it (like <code>()</code>, the Unit type).</p>
 <p>Constrained polymorphism, by the way, is where we restrict that <code>forall</code>, to just a <code>forall</code> within some class of types (a “typeclass”, if you will). So a function like <code>negate :: Num a =&gt; a -&gt; a</code>, only makes the same “for all” commitment for types within the <code>Num</code> typeclass. The <code>Num a =&gt;</code> is called a constraint, or typeclass constraint, by the way.</p>

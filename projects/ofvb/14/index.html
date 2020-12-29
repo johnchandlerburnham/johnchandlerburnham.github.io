@@ -10,43 +10,43 @@
     <body>
         <div id="header">
             <div id="navigation">
-                <a href="../../../">jcb</a>
-                <a href="../../../posts.html">posts</a>
+                <a href="../../../">posts</a>
+                <a href="../../../about.html">about</a>
                 <a href="../../../projects.html">projects</a>
                 <a href="https://github.com/johnchandlerburnham">github</a>
-                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+                <a href="https://fosstodon.org/@johnburnham">fediverse</a>
             </div>
         </div>
         <div id="content">
             <h1>Notes (OFVB 14/31): The Other Numbers</h1>
           <p><a href="https://github.com/johnchandlerburnham/ofvb/blob/master/14/other_numbers.ml">see <code>other_numbers.ml</code></a></p>
 <p>Okay, here’s one thing I find a little strange. Tuples are to be polymorphic with respect to each element (so <code>(a,b)</code> is the product of <code>a</code> and <code>b</code>). In Haskell, if we want a monomorphic pair, we can either make an <code>(a,a)</code> tuple, or better yet we declare a type constructor:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">data</span> <span class="dt">Pair</span> a <span class="ot">=</span> <span class="dt">Pair</span> a a<span class="ot">`.</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">Pair</span> a <span class="ot">=</span> <span class="dt">Pair</span> a a<span class="ot">`.</span></span></code></pre></div>
 <p>But in OCaml, we’re limited to doing:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">type</span> 'a pair = Pair <span class="kw">of</span> 'a * 'a</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">type</span> 'a pair = Pair <span class="kw">of</span> 'a * 'a</span></code></pre></div>
 <p>But when we want to make a <code>Pair</code> in OCaml, we write <code>Pair (1,2)</code> with syntax that looks like tuples, vs Haskell’s <code>Pair 1 2</code>.</p>
 <p>I wonder if this is because OCaml only has rank-1 parametric polymorphism, since the <code>Pair</code> constructor can’t be partially applied like it can in Haskell:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="op">&gt;</span> <span class="kw">data</span> <span class="dt">Pair</span> a <span class="ot">=</span> <span class="dt">Pair</span> a a</span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="op">&gt;</span> <span class="op">:</span>t <span class="dt">Pair</span> <span class="ch">'c'</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="dt">Pair</span> <span class="ch">'c'</span><span class="ot"> ::</span> <span class="dt">Char</span> <span class="ot">-&gt;</span> <span class="dt">Pair</span> <span class="dt">Char</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="op">&gt;</span> <span class="kw">data</span> <span class="dt">Pair</span> a <span class="ot">=</span> <span class="dt">Pair</span> a a</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="op">&gt;</span> <span class="op">:</span>t <span class="dt">Pair</span> <span class="ch">'c'</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a><span class="dt">Pair</span> <span class="ch">'c'</span><span class="ot"> ::</span> <span class="dt">Char</span> <span class="ot">-&gt;</span> <span class="dt">Pair</span> <span class="dt">Char</span></span></code></pre></div>
 <p>We can make a function in OCaml that mimics this:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">type</span> 'a pair' = Pair <span class="kw">of</span> 'a * 'a</span>
-<span id="cb4-2"><a href="#cb4-2"></a># <span class="kw">fun</span> x -&gt; Pair (<span class="ch">'c'</span>,x);;</span>
-<span id="cb4-3"><a href="#cb4-3"></a>- : <span class="dt">char</span> -&gt; <span class="dt">char</span> pair' = &lt;<span class="kw">fun</span>&gt;</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">type</span> 'a pair' = Pair <span class="kw">of</span> 'a * 'a</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a># <span class="kw">fun</span> x -&gt; Pair (<span class="ch">'c'</span>,x);;</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a>- : <span class="dt">char</span> -&gt; <span class="dt">char</span> pair' = &lt;<span class="kw">fun</span>&gt;</span></code></pre></div>
 <p>Actually, I think that specific example is due to OCaml being strict and Haskell being lazy. The difference in parametric polymorphism rank is:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="op">&gt;</span> <span class="kw">data</span> <span class="dt">Pair</span> a b <span class="ot">=</span> <span class="dt">Pair</span> a b</span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="op">&gt;</span> <span class="op">:</span>k <span class="dt">Pair</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a><span class="dt">Pair</span><span class="ot"> ::</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a><span class="op">&gt;</span> <span class="op">:</span>t <span class="dt">Pair</span> <span class="ch">'c'</span></span>
-<span id="cb5-5"><a href="#cb5-5"></a><span class="dt">Pair</span> <span class="ch">'c'</span><span class="ot"> ::</span> b <span class="ot">-&gt;</span> <span class="dt">Pair</span> <span class="dt">Char</span> b</span>
-<span id="cb5-6"><a href="#cb5-6"></a><span class="op">&gt;</span> <span class="kw">type</span> <span class="dt">PairOfChar</span> <span class="ot">=</span> <span class="dt">Pair</span> <span class="dt">Char</span></span>
-<span id="cb5-7"><a href="#cb5-7"></a><span class="op">&gt;</span> <span class="op">:</span>k <span class="dt">PairOfChar</span></span>
-<span id="cb5-8"><a href="#cb5-8"></a><span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="op">&gt;</span> <span class="kw">data</span> <span class="dt">Pair</span> a b <span class="ot">=</span> <span class="dt">Pair</span> a b</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a><span class="op">&gt;</span> <span class="op">:</span>k <span class="dt">Pair</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a><span class="dt">Pair</span><span class="ot"> ::</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a><span class="op">&gt;</span> <span class="op">:</span>t <span class="dt">Pair</span> <span class="ch">'c'</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a><span class="dt">Pair</span> <span class="ch">'c'</span><span class="ot"> ::</span> b <span class="ot">-&gt;</span> <span class="dt">Pair</span> <span class="dt">Char</span> b</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a><span class="op">&gt;</span> <span class="kw">type</span> <span class="dt">PairOfChar</span> <span class="ot">=</span> <span class="dt">Pair</span> <span class="dt">Char</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a><span class="op">&gt;</span> <span class="op">:</span>k <span class="dt">PairOfChar</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true"></a><span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span></span></code></pre></div>
 <p>And in Ocaml:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb6-1"><a href="#cb6-1"></a># <span class="kw">type</span> ('a,'b) pair' = Pair <span class="kw">of</span> 'a * 'b;;</span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">type</span> <span class="kw">nonrec</span> ('a, 'b) pair' = Pair <span class="kw">of</span> 'a * 'b</span>
-<span id="cb6-3"><a href="#cb6-3"></a># <span class="kw">type</span> 'a pairOfChar = PairOfChar <span class="kw">of</span>  <span class="dt">char</span> * 'a ;;</span>
-<span id="cb6-4"><a href="#cb6-4"></a><span class="kw">type</span> 'a pairOfChar = PairOfChar <span class="kw">of</span> <span class="dt">char</span> * 'a</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a># <span class="kw">type</span> ('a,'b) pair' = Pair <span class="kw">of</span> 'a * 'b;;</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a><span class="kw">type</span> <span class="kw">nonrec</span> ('a, 'b) pair' = Pair <span class="kw">of</span> 'a * 'b</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a># <span class="kw">type</span> 'a pairOfChar = PairOfChar <span class="kw">of</span>  <span class="dt">char</span> * 'a ;;</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a><span class="kw">type</span> 'a pairOfChar = PairOfChar <span class="kw">of</span> <span class="dt">char</span> * 'a</span></code></pre></div>
 <p>So very similar! Except all kinds in Ocaml are <code>* -&gt; *</code> and higher-rank polymorphism is simulatedc with <code>(*, *) -&gt; *</code> instead of <code>* -&gt; * -&gt; *</code></p>
 <hr />
 <p>Are we seriously using <code>+.</code> for floating point addition? Really? There isn’t some way to overload <code>+</code> to do what we want? smh, OCaml.</p>

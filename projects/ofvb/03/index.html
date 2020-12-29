@@ -10,11 +10,11 @@
     <body>
         <div id="header">
             <div id="navigation">
-                <a href="../../../">jcb</a>
-                <a href="../../../posts.html">posts</a>
+                <a href="../../../">posts</a>
+                <a href="../../../about.html">about</a>
                 <a href="../../../projects.html">projects</a>
                 <a href="https://github.com/johnchandlerburnham">github</a>
-                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+                <a href="https://fosstodon.org/@johnburnham">fediverse</a>
             </div>
         </div>
         <div id="content">
@@ -22,7 +22,7 @@
           <p>Okay, so since copy-pasting into a REPL is no fun, I’m going to quickly flip forward to the section “Loading a Program from a File”:</p>
 <blockquote>
 <p>Save the file in same directory (folder) as you enter OCaml from, under the name <code>lists.ml</code>:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb1-1"><a href="#cb1-1"></a># #use <span class="st">&quot;lists.ml&quot;</span>;;</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a># #use <span class="st">&quot;lists.ml&quot;</span>;;</span></code></pre></div>
 <p>We can then tell OCaml to use the contents of that file like this: It is exactly the same as typing it in manually […] Errors and warnings will be reported as usual. Note that the #use command is not part of the OCaml language for expressions – it is just a command we are giving to OCaml.</p>
 </blockquote>
 <p>One thing to add is that unlike in Haskell, we can’t put our type signatures in the same file. Apparently, there’s a separate “interface file” with a <code>.mli</code> extension, but I won’t worry about that yet.</p>

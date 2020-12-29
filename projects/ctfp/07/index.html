@@ -10,37 +10,37 @@
     <body>
         <div id="header">
             <div id="navigation">
-                <a href="../../../">jcb</a>
-                <a href="../../../posts.html">posts</a>
+                <a href="../../../">posts</a>
+                <a href="../../../about.html">about</a>
                 <a href="../../../projects.html">projects</a>
                 <a href="https://github.com/johnchandlerburnham">github</a>
-                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+                <a href="https://fosstodon.org/@johnburnham">fediverse</a>
             </div>
         </div>
         <div id="content">
             <h1>Notes (CTFP 07/31): Functors</h1>
           <h1 id="functor">7 Functor</h1>
 <p><strong>functor</strong>: A functor is a mapping between categories.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="ot">f ::</span> a <span class="ot">-&gt;</span> b</span>
-<span id="cb1-2"><a href="#cb1-2"></a></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="dt">F</span><span class="ot"> f ::</span> <span class="dt">F</span> a <span class="ot">-&gt;</span> <span class="dt">F</span> b</span>
-<span id="cb1-4"><a href="#cb1-4"></a></span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="dt">F</span><span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (<span class="dt">F</span> a <span class="ot">-&gt;</span> <span class="dt">F</span> b)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="ot">f ::</span> a <span class="ot">-&gt;</span> b</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="dt">F</span><span class="ot"> f ::</span> <span class="dt">F</span> a <span class="ot">-&gt;</span> <span class="dt">F</span> b</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="dt">F</span><span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (<span class="dt">F</span> a <span class="ot">-&gt;</span> <span class="dt">F</span> b)</span></code></pre></div>
 <p>Compositions of functions in the base category map to the composition of the image of those functions:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a>h <span class="ot">=</span> g <span class="op">.</span> f</span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="dt">F</span> h <span class="ot">=</span> <span class="dt">F</span> g <span class="op">.</span> <span class="dt">F</span> f</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a>h <span class="ot">=</span> g <span class="op">.</span> f</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="dt">F</span> h <span class="ot">=</span> <span class="dt">F</span> g <span class="op">.</span> <span class="dt">F</span> f</span></code></pre></div>
 <p>An object’s identity morphisms map to the identity morphisms of its image:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="dt">F</span> (<span class="fu">id</span><span class="ot"> ::</span> <span class="dt">A</span> <span class="ot">-&gt;</span> <span class="dt">A</span>)  <span class="ot">= id ::</span> <span class="dt">F</span> <span class="dt">A</span> <span class="ot">-&gt;</span> <span class="dt">F</span> <span class="dt">A</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="dt">F</span> (<span class="fu">id</span><span class="ot"> ::</span> <span class="dt">A</span> <span class="ot">-&gt;</span> <span class="dt">A</span>)  <span class="ot">= id ::</span> <span class="dt">F</span> <span class="dt">A</span> <span class="ot">-&gt;</span> <span class="dt">F</span> <span class="dt">A</span></span></code></pre></div>
 <p><strong>endofunctor</strong>: A functor that maps a category to itself.</p>
 <h2 id="functors-in-programming">7.1 Functors in Programming</h2>
 <h3 id="the-maybe-functor">7.1.1 The Maybe Functor</h3>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">data</span> <span class="dt">Maybe</span> a <span class="ot">=</span> <span class="dt">Nothing</span> <span class="op">|</span> <span class="dt">Just</span> a</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">Maybe</span> a <span class="ot">=</span> <span class="dt">Nothing</span> <span class="op">|</span> <span class="dt">Just</span> a</span></code></pre></div>
 <p><code>fmap</code> lifts a function onto the functorial target category. For <code>Maybe</code>:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">fmap</span><span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (<span class="dt">Maybe</span> a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> b)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="fu">fmap</span><span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (<span class="dt">Maybe</span> a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> b)</span></code></pre></div>
 <p>In general:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">fmap</span><span class="ot"> ::</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (f a <span class="ot">-&gt;</span> f b)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="fu">fmap</span><span class="ot"> ::</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (f a <span class="ot">-&gt;</span> f b)</span></code></pre></div>
 <p>The functor maps both objects and categories, but the objects are types not values, so we need</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="dt">F</span><span class="ot"> ::</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="dt">F</span><span class="ot"> ::</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span></span></code></pre></div>
 <p>which is <code>Maybe.</code> See this <a href="https://stackoverflow.com/questions/33441140/why-is-pure-only-required-for-applicative-and-not-already-for-functor?utm_medium=organic&amp;utm_source=google_rich_qa&amp;utm_campaign=google_rich_qa">Stack Overflow question</a> for more detail.</p>
 <h3 id="equational-reasoning">7.1.2 Equational Reasoning</h3>
 <p>Equational reasoning is possible with pure functions, because the equality is not hiding state mutation. Thus, reasoning about code in functional programming language like Haskell becomes more explicitly mathematical.</p>
@@ -49,72 +49,72 @@
 <h3 id="typeclasses">7.1.4 Typeclasses</h3>
 <p>Suppose <code>Maybe</code> is a Functor. <code>Maybe</code> is a type constructor. This means <code>Maybe</code> itself is the mapping from objects to objects (<code>* -&gt; *</code>) e.g. <code>Int -&gt; Maybe Int.</code></p>
 <p>But to be a functor, <code>Maybe</code> needs a mapping from morphisms to morphisms. This is <code>fmap</code>, which is declared in Haskell in the Functor class:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">class</span> <span class="dt">Functor</span> f <span class="kw">where</span></span>
-<span id="cb8-2"><a href="#cb8-2"></a><span class="ot">  fmap ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="kw">class</span> <span class="dt">Functor</span> f <span class="kw">where</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a><span class="ot">  fmap ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b</span></code></pre></div>
 <p>To say that <code>Maybe</code> is an instance of this class, we have to give the implementation of <code>fmap</code>:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">Maybe</span> <span class="kw">where</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a>  <span class="fu">fmap</span> f <span class="dt">Nothing</span> <span class="ot">=</span> <span class="dt">Nothing</span></span>
-<span id="cb9-3"><a href="#cb9-3"></a>  <span class="fu">fmap</span> f (<span class="dt">Just</span> a) <span class="ot">=</span> <span class="dt">Just</span> (f a)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">Maybe</span> <span class="kw">where</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a>  <span class="fu">fmap</span> f <span class="dt">Nothing</span> <span class="ot">=</span> <span class="dt">Nothing</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a>  <span class="fu">fmap</span> f (<span class="dt">Just</span> a) <span class="ot">=</span> <span class="dt">Just</span> (f a)</span></code></pre></div>
 <h3 id="functor-in-c">7.1.5 Functor in C++</h3>
 <p>Skipping <code>C++</code>.</p>
 <h3 id="the-list-functor">7.1.6 The List Functor</h3>
-<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">data</span> <span class="dt">List</span> a <span class="ot">=</span> <span class="dt">Nil</span> <span class="op">|</span> <span class="dt">Cons</span> a (<span class="dt">List</span> a)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">List</span> a <span class="ot">=</span> <span class="dt">Nil</span> <span class="op">|</span> <span class="dt">Cons</span> a (<span class="dt">List</span> a)</span></code></pre></div>
 <p>An <code>fmap</code> for <code>List</code> has to have the type:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1"></a><span class="fu">fmap</span><span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (<span class="dt">List</span> a <span class="ot">-&gt;</span> <span class="dt">List</span> b)</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a><span class="fu">fmap</span><span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (<span class="dt">List</span> a <span class="ot">-&gt;</span> <span class="dt">List</span> b)</span></code></pre></div>
 <p>If we have a <code>List</code> of <code>a</code>’s and a function that transforms <code>a</code>’s into <code>b</code>’s, what’s the most natural way to get a <code>List</code> of <code>b</code>’s? To apply the transformation to each <code>a</code> in the list!</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">List</span> <span class="kw">where</span></span>
-<span id="cb12-2"><a href="#cb12-2"></a>  <span class="fu">fmap</span> _ <span class="dt">Nil</span> <span class="ot">=</span> <span class="dt">Nil</span></span>
-<span id="cb12-3"><a href="#cb12-3"></a>  <span class="fu">fmap</span> f (<span class="dt">Cons</span> x t) <span class="ot">=</span> <span class="dt">Cons</span> (f x) (<span class="fu">fmap</span> f t)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">List</span> <span class="kw">where</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a>  <span class="fu">fmap</span> _ <span class="dt">Nil</span> <span class="ot">=</span> <span class="dt">Nil</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true"></a>  <span class="fu">fmap</span> f (<span class="dt">Cons</span> x t) <span class="ot">=</span> <span class="dt">Cons</span> (f x) (<span class="fu">fmap</span> f t)</span></code></pre></div>
 <h3 id="the-reader-functor">7.1.7 The Reader Functor</h3>
 <p>In Haskell, a function type is constructed using the arrow type constructor:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1"></a>(<span class="ot">-&gt;</span>) a b</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a>(<span class="ot">-&gt;</span>) a b</span></code></pre></div>
 <p>Because <code>(-&gt;)</code> is a type constructor that takes two arguments, <code>(-&gt;) a</code> is a type constructor, like <code>List</code> or <code>Maybe</code>.</p>
 <p>Let’s give wrap type constructor <code>(-&gt;)</code> in a newtype called <code>Reader</code>:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1"></a><span class="ot">{-# LANGUAGE InstanceSigs #-}</span></span>
-<span id="cb14-2"><a href="#cb14-2"></a><span class="kw">newtype</span> <span class="dt">Reader</span> r a <span class="ot">=</span> <span class="dt">Reader</span> {<span class="ot"> run ::</span> r <span class="ot">-&gt;</span> a }</span>
-<span id="cb14-3"><a href="#cb14-3"></a></span>
-<span id="cb14-4"><a href="#cb14-4"></a><span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Reader</span> r) <span class="kw">where</span></span>
-<span id="cb14-5"><a href="#cb14-5"></a><span class="ot">  fmap ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (<span class="dt">Reader</span> r a) <span class="ot">-&gt;</span> (<span class="dt">Reader</span> r b)</span>
-<span id="cb14-6"><a href="#cb14-6"></a>  <span class="fu">fmap</span> f reader <span class="ot">=</span> <span class="dt">Reader</span> <span class="op">$</span> f <span class="op">.</span> (run reader)</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE InstanceSigs #-}</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true"></a><span class="kw">newtype</span> <span class="dt">Reader</span> r a <span class="ot">=</span> <span class="dt">Reader</span> {<span class="ot"> run ::</span> r <span class="ot">-&gt;</span> a }</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Reader</span> r) <span class="kw">where</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true"></a><span class="ot">  fmap ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (<span class="dt">Reader</span> r a) <span class="ot">-&gt;</span> (<span class="dt">Reader</span> r b)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true"></a>  <span class="fu">fmap</span> f reader <span class="ot">=</span> <span class="dt">Reader</span> <span class="op">$</span> f <span class="op">.</span> (run reader)</span></code></pre></div>
 <p>We could also say:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1"></a><span class="fu">fmap</span> f (<span class="dt">Reader</span> g) <span class="ot">=</span> <span class="dt">Reader</span> <span class="op">$</span> f <span class="op">.</span> g</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true"></a><span class="fu">fmap</span> f (<span class="dt">Reader</span> g) <span class="ot">=</span> <span class="dt">Reader</span> <span class="op">$</span> f <span class="op">.</span> g</span></code></pre></div>
 <h2 id="functors-as-containers">7.2 Functors as Containers</h2>
 <p>The idea of a Functor as a container of some value or values is imperfect, since sometimes a Functor will explicitly contain no values, as in the case of the <code>Const</code> functor:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1"></a><span class="ot">{-# LANGUAGE InstanceSigs #-}</span></span>
-<span id="cb16-2"><a href="#cb16-2"></a><span class="kw">data</span> <span class="dt">Const</span> c a <span class="ot">=</span> <span class="dt">Const</span> c</span>
-<span id="cb16-3"><a href="#cb16-3"></a></span>
-<span id="cb16-4"><a href="#cb16-4"></a><span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Const</span> c) <span class="kw">where</span></span>
-<span id="cb16-5"><a href="#cb16-5"></a><span class="ot">  fmap ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">Const</span> c a <span class="ot">-&gt;</span> <span class="dt">Const</span> c b</span>
-<span id="cb16-6"><a href="#cb16-6"></a>  <span class="fu">fmap</span> _ (<span class="dt">Const</span> v) <span class="ot">=</span> (<span class="dt">Const</span> v)</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE InstanceSigs #-}</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">Const</span> c a <span class="ot">=</span> <span class="dt">Const</span> c</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Const</span> c) <span class="kw">where</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true"></a><span class="ot">  fmap ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">Const</span> c a <span class="ot">-&gt;</span> <span class="dt">Const</span> c b</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true"></a>  <span class="fu">fmap</span> _ (<span class="dt">Const</span> v) <span class="ot">=</span> (<span class="dt">Const</span> v)</span></code></pre></div>
 <p>A <code>Const c a</code> is a box containing a type <code>c</code> and a “phantom” type <code>a</code>. The type <code>a</code> doesn’t exist except in the type signature.</p>
 <h2 id="functor-composition">7.3 Functor Composition</h2>
 <p>Lets say we have a list of integers:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1"></a><span class="ot">ints ::</span> [<span class="dt">Int</span>]</span>
-<span id="cb17-2"><a href="#cb17-2"></a>ints <span class="ot">=</span> [<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">7</span>,<span class="dv">8</span>,<span class="dv">9</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true"></a><span class="ot">ints ::</span> [<span class="dt">Int</span>]</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true"></a>ints <span class="ot">=</span> [<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">7</span>,<span class="dv">8</span>,<span class="dv">9</span>]</span></code></pre></div>
 <p>Now suppose we want to apply the function:</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1"></a><span class="ot">isPrime ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true"></a><span class="ot">isPrime ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></span></code></pre></div>
 <p>to this list. The specific implementation of <code>isPrime</code> isn’t important, it just returns <code>True</code> if the <code>Int</code> is prime and <code>False</code> if it is not prime.</p>
 <p>But we have a problem here, in that prime numbers are only defined for integers greater than 1. <code>isPrime 3</code> should return <code>True</code> and <code>isPrime 4</code> should return <code>False</code>, but <code>isPrime 1</code> is undefined and should return neither of those things.</p>
 <p>Now, you might be saying, why don’t we just return <code>False</code> for any integer where <code>isPrime</code> is undefined? This does seem like the simplest solution from a programming perspective.</p>
 <p>However, this solution could actually generate a lot of headache for us later on.</p>
 <p>For example, let’s say we wanted to write another function <code>isComposite</code>, that returns <code>True</code> for integers with factors.</p>
 <p>Mathematical intuition says that we should be able to do:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb19-1"><a href="#cb19-1"></a><span class="ot">isComposite ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
-<span id="cb19-2"><a href="#cb19-2"></a>isComposite <span class="ot">=</span> <span class="fu">not</span> <span class="op">.</span> isPrime</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true"></a><span class="ot">isComposite ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true"></a>isComposite <span class="ot">=</span> <span class="fu">not</span> <span class="op">.</span> isPrime</span></code></pre></div>
 <p>But if we defined <code>isPrime 1</code> to be <code>False</code> then <code>isComposite 1</code> would return <code>True</code>, which is wrong, because “composite” numbers are also only defined for numbers greater than 1.</p>
 <p>Now, suppose we have some code (maybe from a library) where <code>isPrime</code> and <code>isComposite</code> do follow the rule that each is the logical inverse (the "not) of the other.</p>
 <p>But let’s say that for whatever reason, the author decided to make <code>isPrime</code> and <code>isComposite</code> partial functions, meaning that for any integers outside their domain (less than or equal to 1) they return a runtime error.</p>
 <p>Runtime errors, are annoying (and dangerous) so, let’s say we want to fix their code.</p>
 <p>We could directly modify their code and write two new functions:</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb20-1"><a href="#cb20-1"></a><span class="ot">safeIsPrime ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Bool</span></span>
-<span id="cb20-2"><a href="#cb20-2"></a><span class="ot">safeIsComposite ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Bool</span></span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true"></a><span class="ot">safeIsPrime ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Bool</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true"></a><span class="ot">safeIsComposite ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Bool</span></span></code></pre></div>
 <p>So that <code>isPrime 1</code> return <code>Nothing</code> and <code>isComposite 4</code> returns <code>Just True</code>.</p>
 <p>Editing other peoples’ code is a lot of work though, and isn’t always the best solution. Is there a way we can turn make partial functions safe from the “outside”?</p>
 <p>There is! We know that</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb21-1"><a href="#cb21-1"></a><span class="ot">safen ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Int</span></span>
-<span id="cb21-2"><a href="#cb21-2"></a>safen x</span>
-<span id="cb21-3"><a href="#cb21-3"></a>  <span class="op">|</span> x <span class="op">&gt;</span> <span class="dv">1</span> <span class="ot">=</span> <span class="dt">Just</span> x</span>
-<span id="cb21-4"><a href="#cb21-4"></a>  <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> <span class="dt">Nothing</span></span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true"></a><span class="ot">safen ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Int</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true"></a>safen x</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true"></a>  <span class="op">|</span> x <span class="op">&gt;</span> <span class="dv">1</span> <span class="ot">=</span> <span class="dt">Just</span> x</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true"></a>  <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> <span class="dt">Nothing</span></span></code></pre></div>
 <p>safeIsPrime x= safen</p>
         </div>
         <div id="footer">

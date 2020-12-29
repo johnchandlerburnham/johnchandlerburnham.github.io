@@ -10,11 +10,11 @@
     <body>
         <div id="header">
             <div id="navigation">
-                <a href="../../../">jcb</a>
-                <a href="../../../posts.html">posts</a>
+                <a href="../../../">posts</a>
+                <a href="../../../about.html">about</a>
                 <a href="../../../projects.html">projects</a>
                 <a href="https://github.com/johnchandlerburnham">github</a>
-                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+                <a href="https://fosstodon.org/@johnburnham">fediverse</a>
             </div>
         </div>
         <div id="content">
@@ -39,10 +39,10 @@
 <p><a href="https://github.com/johnchandlerburnham/hpfp/blob/master/14/hangman">see <code>hangman</code></a></p>
 <p>So I went back and did this exercise and my initial instinct has been confirmed. I found it a pretty interesting exercise to build a <code>Gen Puzzle</code> arbitrary puzzle generator, but actually applyting that generator to a reasonable property test for the hangman game is way too complicated for a beginner given the material covered so far. I figured it out, but it requires using the <code>monadicIO</code> function from the <code>Test.QuickCheck.Monadic</code> library, which is super interesting in how it works, but yeah, definitely something I only understood on my second pass through this book.</p>
 <p>In any case, check out my new and improved hangman. I was able to refactor out a lot of complexity, using a little monadic goodness. I also simplified the <code>Puzzle</code> type by making it only contain two strings, one for the word and one for guesses:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">data</span> <span class="dt">Puzzle</span> <span class="ot">=</span> <span class="dt">Puzzle</span> {<span class="ot"> word ::</span> <span class="dt">String</span>,<span class="ot"> guessed ::</span> <span class="dt">String</span> } <span class="kw">deriving</span> <span class="dt">Show</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">Puzzle</span> <span class="ot">=</span> <span class="dt">Puzzle</span> {<span class="ot"> word ::</span> <span class="dt">String</span>,<span class="ot"> guessed ::</span> <span class="dt">String</span> } <span class="kw">deriving</span> <span class="dt">Show</span></span></code></pre></div>
 <p>This simplifies the code enormously, because instead of dragging around a stateful <code>filledIn :: [Maybe Char]</code>, we can instead just compute:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="ot">discovered ::</span> <span class="dt">Puzzle</span> <span class="ot">-&gt;</span> [<span class="dt">Maybe</span> <span class="dt">Char</span>]</span>
-<span id="cb3-2"><a href="#cb3-2"></a>discovered p <span class="ot">=</span> (\x <span class="ot">-&gt;</span> <span class="kw">if</span> <span class="fu">elem</span> x (guessed p) <span class="kw">then</span> <span class="dt">Just</span> x <span class="kw">else</span> <span class="dt">Nothing</span>) <span class="op">&lt;$&gt;</span> word p</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="ot">discovered ::</span> <span class="dt">Puzzle</span> <span class="ot">-&gt;</span> [<span class="dt">Maybe</span> <span class="dt">Char</span>]</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>discovered p <span class="ot">=</span> (\x <span class="ot">-&gt;</span> <span class="kw">if</span> <span class="fu">elem</span> x (guessed p) <span class="kw">then</span> <span class="dt">Just</span> x <span class="kw">else</span> <span class="dt">Nothing</span>) <span class="op">&lt;$&gt;</span> word p</span></code></pre></div>
 <p>This is a little slower, sure, to recompute <code>discovered</code> every time we want to check the characters that have already been solved rather than already having it in our <code>Puzzle</code> type. But honestly, the scope of the game is so small that it doesn’t matter. And if for some reason we need <code>Puzzle</code> to work efficiently with million-character words, there are better ways to cache that computation, and bigger inefficiencies, like the use of <code>String</code>, that we would have to address first.</p>
 <h3 id="validating-ciphers">Validating ciphers</h3>
 <p><a href="https://github.com/johnchandlerburnham/hpfp/blob/master/14/ciphers">see <code>ciphers</code></a></p>

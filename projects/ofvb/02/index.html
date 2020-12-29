@@ -10,11 +10,11 @@
     <body>
         <div id="header">
             <div id="navigation">
-                <a href="../../../">jcb</a>
-                <a href="../../../posts.html">posts</a>
+                <a href="../../../">posts</a>
+                <a href="../../../about.html">about</a>
                 <a href="../../../projects.html">projects</a>
                 <a href="https://github.com/johnchandlerburnham">github</a>
-                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+                <a href="https://fosstodon.org/@johnburnham">fediverse</a>
             </div>
         </div>
         <div id="content">
@@ -22,33 +22,33 @@
           <p>On my system, <code>max_int</code> is 2^62 - 1, <code>min_int</code> is (-2)^62. Apparently OCaml uses the extra bit for some internal pointer magic.</p>
 <h1 id="questions">Questions</h1>
 <h2 id="section">1</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb1-1"><a href="#cb1-1"></a># <span class="kw">let</span> f x = x * <span class="dv">10</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">val</span> f : <span class="dt">int</span> -&gt; <span class="dt">int</span> = &lt;<span class="kw">fun</span>&gt;</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a># <span class="kw">let</span> f x = x * <span class="dv">10</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="kw">val</span> f : <span class="dt">int</span> -&gt; <span class="dt">int</span> = &lt;<span class="kw">fun</span>&gt;</span></code></pre></div>
 <h2 id="section-1">2</h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb2-1"><a href="#cb2-1"></a># <span class="kw">let</span> f x y = x &lt;&gt; <span class="dv">0</span> &amp;&amp; y &lt;&gt; <span class="dv">0</span>;;</span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="kw">val</span> f : <span class="dt">int</span> -&gt; <span class="dt">int</span> -&gt; <span class="dt">bool</span> = &lt;<span class="kw">fun</span>&gt;</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a># <span class="kw">let</span> f x y = x &lt;&gt; <span class="dv">0</span> &amp;&amp; y &lt;&gt; <span class="dv">0</span>;;</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="kw">val</span> f : <span class="dt">int</span> -&gt; <span class="dt">int</span> -&gt; <span class="dt">bool</span> = &lt;<span class="kw">fun</span>&gt;</span></code></pre></div>
 <h2 id="section-2">3</h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb3-1"><a href="#cb3-1"></a># <span class="kw">let</span> <span class="kw">rec</span> f x = <span class="kw">if</span> x = <span class="dv">1</span> <span class="kw">then</span> <span class="dv">1</span> <span class="kw">else</span> x + f (x - <span class="dv">1</span>);;</span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="kw">val</span> f : <span class="dt">int</span> -&gt; <span class="dt">int</span> = &lt;<span class="kw">fun</span>&gt;</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a># <span class="kw">let</span> <span class="kw">rec</span> f x = <span class="kw">if</span> x = <span class="dv">1</span> <span class="kw">then</span> <span class="dv">1</span> <span class="kw">else</span> x + f (x - <span class="dv">1</span>);;</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="kw">val</span> f : <span class="dt">int</span> -&gt; <span class="dt">int</span> = &lt;<span class="kw">fun</span>&gt;</span></code></pre></div>
 <h2 id="section-3">4</h2>
-<div class="sourceCode" id="cb4"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">let</span> <span class="kw">rec</span> power x n = <span class="kw">if</span> n = <span class="dv">0</span> <span class="kw">then</span> <span class="dv">1</span> <span class="kw">else</span> x * f x (n - <span class="dv">1</span>);;</span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="kw">val</span> power : <span class="dt">int</span> -&gt; <span class="dt">int</span> -&gt; <span class="dt">int</span> = &lt;<span class="kw">fun</span>&gt;</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">let</span> <span class="kw">rec</span> power x n = <span class="kw">if</span> n = <span class="dv">0</span> <span class="kw">then</span> <span class="dv">1</span> <span class="kw">else</span> x * f x (n - <span class="dv">1</span>);;</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="kw">val</span> power : <span class="dt">int</span> -&gt; <span class="dt">int</span> -&gt; <span class="dt">int</span> = &lt;<span class="kw">fun</span>&gt;</span></code></pre></div>
 <h2 id="section-4">5</h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb5-1"><a href="#cb5-1"></a># <span class="kw">let</span> isVowel c = c = <span class="ch">'a'</span> || c = <span class="ch">'e'</span> || c = <span class="ch">'i'</span> || c = <span class="ch">'o'</span> || c = <span class="ch">'u'</span>;;</span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="kw">val</span> isVowel : <span class="dt">char</span> -&gt; <span class="dt">bool</span> = &lt;<span class="kw">fun</span>&gt;</span>
-<span id="cb5-3"><a href="#cb5-3"></a># <span class="kw">let</span> <span class="dt">not</span> x = <span class="kw">if</span> x <span class="kw">then</span> <span class="kw">false</span> <span class="kw">else</span> <span class="kw">true</span>;;</span>
-<span id="cb5-4"><a href="#cb5-4"></a><span class="kw">val</span> <span class="dt">not</span> : <span class="dt">bool</span> -&gt; <span class="dt">bool</span> = &lt;<span class="kw">fun</span>&gt;</span>
-<span id="cb5-5"><a href="#cb5-5"></a># <span class="kw">let</span> isConsonant c = <span class="dt">not</span> (isVowel c);;</span>
-<span id="cb5-6"><a href="#cb5-6"></a><span class="kw">val</span> isConsonant : <span class="dt">char</span> -&gt; <span class="dt">bool</span> = &lt;<span class="kw">fun</span>&gt;</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a># <span class="kw">let</span> isVowel c = c = <span class="ch">'a'</span> || c = <span class="ch">'e'</span> || c = <span class="ch">'i'</span> || c = <span class="ch">'o'</span> || c = <span class="ch">'u'</span>;;</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a><span class="kw">val</span> isVowel : <span class="dt">char</span> -&gt; <span class="dt">bool</span> = &lt;<span class="kw">fun</span>&gt;</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a># <span class="kw">let</span> <span class="dt">not</span> x = <span class="kw">if</span> x <span class="kw">then</span> <span class="kw">false</span> <span class="kw">else</span> <span class="kw">true</span>;;</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a><span class="kw">val</span> <span class="dt">not</span> : <span class="dt">bool</span> -&gt; <span class="dt">bool</span> = &lt;<span class="kw">fun</span>&gt;</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a># <span class="kw">let</span> isConsonant c = <span class="dt">not</span> (isVowel c);;</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a><span class="kw">val</span> isConsonant : <span class="dt">char</span> -&gt; <span class="dt">bool</span> = &lt;<span class="kw">fun</span>&gt;</span></code></pre></div>
 <h2 id="section-5">6</h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb6-1"><a href="#cb6-1"></a># <span class="kw">let</span> x = <span class="dv">1</span> <span class="kw">in</span> <span class="kw">let</span> x = <span class="dv">2</span> <span class="kw">in</span> x + x;;</span>
-<span id="cb6-2"><a href="#cb6-2"></a>Warning <span class="dv">26</span>: unused variable x.</span>
-<span id="cb6-3"><a href="#cb6-3"></a>- : <span class="dt">int</span> = <span class="dv">4</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a># <span class="kw">let</span> x = <span class="dv">1</span> <span class="kw">in</span> <span class="kw">let</span> x = <span class="dv">2</span> <span class="kw">in</span> x + x;;</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a>Warning <span class="dv">26</span>: unused variable x.</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a>- : <span class="dt">int</span> = <span class="dv">4</span></span></code></pre></div>
 <p>OCaml searches bindings from inside to outside, so only the <code>let x = 2</code> matters.</p>
 <h2 id="section-6">7</h2>
-<div class="sourceCode" id="cb7"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb7-1"><a href="#cb7-1"></a># <span class="kw">let</span> <span class="kw">rec</span> factorial a = <span class="kw">if</span> a &lt;= <span class="dv">0</span> <span class="kw">then</span> <span class="dv">0</span> <span class="kw">else</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a>    <span class="kw">if</span> a = <span class="dv">1</span> <span class="kw">then</span> <span class="dv">1</span> <span class="kw">else</span> a * factorial (a - <span class="dv">1</span>);;</span>
-<span id="cb7-3"><a href="#cb7-3"></a><span class="kw">val</span> factorial : <span class="dt">int</span> -&gt; <span class="dt">int</span> = &lt;<span class="kw">fun</span>&gt;</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a># <span class="kw">let</span> <span class="kw">rec</span> factorial a = <span class="kw">if</span> a &lt;= <span class="dv">0</span> <span class="kw">then</span> <span class="dv">0</span> <span class="kw">else</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a>    <span class="kw">if</span> a = <span class="dv">1</span> <span class="kw">then</span> <span class="dv">1</span> <span class="kw">else</span> a * factorial (a - <span class="dv">1</span>);;</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a><span class="kw">val</span> factorial : <span class="dt">int</span> -&gt; <span class="dt">int</span> = &lt;<span class="kw">fun</span>&gt;</span></code></pre></div>
         </div>
         <div id="footer">
           <p>&copy; <script>document.write(new Date().getFullYear());</script>

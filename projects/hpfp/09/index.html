@@ -10,11 +10,11 @@
     <body>
         <div id="header">
             <div id="navigation">
-                <a href="../../../">jcb</a>
-                <a href="../../../posts.html">posts</a>
+                <a href="../../../">posts</a>
+                <a href="../../../about.html">about</a>
                 <a href="../../../projects.html">projects</a>
                 <a href="https://github.com/johnchandlerburnham">github</a>
-                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+                <a href="https://fosstodon.org/@johnburnham">fediverse</a>
             </div>
         </div>
         <div id="content">
@@ -29,16 +29,9 @@
 <h2 id="list-comprehensions">9.7 List Comprehensions</h2>
 <h3 id="exercises-comprehend-thy-lists">Exercises: Comprehend Thy Lists</h3>
 <ol type="1">
-<li><code>[4,15,36,64,100]</code></li>
-<li><div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a>[(<span class="dv">1</span>,<span class="dv">1</span>),(<span class="dv">1</span>,<span class="dv">4</span>),(<span class="dv">1</span>,<span class="dv">9</span>),(<span class="dv">1</span>,<span class="dv">16</span>),(<span class="dv">1</span>,<span class="dv">25</span>),(<span class="dv">1</span>,<span class="dv">36</span>),(<span class="dv">1</span>,<span class="dv">49</span>)</span>
-<span id="cb1-2"><a href="#cb1-2"></a>,(<span class="dv">4</span>,<span class="dv">1</span>),(<span class="dv">4</span>,<span class="dv">4</span>),(<span class="dv">4</span>,<span class="dv">9</span>),(<span class="dv">4</span>,<span class="dv">16</span>),(<span class="dv">4</span>,<span class="dv">25</span>),(<span class="dv">4</span>,<span class="dv">36</span>),(<span class="dv">4</span>,<span class="dv">49</span>)</span>
-<span id="cb1-3"><a href="#cb1-3"></a>,(<span class="dv">9</span>,<span class="dv">1</span>),(<span class="dv">9</span>,<span class="dv">4</span>),(<span class="dv">9</span>,<span class="dv">9</span>),(<span class="dv">9</span>,<span class="dv">16</span>),(<span class="dv">9</span>,<span class="dv">25</span>),(<span class="dv">9</span>,<span class="dv">36</span>),(<span class="dv">9</span>,<span class="dv">49</span>)</span>
-<span id="cb1-4"><a href="#cb1-4"></a>,(<span class="dv">16</span>,<span class="dv">1</span>),(<span class="dv">16</span>,<span class="dv">4</span>),(<span class="dv">16</span>,<span class="dv">9</span>),(<span class="dv">16</span>,<span class="dv">16</span>),(<span class="dv">16</span>,<span class="dv">25</span>),(<span class="dv">16</span>,<span class="dv">36</span>),(<span class="dv">16</span>,<span class="dv">49</span>)</span>
-<span id="cb1-5"><a href="#cb1-5"></a>,(<span class="dv">25</span>,<span class="dv">1</span>),(<span class="dv">25</span>,<span class="dv">4</span>),(<span class="dv">25</span>,<span class="dv">9</span>),(<span class="dv">25</span>,<span class="dv">16</span>),(<span class="dv">25</span>,<span class="dv">25</span>),(<span class="dv">25</span>,<span class="dv">36</span>),(<span class="dv">25</span>,<span class="dv">49</span>)</span>
-<span id="cb1-6"><a href="#cb1-6"></a>,(<span class="dv">36</span>,<span class="dv">1</span>),(<span class="dv">36</span>,<span class="dv">4</span>),(<span class="dv">36</span>,<span class="dv">9</span>),(<span class="dv">36</span>,<span class="dv">16</span>),(<span class="dv">36</span>,<span class="dv">25</span>),(<span class="dv">36</span>,<span class="dv">36</span>),(<span class="dv">36</span>,<span class="dv">49</span>)</span>
-<span id="cb1-7"><a href="#cb1-7"></a>,(<span class="dv">49</span>,<span class="dv">1</span>),(<span class="dv">49</span>,<span class="dv">4</span>),(<span class="dv">49</span>,<span class="dv">9</span>),(<span class="dv">49</span>,<span class="dv">16</span>),(<span class="dv">49</span>,<span class="dv">25</span>),(<span class="dv">49</span>,<span class="dv">36</span>),(<span class="dv">49</span>,<span class="dv">49</span>)</span>
-<span id="cb1-8"><a href="#cb1-8"></a>]</span></code></pre></div></li>
-<li><code>[(1,1),(1,4),(1,9),(1,16),(1,25)]</code></li>
+<li><p><code>[4,15,36,64,100]</code></p></li>
+<li><p><code>haskell     [(1,1),(1,4),(1,9),(1,16),(1,25),(1,36),(1,49)     ,(4,1),(4,4),(4,9),(4,16),(4,25),(4,36),(4,49)     ,(9,1),(9,4),(9,9),(9,16),(9,25),(9,36),(9,49)     ,(16,1),(16,4),(16,9),(16,16),(16,25),(16,36),(16,49)     ,(25,1),(25,4),(25,9),(25,16),(25,25),(25,36),(25,49)     ,(36,1),(36,4),(36,9),(36,16),(36,25),(36,36),(36,49)     ,(49,1),(49,4),(49,9),(49,16),(49,25),(49,36),(49,49)     ]</code></p></li>
+<li><p><code>[(1,1),(1,4),(1,9),(1,16),(1,25)]</code></p></li>
 </ol>
 <h3 id="exercises-square-cube">Exercises: Square Cube</h3>
 <p><a href="https://github.com/johnchandlerburnham/hpfp/blob/master/09/SquareCube.hs">see <code>SquareCube.hs</code></a></p>

@@ -10,31 +10,31 @@
     <body>
         <div id="header">
             <div id="navigation">
-                <a href="../../../">jcb</a>
-                <a href="../../../posts.html">posts</a>
+                <a href="../../../">posts</a>
+                <a href="../../../about.html">about</a>
                 <a href="../../../projects.html">projects</a>
                 <a href="https://github.com/johnchandlerburnham">github</a>
-                <a href="https://twitter.com/John_C_Burnham">twitter</a>
+                <a href="https://fosstodon.org/@johnburnham">fediverse</a>
             </div>
         </div>
         <div id="content">
             <h1>Notes (HPFP 29/31): IO</h1>
           <h1 id="io">29 IO</h1>
 <p>One interesting thing about how <code>IO</code> is defined is that</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">newtype</span> <span class="dt">IO</span> a <span class="ot">=</span> <span class="dt">IO</span> (<span class="dt">State</span><span class="op">#</span> <span class="dt">RealWorld</span> <span class="ot">-&gt;</span> (<span class="op">#</span> <span class="dt">State</span><span class="op">#</span> <span class="dt">RealWorld</span>, a <span class="op">#</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">newtype</span> <span class="dt">IO</span> a <span class="ot">=</span> <span class="dt">IO</span> (<span class="dt">State</span><span class="op">#</span> <span class="dt">RealWorld</span> <span class="ot">-&gt;</span> (<span class="op">#</span> <span class="dt">State</span><span class="op">#</span> <span class="dt">RealWorld</span>, a <span class="op">#</span>))</span></code></pre></div>
 <p>is that it inverts the usual perspective of subjective thought happening within an objective world. <code>IO</code> is like looking into the universe from the plane of pure Platonic computation, calculating its physics forward a step in time, and then plucking out the type <code>a</code> you happen to want. It’s a very heady perspective, and small wonder people get hooked on it.</p>
 <p>But it’s important to remember that this perspective is a lie. GHC is only simulating the outside-view; the code we run is still very much within the universe and generating causal effects like heating our cpu, increasing our electric bill etc. etc. These effects are usually (but not always) small, which is what makes the simulated outside perspective useful.</p>
 <p>The outside perspective preserves purity by modeling (or pretending to model) the whole universe as a pure function. The <code>IO</code> type is that model, it makes <code>GHC</code> safely switch off simulating computation as something that happens outside of time and space. Within <code>IO</code>, <code>GHC</code> respects RealWorld time, and doesn’t mess with our execution order.</p>
 <p>There is also an unsafe way to punch a hole in the simulation:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">import</span> <span class="dt">System.IO.Unsafe</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a></span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="ot">unsafe ::</span> <span class="dt">Int</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a>unsafe <span class="ot">=</span> unsafePerformIO (<span class="fu">print</span> <span class="st">&quot;a hole in the simulation&quot;</span> <span class="op">&gt;&gt;</span> <span class="fu">return</span> <span class="dv">2</span>)</span>
-<span id="cb2-5"><a href="#cb2-5"></a></span>
-<span id="cb2-6"><a href="#cb2-6"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb2-7"><a href="#cb2-7"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb2-8"><a href="#cb2-8"></a>  <span class="fu">putStrLn</span> <span class="st">&quot;the outside perspective&quot;</span></span>
-<span id="cb2-9"><a href="#cb2-9"></a>  <span class="fu">print</span> <span class="op">$</span> <span class="dv">2</span> <span class="op">+</span> unsafe</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">System.IO.Unsafe</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="ot">unsafe ::</span> <span class="dt">Int</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a>unsafe <span class="ot">=</span> unsafePerformIO (<span class="fu">print</span> <span class="st">&quot;a hole in the simulation&quot;</span> <span class="op">&gt;&gt;</span> <span class="fu">return</span> <span class="dv">2</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="st">&quot;the outside perspective&quot;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a>  <span class="fu">print</span> <span class="op">$</span> <span class="dv">2</span> <span class="op">+</span> unsafe</span></code></pre></div>
 <h2 id="chapter-exercises">29.9 Chapter Exercises</h2>
 <h3 id="file-io-with-vigenere">File IO with Vigenere</h3>
 <p>see <code>src/VignereFile.hs</code></p>
