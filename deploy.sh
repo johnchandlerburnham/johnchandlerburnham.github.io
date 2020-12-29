@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i bash -p git bash
+#! nix-shell <nixpkgs> -i bash -p git bash stack rsync
 
 REMOTE="git@github.com:johnchandlerburnham/johnchandlerburnham.github.io"
 
