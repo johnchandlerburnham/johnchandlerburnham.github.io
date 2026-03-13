@@ -1,34 +1,34 @@
 [submodule "projects/hpfp"]
 	path = projects/hpfp
-	url = git@github.com:johnchandlerburnham/hpfp.git
+	url = https://github.com/johnchandlerburnham/hpfp.git
 	branch = master
 [submodule "projects/pvim"]
 	path = projects/pvim
-	url = git@github.com:johnchandlerburnham/pvim.git
+	url = https://github.com/johnchandlerburnham/pvim.git
 	branch = master
 [submodule "projects/ctfp"]
 	path = projects/ctfp
-	url = git@github.com:johnchandlerburnham/ctfp.git
+	url = https://github.com/johnchandlerburnham/ctfp.git
 	branch = master
 [submodule "projects/tilc"]
 	path = projects/tilc
-	url = git@github.com:johnchandlerburnham/tilc.git
+	url = https://github.com/johnchandlerburnham/tilc.git
 	branch = master
 [submodule "projects/tecp"]
 	path = projects/tecp
-	url = git@github.com:johnchandlerburnham/tecp.git
+	url = https://github.com/johnchandlerburnham/tecp.git
 	branch = master
 [submodule "projects/lcbb"]
 	path = projects/lcbb
-	url = git@github.com:johnchandlerburnham/lcbb.git
+	url = https://github.com/johnchandlerburnham/lcbb.git
 	branch = master
 [submodule "projects/ofvb"]
 	path = projects/ofvb
-	url = git@github.com:johnchandlerburnham/ofvb.git
+	url = https://github.com/johnchandlerburnham/ofvb.git
 	branch = master
 [submodule "projects/tlph"]
 	path = projects/tlph
-	url = git@github.com:johnchandlerburnham/tlph.git
+	url = https://github.com/johnchandlerburnham/tlph.git
 [submodule "projects/trpl"]
 	path = projects/trpl
-	url = git@github.com:johnchandlerburnham/trpl.git
+	url = https://github.com/johnchandlerburnham/trpl.git

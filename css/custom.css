@@ -1,0 +1,143 @@
+/* Site-specific overrides for Tufte CSS */
+
+/* Navigation */
+header {
+  width: 87.5%;
+  padding-left: 12.5%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-top: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #ccc;
+}
+
+nav a {
+  font-family: et-book, Palatino, "Palatino Linotype", "Palatino LT STD",
+    "Book Antiqua", Georgia, serif;
+  font-size: 1.1rem;
+  color: #111;
+  text-decoration: none;
+  margin-right: 1.5rem;
+  letter-spacing: 0.02em;
+}
+
+nav a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+/* Footer */
+footer {
+  width: 87.5%;
+  padding-left: 12.5%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-top: 1rem;
+  padding-bottom: 2rem;
+  border-top: 1px solid #ccc;
+}
+
+footer p {
+  font-size: 1.0rem;
+  color: #666;
+}
+
+footer a {
+  color: #666;
+}
+
+/* Code blocks: extend into right margin since we don't use sidenotes */
+section > div.sourceCode {
+  width: 67.5%;
+}
+
+/* Tables */
+table {
+  border-collapse: collapse;
+  width: 55%;
+  margin: 1.4rem 0;
+}
+
+th, td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #ccc;
+}
+
+th {
+  font-weight: bold;
+}
+
+/* Images */
+section img {
+  max-width: 55%;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  header {
+    border-bottom-color: #444;
+  }
+
+  nav a {
+    color: #ddd;
+  }
+
+  footer {
+    border-top-color: #444;
+  }
+
+  footer p,
+  footer a {
+    color: #999;
+  }
+
+  a:link,
+  a:visited {
+    color: #9dbfdf;
+  }
+
+  nav a {
+    color: #ddd;
+  }
+
+  th, td {
+    border-bottom-color: #444;
+  }
+
+  th {
+    color: #ddd;
+  }
+}
+
+/* Responsive */
+@media (max-width: 760px) {
+  header {
+    width: 100%;
+    padding-left: 8%;
+    padding-right: 8%;
+  }
+
+  footer {
+    width: 100%;
+    padding-left: 8%;
+    padding-right: 8%;
+  }
+
+  nav a {
+    font-size: 0.95rem;
+    margin-right: 1rem;
+  }
+
+  section > div.sourceCode {
+    width: 100%;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  section img {
+    max-width: 100%;
+  }
+}

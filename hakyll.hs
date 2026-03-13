@@ -1,7 +1,6 @@
 --------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
 
-import Data.Monoid (mappend)
 import qualified Data.Set as S
 import Hakyll
 import Text.Pandoc.Options
@@ -10,8 +9,7 @@ import Text.Pandoc.Options
 config :: Configuration
 config =
   defaultConfiguration
-    { destinationDirectory = "_site",
-      deployCommand = "bash deploy.sh deploy"
+    { destinationDirectory = "_site"
     }
 
 main :: IO ()
@@ -20,7 +18,15 @@ main = hakyllWith config $ do
   let projectPostPattern = "projects/**.md"
   let projectSourcePattern = "projects/**" .&&. (complement projectPostPattern)
 
+  match (fromList ["CNAME"]) $ do
+    route idRoute
+    compile copyFileCompiler
+
   match "images/*" $ do
+    route idRoute
+    compile copyFileCompiler
+
+  match "et-book/**" $ do
     route idRoute
     compile copyFileCompiler
 
@@ -51,8 +57,8 @@ main = hakyllWith config $ do
       posts <- recentFirst =<< loadAll pat
       let ctx =
             constField "title" title
-              `mappend` listField "posts" (postCtxWithTags tags) (return posts)
-              `mappend` defaultContext
+              <> listField "posts" (postCtxWithTags tags) (return posts)
+              <> defaultContext
       makeItem ""
         >>= loadAndApplyTemplate "templates/tag.html" ctx
         >>= loadAndApplyTemplate "templates/default.html" ctx
@@ -83,8 +89,8 @@ main = hakyllWith config $ do
       posts <- recentFirst =<< loadAll postPattern
       let archiveCtx =
             listField "posts" (postCtxWithTags tags) (return posts)
-              `mappend` constField "title" "Posts"
-              `mappend` defaultContext
+              <> constField "title" "Posts"
+              <> defaultContext
       makeItem ""
         >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
         >>= loadAndApplyTemplate "templates/default.html" archiveCtx
@@ -94,17 +100,17 @@ main = hakyllWith config $ do
 
 --------------------------------------------------------------------------------
 postCtx :: Context String
-postCtx = dateField "date" "%B %e, %Y" `mappend` defaultContext
+postCtx = dateField "date" "%B %e, %Y" <> defaultContext
 
 postCtxWithTags :: Tags -> Context String
-postCtxWithTags tags = tagsField "tags" tags `mappend` postCtx
+postCtxWithTags tags = tagsField "tags" tags <> postCtx
 
 pandocMathCompiler :: Compiler (Item String)
 pandocMathCompiler =
   let mathExtensions =
         [Ext_tex_math_dollars, Ext_tex_math_double_backslash, Ext_latex_macros]
       defaultExtensions = writerExtensions defaultHakyllWriterOptions
-      newExtensions = defaultExtensions `mappend` extensionsFromList mathExtensions
+      newExtensions = defaultExtensions <> extensionsFromList mathExtensions
       writerOptions =
         defaultHakyllWriterOptions
           { writerTableOfContents = False,
