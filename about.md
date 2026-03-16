@@ -10,7 +10,7 @@ today doesn't work. We build on foundations we can't verify, trust systems we
 can't inspect, and depend on software that no one truly understands.
 
 The tools of certified computing exist: type theory, formal verification, proof
-assistants, zero-knowledge cryptography — the tools exist. The problem is that
+assistants, zero-knowledge cryptography, etc. The problem is that
 they're expensive, slow, and inaccessible. I'm interested in making them
 cheaper, faster, and ubiquitous.
 
