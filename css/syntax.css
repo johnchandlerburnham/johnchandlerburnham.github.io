@@ -108,6 +108,78 @@ code span.wa { color: #b05000; font-style: italic; } /* Warning */
   code span.wa { color: #e6a430; }
 }
 
+/* Dark mode (manual toggle) */
+[data-theme="dark"] pre.sourceCode { background-color: #1e1e1e; }
+[data-theme="dark"] p > code,
+[data-theme="dark"] li > code,
+[data-theme="dark"] td > code { background-color: #1e1e1e; }
+[data-theme="dark"] code span.al { color: #f44747; }
+[data-theme="dark"] code span.an { color: #777; }
+[data-theme="dark"] code span.at { color: #b5cea8; }
+[data-theme="dark"] code span.bn { color: #4ec9b0; }
+[data-theme="dark"] code span.bu { color: #ddd; }
+[data-theme="dark"] code span.cf { color: #c586c0; }
+[data-theme="dark"] code span.ch { color: #ce9178; }
+[data-theme="dark"] code span.cn { color: #4ec9b0; }
+[data-theme="dark"] code span.co { color: #6a9955; }
+[data-theme="dark"] code span.cv { color: #6a9955; }
+[data-theme="dark"] code span.do { color: #6a9955; }
+[data-theme="dark"] code span.dt { color: #dcdcaa; }
+[data-theme="dark"] code span.dv { color: #b5cea8; }
+[data-theme="dark"] code span.er { color: #f44747; }
+[data-theme="dark"] code span.ex { color: #ddd; }
+[data-theme="dark"] code span.fl { color: #b5cea8; }
+[data-theme="dark"] code span.fu { color: #569cd6; }
+[data-theme="dark"] code span.im { color: #c586c0; }
+[data-theme="dark"] code span.in { color: #6a9955; }
+[data-theme="dark"] code span.kw { color: #c586c0; }
+[data-theme="dark"] code span.op { color: #d4d4d4; }
+[data-theme="dark"] code span.ot { color: #c586c0; }
+[data-theme="dark"] code span.pp { color: #dcdcaa; }
+[data-theme="dark"] code span.sc { color: #ce9178; }
+[data-theme="dark"] code span.ss { color: #ce9178; }
+[data-theme="dark"] code span.st { color: #ce9178; }
+[data-theme="dark"] code span.va { color: #9cdcfe; }
+[data-theme="dark"] code span.vs { color: #ce9178; }
+[data-theme="dark"] code span.wa { color: #e6a430; }
+
+/* Force light when OS prefers dark */
+@media (prefers-color-scheme: dark) {
+  [data-theme="light"] pre.sourceCode { background-color: #f7f5f0; }
+  [data-theme="light"] p > code,
+  [data-theme="light"] li > code,
+  [data-theme="light"] td > code { background-color: #f7f5f0; }
+  [data-theme="light"] code span.al { color: #c23030; }
+  [data-theme="light"] code span.an { color: #8a8a8a; }
+  [data-theme="light"] code span.at { color: #5f6b16; }
+  [data-theme="light"] code span.bn { color: #287068; }
+  [data-theme="light"] code span.bu { color: #111; }
+  [data-theme="light"] code span.cf { color: #5f6b16; }
+  [data-theme="light"] code span.ch { color: #8b3d5a; }
+  [data-theme="light"] code span.cn { color: #287068; }
+  [data-theme="light"] code span.co { color: #8a8a8a; }
+  [data-theme="light"] code span.cv { color: #8a8a8a; }
+  [data-theme="light"] code span.do { color: #8a8a8a; }
+  [data-theme="light"] code span.dt { color: #956d00; }
+  [data-theme="light"] code span.dv { color: #287068; }
+  [data-theme="light"] code span.er { color: #c23030; }
+  [data-theme="light"] code span.ex { color: #111; }
+  [data-theme="light"] code span.fl { color: #287068; }
+  [data-theme="light"] code span.fu { color: #1a5fa0; }
+  [data-theme="light"] code span.im { color: #5f6b16; }
+  [data-theme="light"] code span.in { color: #8a8a8a; }
+  [data-theme="light"] code span.kw { color: #5f6b16; }
+  [data-theme="light"] code span.op { color: #5f6b16; }
+  [data-theme="light"] code span.ot { color: #5f6b16; }
+  [data-theme="light"] code span.pp { color: #956d00; }
+  [data-theme="light"] code span.sc { color: #8b3d5a; }
+  [data-theme="light"] code span.ss { color: #8b3d5a; }
+  [data-theme="light"] code span.st { color: #8b3d5a; }
+  [data-theme="light"] code span.va { color: #1a5fa0; }
+  [data-theme="light"] code span.vs { color: #8b3d5a; }
+  [data-theme="light"] code span.wa { color: #b05000; }
+}
+
 /* Responsive */
 @media (max-width: 760px) {
   div.sourceCode {

@@ -41,7 +41,7 @@ main = hakyllWith config $ do
         >>= loadAndApplyTemplate "templates/post-list.html" defaultContext
         >>= relativizeUrls
 
-  match (fromList ["about.md", "projects.md"]) $ do
+  match (fromList ["about.md", "projects.md", "contact.md"]) $ do
     route $ setExtension "html"
     compile $
       pandocMathCompiler

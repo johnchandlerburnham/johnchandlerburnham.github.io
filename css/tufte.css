@@ -64,6 +64,19 @@ body {
     }
 }
 
+[data-theme="dark"] body {
+    background-color: #151515;
+    color: #ddd;
+}
+
+/* Force light when OS is dark but user chose light */
+@media (prefers-color-scheme: dark) {
+    [data-theme="light"] body {
+        background-color: #fffff8;
+        color: #111;
+    }
+}
+
 h1 {
     font-weight: 400;
     margin-top: 4rem;

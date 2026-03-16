@@ -16,6 +16,7 @@ loud.
 - [Practical Vim (Neil)](/projects/pvim/00)
 - [Haskell Programming from First Principles (Allen, Moronuki)](/projects/hpfp/00)
 - [OCaml from the Very Beginning by John Whittington](/projects/ofvb/00)
+- [The Elements of Computing Systems (Nisan, Schocken)](/projects/tecp/00)
 - [The Rust Programming Language (Klabnik, Nichols)](/projects/trpl/00)
-- [Type Level Programming in Haskell (Macguire)](/projects/tlph/00)
+- [Thinking with Types: Type-Level Programming in Haskell (Maguire)](/projects/tlph/00)
 

@@ -2,46 +2,42 @@
 title: About
 ---
 
-  - Working on a new stealth project.
+Computing is a revolution on the scale of writing, of language, of nucleic acids
+— a new medium for encoding and transmitting structure. When computers work,
+they are glorious: elevating and emancipatory to the human spirit. When they
+don't, they're an Orwellian boot stamping on a user's face. A lot of computing
+today doesn't work. We build on foundations we can't verify, trust systems we
+can't inspect, and depend on software that no one truly understands.
 
-  - Worked on [Moonad](https://github.com/moonad/) and the
-    [Formality language](https://github.com/moonad/Formality) at [Sunshine
-    Cybernetics](https://sunshinecybernetics.com)
+The tools of certified computing exist: type theory, formal verification, proof
+assistants, zero-knowledge cryptography — the tools exist. The problem is that
+they're expensive, slow, and inaccessible. I'm interested in making them
+cheaper, faster, and ubiquitous.
 
-  - Worked on Tezos at [Toqueville Group](tqtezos.com) in Brooklyn, NY
+I'm the CEO and founder of [Argument Computer
+Corporation](https://argument.xyz/) (YC W22, Boston), where we work on
+verifiable computing. Our main project is
+[Ix](https://github.com/argumentcomputer/ix), a platform that compiles [Lean
+4](https://lean-lang.org/) programs into zero-knowledge proofs — enabling anyone
+to verify program execution and typechecking in milliseconds against
+kilobyte-sized cryptographic certificates, regardless of program complexity.
 
-  - Wrote some Haskell at [Serokell OU](http://www.serokell.io).
+Previously, I worked on the [Formality](https://github.com/moonad/Formality)
+programming language at Sunshine Cybernetics, on Tezos at Toqueville Group, and
+wrote Haskell at [Serokell](https://serokell.io/). Before that, I cofounded
+[Tlon](https://tlon.io), exemplar Orwellian boot-makers and the company
+responsible for [Urbit](https://en.wikipedia.org/wiki/Urbit). I regret my
+involvement.
 
-  - Went to [Dartmouth College](http://www.dartmouth.edu), studied Math and CS, currently
-    on a leave of absence.
+I studied math and computer science at [Dartmouth](https://dartmouth.edu), and
+classics at [Thomas More College of Liberal
+Arts](https://thomasmorecollege.edu/) though I did not graduate from either. I
+was a [Thiel Fellow](https://thielfellowship.org) in 2011 to mine asteroids
+(no asteroids were harmed), a research fellow at
+[Wolfram Research](https://wolfram.com), and an intern at [Planet
+Labs](https://planet.com) and [Moon Express](https://moonexpress.com). I
+graduated from [Northfield Mount Hermon](https://www.nmhschool.org/), and earned
+the rank of Eagle Scout in the Boy Scouts of America.
 
-  - Read some Great Books at the [Thomas More College of Liberal
-    Arts](http://www.thomasmorecollege.edu/), in Merrimack, NH.
-    Learned some Greek and Latin, in that order (ἀρίστη ὴ Ἀττική γλῶττα).
-
-  - Cofounded [Tlon](http://tlon.io) (the company developing [Urbit](http://www.urbit.org))
-    in San Francisco. Learned about functional programming and startups.
-
-  - Research Fellowship at [Wolfram Research](http://www.wolfram.com) in Somerville,
-    MA. Worked on social network data analytics in the Wolfram Alpha knowledge
-    engine.
-
-  - Interned at a few space technology startups in Silicon Valley:
-    [Moon Express](http://www.moonexpress.com), a NASA contractor building a lunar lander,
-    and [Planet Labs](http://www.planet.com), a satellite imaging company.
-
-  - Won a [Thiel Fellowship](http://thielfellowship.org) for an asteroid mining idea.
-    (Did not mine any asteroids).
-
-  - Boarding school at ([Northfield Mount Hermon](http://www.nmhschool.org)). Started
-    a student newspaper, wrestled, rowed crew, earned the rank of Eagle Scout
-    in the Boy Scouts of America.
-
-  - Went to a semester program on the island of Eleuthera in The Bahamas,
-    ([Island School](http://www.islandschool.org)). Learned about environmentalism,
-    celestial navigation, scuba diving, sea-kayaking.
-
-  - Born in New York City, grew up in Istanbul, Turkey; Fishers Island, New
-    York; and Boston, Massachusetts.
-
-
+You can reach me via email at my initials at this domain, or through my work
+email, which can be found in the above link.
