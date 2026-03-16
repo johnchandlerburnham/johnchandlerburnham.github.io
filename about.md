@@ -2,25 +2,34 @@
 title: About
 ---
 
-Computing is a revolution on the scale of writing, of language, of nucleic acids
-— a new medium for encoding and transmitting structure. When computers work,
-they are glorious: elevating and emancipatory to the human spirit. When they
-don't, they're an Orwellian boot stamping on a user's face. A lot of computing
-today doesn't work. We build on foundations we can't verify, trust systems we
-can't inspect, and depend on software that no one truly understands.
+We're still in the early days of the Computing Revolution. The first
+general-purpose digital computers were powered on less than a century ago, and
+our parents and grandparents remember a world substantially without them.
+Thinking machines are shockingly new, and we really have no idea what (or
+perhaps *who*) they are yet. We're in the middle of an epochal transformation
+whose nearest precedent is the invention of writing, or the evolution of the
+nucleic acid.
+
+When computers work, they are glorious: elevating and emancipatory to the human
+spirit. When they don't, they're an Orwellian boot stamping on a user's face. A
+lot of computing today doesn't work. We build on foundations we can't verify,
+trust systems we can't inspect, and depend on software that no one truly
+understands.
 
 The tools of certified computing exist: type theory, formal verification, proof
-assistants, zero-knowledge cryptography, etc. The problem is that
-they're expensive, slow, and inaccessible. I'm interested in making them
-cheaper, faster, and ubiquitous.
+assistants, zero-knowledge cryptography, etc. The problem is that they're
+expensive, slow, and arcane.
 
-I'm the CEO and founder of [Argument Computer
-Corporation](https://argument.xyz/) (YC W22, Boston), where we work on
-verifiable computing. Our main project is
-[Ix](https://github.com/argumentcomputer/ix), a platform that compiles [Lean
-4](https://lean-lang.org/) programs into zero-knowledge proofs — enabling anyone
-to verify program execution and typechecking in milliseconds against
-kilobyte-sized cryptographic certificates, regardless of program complexity.
+I'm interested in making computing faster, better, cheaper, safer. And
+universally accessible for everyone.
+
+I'm currently the cofounder and CEO of a startup [Argument Computer
+Corporation](https://argument.xyz/) (YC W22, Boston) that works on this. Our
+main project is [Ix](https://github.com/argumentcomputer/ix), a platform that
+compiles [Lean 4](https://lean-lang.org/) programs into zero-knowledge proofs —
+enabling anyone to verify program execution and typechecking in milliseconds
+against kilobyte-sized cryptographic certificates, regardless of program
+complexity.
 
 Previously, I worked on the [Formality](https://github.com/moonad/Formality)
 programming language at Sunshine Cybernetics, on Tezos at Toqueville Group, and
